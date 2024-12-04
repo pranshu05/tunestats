@@ -1,18 +1,13 @@
-/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
-import getNowPlayingItem from "@/lib/getNowPlayingItem";
+import getNowPlayingItem from "@/utils/getNowPlayingItem";
 import ProgressBar from "@ramonak/react-progress-bar";
 
-export function SpotifyPlayer({ userID }) {
+export function SpotifyPlayer(props) {
     const [result, setResult] = useState({});
 
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await getNowPlayingItem(userID);
-            setResult(data);
-        };
-        fetchData();
-    }, [userID]);
+        Promise.all([getNowPlayingItem(props.client_id, props.client_secret, props.refresh_token),]).then((results) => { setResult(results[0]); });
+    });
 
     return result.isPlaying ? (
         <div className="spotify-cont" style={{ backgroundImage: `url(${result.albumImageUrl})`, backgroundSize: "cover", }}>
@@ -31,7 +26,9 @@ export function SpotifyPlayer({ userID }) {
             </div>
         </div>
     ) : (
-        <div className="spotify-cont" style={{ backgroundImage: `url(https://e0.pxfuel.com/wallpapers/230/630/desktop-wallpaper-anime-aesthetic-pc-anime-aesthetic-pc-background-on-bat-retro-anime-aesthetic.jpg)`, backgroundSize: "cover", }}>
+        <div
+            className="spotify-cont"
+            style={{ backgroundImage: `url(https://e0.pxfuel.com/wallpapers/230/630/desktop-wallpaper-anime-aesthetic-pc-anime-aesthetic-pc-background-on-bat-retro-anime-aesthetic.jpg)`, backgroundSize: "cover", }}>
             <div className="blur"></div>
             <div className="spotify-track">
                 <div className="song-img">
@@ -42,5 +39,5 @@ export function SpotifyPlayer({ userID }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
