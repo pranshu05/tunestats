@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Loader from "@/components/(layout)/Loader";
 import UserData from "@/components/(user)/UserData";
 import NowPlaying from "@/components/(user)/NowPlaying";
+import TopArtists from "@/components/(user)/TopArtists";
 import { getAccessToken } from "@/lib/getAccessToken";
 
 export default function UserPage({ userId, initialAccessToken }) {
@@ -45,9 +46,14 @@ export default function UserPage({ userId, initialAccessToken }) {
     }
 
     return (
-        <div className="flex flex-col lg:flex-row min-h-screen p-4 gap-4">
-            <div className="lg:w-1/3 w-full"><UserData session={session} user={user} userId={userId} /></div>
-            <div className="lg:w-2/3 w-full flex-grow"><NowPlaying userId={userId} /></div>
+        <div className="flex flex-col lg:flex-row min-h-screen p-3 gap-3">
+            <div className="lg:w-1/3 w-full flex flex-col gap-3">
+                <UserData session={session} user={user} userId={userId} />
+                <NowPlaying userId={userId} />
+            </div>
+            <div className="lg:w-2/3 w-full flex flex-col gap-3">
+                <TopArtists userId={userId} />
+            </div>
         </div>
     );
 }

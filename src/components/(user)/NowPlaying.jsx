@@ -65,7 +65,7 @@ export default function NowPlaying({ userId }) {
     }, [accessToken]);
 
     if (!song || !song.isPlaying) {
-        return (<div className="flex items-center justify-center h-full text-[#333] bg-[#121212] rounded-lg">No song playing</div>);
+        return (<div className="flex items-center justify-center h-full text-[#333] bg-[#121212] rounded-lg p-3">No song playing</div>);
     }
 
     const progressPercent = (progressMs / song.durationMs) * 100;
