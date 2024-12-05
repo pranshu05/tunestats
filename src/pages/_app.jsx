@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react";
 import '../styles/globals.css';
 
 export const metadata = {
@@ -5,8 +6,10 @@ export const metadata = {
     description: "Display your Spotify activity in a unique way!",
 };
 
-export default function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     return (
-        <Component {...pageProps} />
+        <SessionProvider session={session}>
+            <Component {...pageProps} />
+        </SessionProvider>
     )
 }
