@@ -1,9 +1,5 @@
 # Display your Spotify listening activity in a unique way! Follow steps below to get started
 
-## Preview
-
-![image](https://cdn.discordapp.com/attachments/1106636184425345224/1106776421726167060/image.png)
-
 <a href="https://www.producthunt.com/posts/spotify-activity?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-spotify&#0045;activity" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=396383&theme=light" alt="Spotify&#0032;Activity - Display&#0032;your&#0032;Spotify&#0032;activity&#0032;in&#0032;a&#0032;unique&#0032;way | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 ## Spotify API
