@@ -30,7 +30,7 @@ export default function UserPage({ userId, initialAccessToken }) {
     useEffect(() => {
         const refreshAccessToken = async () => {
             if (!accessToken) {
-                const newAccessToken = await getAccessToken(userId); // Refresh access token if needed
+                const newAccessToken = await getAccessToken(userId);
                 setAccessToken(newAccessToken);
             }
         };
@@ -45,9 +45,9 @@ export default function UserPage({ userId, initialAccessToken }) {
     }
 
     return (
-        <div className="flex min-h-screen p-4 gap-4">
-            <div className="w-1/3"><UserData session={session} user={user} userId={userId} /></div>
-            <div className="w-2/3"><NowPlaying userId={userId} /></div>
+        <div className="flex flex-col lg:flex-row min-h-screen p-4 gap-4">
+            <div className="lg:w-1/3 w-full"><UserData session={session} user={user} userId={userId} /></div>
+            <div className="lg:w-2/3 w-full flex-grow"><NowPlaying userId={userId} /></div>
         </div>
     );
 }
