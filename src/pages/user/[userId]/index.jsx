@@ -1,15 +1,16 @@
-/* eslint-disable @next/next/no-img-element */
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { db } from "@/lib/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import Loader from "@/components/(layout)/Loader"
+import Loader from "@/components/(layout)/Loader";
 import UserData from "@/components/(user)/UserData";
 import NowPlaying from "@/components/(user)/NowPlaying";
+import { getAccessToken } from "@/lib/getAccessToken";
 
-export default function UserPage({ userId, accessToken }) {
+export default function UserPage({ userId, initialAccessToken }) {
     const { data: session } = useSession();
     const [user, setUser] = useState(null);
+    const [accessToken, setAccessToken] = useState(initialAccessToken);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -22,17 +23,31 @@ export default function UserPage({ userId, accessToken }) {
                 console.log("No such user!");
             }
         };
+
         fetchUserData();
     }, [userId]);
 
-    if (!user) {
+    useEffect(() => {
+        const refreshAccessToken = async () => {
+            if (!accessToken) {
+                const newAccessToken = await getAccessToken(userId); // Refresh access token if needed
+                setAccessToken(newAccessToken);
+            }
+        };
+
+        if (!accessToken) {
+            refreshAccessToken();
+        }
+    }, [userId, accessToken]);
+
+    if (!user || !accessToken) {
         return <Loader />;
     }
 
     return (
         <div className="flex min-h-screen p-4 gap-4">
             <div className="w-1/3"><UserData session={session} user={user} userId={userId} /></div>
-            <div className="w-2/3"><NowPlaying accessToken={accessToken} /></div>
+            <div className="w-2/3"><NowPlaying userId={userId} /></div>
         </div>
     );
 }
@@ -64,7 +79,7 @@ export async function getServerSideProps(context) {
         return {
             props: {
                 userId,
-                accessToken,
+                initialAccessToken: accessToken,
             },
         };
     } catch (error) {

@@ -32,6 +32,7 @@ export default NextAuth({
                     spotifyId: user.id || "unknown",
                     image: user.image || "unknown",
                     accessToken: account.access_token || "unknown",
+                    refreshToken: account.refresh_token || "unknown",
                     lastLogin: new Date(),
                 });
             }

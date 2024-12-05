@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ramonak/react-progress-bar": "^5.3.0",
+    "axios": "^1.7.9",
     "firebase": "^11.0.2",
     "next": "14.2.15",
     "next-auth": "^4.24.10",

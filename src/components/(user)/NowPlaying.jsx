@@ -1,12 +1,31 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 import ProgressBar from "@ramonak/react-progress-bar";
+import { getAccessToken } from "@/lib/getAccessToken";
 
-export default function NowPlaying({ accessToken }) {
+export default function NowPlaying({ userId }) {
+    const [accessToken, setAccessToken] = useState(null);
     const [song, setSong] = useState(null);
     const [progressMs, setProgressMs] = useState(0);
 
     useEffect(() => {
+        const fetchAccessToken = async () => {
+            try {
+                const token = await getAccessToken(userId);
+                setAccessToken(token);
+            } catch (error) {
+                console.error("Error fetching access token:", error);
+            }
+        };
+
+        if (userId) {
+            fetchAccessToken();
+        }
+    }, [userId]);
+
+    useEffect(() => {
+        if (!accessToken) return;
+
         const fetchCurrentlyPlaying = async () => {
             try {
                 const res = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
