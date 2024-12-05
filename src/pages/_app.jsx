@@ -2,7 +2,7 @@ import { SessionProvider } from "next-auth/react";
 import '../styles/globals.css';
 
 export const metadata = {
-    title: "Protify",
+    title: "TuneStats",
     description: "Display your Spotify activity in a unique way!",
 };
 

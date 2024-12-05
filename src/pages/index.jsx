@@ -7,7 +7,7 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
             {!session ? (
                 <>
-                    <h1 className="text-4xl font-bold mb-4">Welcome to Protify</h1>
+                    <h1 className="text-4xl font-bold mb-4">Welcome to TuneStats</h1>
                     <button
                         onClick={() => signIn("spotify")}
                         className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition"
