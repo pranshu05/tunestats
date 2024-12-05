@@ -4,27 +4,17 @@ export default function Home() {
     const { data: session } = useSession();
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+        <div className="flex flex-col items-center justify-center min-h-screen">
             {!session ? (
                 <>
                     <h1 className="text-4xl font-bold mb-4">Welcome to TuneStats</h1>
-                    <button
-                        onClick={() => signIn("spotify")}
-                        className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition"
-                    >
-                        Login with Spotify
-                    </button>
+                    <button onClick={() => signIn("spotify")} className="px-4 py-2 bg-[#1DB954] rounded-md">Login with Spotify</button>
                 </>
             ) : (
                 <>
                     <h1 className="text-4xl font-bold mb-4">Welcome, {session.user.name}!</h1>
-                    <p className="mb-4">You are logged in as {session.user.email}.</p>
-                    <button
-                        onClick={() => signOut()}
-                        className="px-4 py-2 bg-red-500 rounded hover:bg-red-600 transition"
-                    >
-                        Sign Out
-                    </button>
+                    <a href={`/user/${session.user.id}`} className="mb-4">Go to your profile.</a>
+                    <button onClick={() => signOut()} className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Sign Out</button>
                 </>
             )}
         </div>

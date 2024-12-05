@@ -26,21 +26,14 @@ export default NextAuth({
         async signIn({ user, account }) {
             if (account.provider === "spotify") {
                 const userRef = doc(db, "users", user.id);
-
-                const userData = {
-                    email: user.email || "unknown_email@example.com",
-                    name: user.name || "Unknown Name",
-                    spotifyId: account.id || null,
-                    image: user.image || null,
-                    lastLogin: new Date().toISOString(),
-                };
-
-                try {
-                    await setDoc(userRef, userData, { merge: true });
-                    return true;
-                } catch (error) {
-                    return false;
-                }
+                await setDoc(userRef, {
+                    email: user.email || "unknown",
+                    name: user.name || "unknown",
+                    spotifyId: user.id || "unknown",
+                    image: user.image || "unknown",
+                    accessToken: account.access_token || "unknown",
+                    lastLogin: new Date(),
+                });
             }
             return true;
         },
@@ -49,5 +42,4 @@ export default NextAuth({
             return session;
         },
     },
-    secret: process.env.NEXTAUTH_SECRET,
 });
