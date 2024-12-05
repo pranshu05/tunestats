@@ -1,19 +1,32 @@
-import { useRouter } from "next/router";
+import { useSession, signIn, signOut } from "next-auth/react";
 
-export default function LandingPage() {
-    const router = useRouter();
-
-    const handleLoginRedirect = () => {
-        router.push("/login");
-    };
+export default function Home() {
+    const { data: session } = useSession();
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-            <div className="text-center space-y-6">
-                <h1 className="text-4xl font-bold">Welcome to Protify!</h1>
-                <p className="text-lg">View and share your current Spotify activity!</p>
-                <button onClick={handleLoginRedirect} className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-400">Get Started</button>
-            </div>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+            {!session ? (
+                <>
+                    <h1 className="text-4xl font-bold mb-4">Welcome to Protify</h1>
+                    <button
+                        onClick={() => signIn("spotify")}
+                        className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition"
+                    >
+                        Login with Spotify
+                    </button>
+                </>
+            ) : (
+                <>
+                    <h1 className="text-4xl font-bold mb-4">Welcome, {session.user.name}!</h1>
+                    <p className="mb-4">You are logged in as {session.user.email}.</p>
+                    <button
+                        onClick={() => signOut()}
+                        className="px-4 py-2 bg-red-500 rounded hover:bg-red-600 transition"
+                    >
+                        Sign Out
+                    </button>
+                </>
+            )}
         </div>
     );
 }
