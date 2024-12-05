@@ -6,12 +6,28 @@ import Loader from "@/components/(layout)/Loader";
 import UserData from "@/components/(user)/UserData";
 import NowPlaying from "@/components/(user)/NowPlaying";
 import TopArtists from "@/components/(user)/TopArtists";
+import TopSongs from "@/components/(user)/TopSongs";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAccessToken } from "@/lib/getAccessToken";
 
 export default function UserPage({ userId, initialAccessToken }) {
     const { data: session } = useSession();
     const [user, setUser] = useState(null);
     const [accessToken, setAccessToken] = useState(initialAccessToken);
+    const [activeTabIndex, setActiveTabIndex] = useState(0);
+
+    const tabs = [
+        { id: 0, label: "Top Artists", component: <TopArtists userId={userId} /> },
+        { id: 1, label: "Top Songs", component: <TopSongs userId={userId} /> },
+    ];
+
+    const handleNextTab = () => {
+        setActiveTabIndex((prevIndex) => (prevIndex + 1) % tabs.length);
+    };
+
+    const handlePreviousTab = () => {
+        setActiveTabIndex((prevIndex) => (prevIndex - 1 + tabs.length) % tabs.length);
+    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -51,8 +67,12 @@ export default function UserPage({ userId, initialAccessToken }) {
                 <UserData session={session} user={user} userId={userId} />
                 <NowPlaying userId={userId} />
             </div>
-            <div className="lg:w-2/3 w-full flex flex-col gap-3">
-                <TopArtists userId={userId} />
+            <div className="lg:w-2/3 w-full bg-[#121212] rounded-lg p-3">
+                {tabs[activeTabIndex].component}
+                <div className="flex justify-end gap-3">
+                    <button onClick={handlePreviousTab} className="p-2 rounded-full bg-[#1F1F1F] text-white"><ChevronLeft /></button>
+                    <button onClick={handleNextTab} className="p-2 rounded-full bg-[#1F1F1F] text-white"><ChevronRight /></button>
+                </div>
             </div>
         </div>
     );

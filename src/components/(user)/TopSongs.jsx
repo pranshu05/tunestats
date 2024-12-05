@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { getAccessToken } from "@/lib/getAccessToken";
 
-export default function TopArtists({ userId }) {
+export default function TopSongs({ userId }) {
     const [accessToken, setAccessToken] = useState(null);
-    const [topArtists, setTopArtists] = useState([]);
+    const [topTracks, setTopTracks] = useState([]);
     const [timeRange, setTimeRange] = useState("short_term");
 
     useEffect(() => {
@@ -25,22 +25,22 @@ export default function TopArtists({ userId }) {
     useEffect(() => {
         if (!accessToken) return;
 
-        const fetchTopArtists = async () => {
+        const fetchTopTracks = async () => {
             try {
-                const res = await fetch(`https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=9`, { method: "GET", headers: { Authorization: `Bearer ${accessToken}` }, });
+                const res = await fetch(`https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}&limit=9`, { method: "GET", headers: { Authorization: `Bearer ${accessToken}` }, });
 
                 if (res.ok) {
                     const data = await res.json();
-                    setTopArtists(data.items);
+                    setTopTracks(data.items);
                 } else {
-                    console.error("Failed to fetch top artists", res.statusText);
+                    console.error("Failed to fetch top tracks", res.statusText);
                 }
             } catch (error) {
-                console.error("Error fetching top artists data:", error);
+                console.error("Error fetching top tracks data:", error);
             }
         };
 
-        fetchTopArtists();
+        fetchTopTracks();
     }, [accessToken, timeRange]);
 
     const handleTimeRangeChange = (range) => {
@@ -50,7 +50,7 @@ export default function TopArtists({ userId }) {
     return (
         <div className="flex flex-col gap-3">
             <div className="flex flex-col lg:flex-row lg:justify-between items-center gap-3">
-                <h2 className="text-2xl font-bold">Top Artists</h2>
+                <h2 className="text-2xl font-bold">Top Songs</h2>
                 <div className="flex gap-2">
                     <button onClick={() => handleTimeRangeChange("short_term")} className={`px-3 py-1 rounded-md ${timeRange === "short_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Week</button>
                     <button onClick={() => handleTimeRangeChange("medium_term")} className={`px-3 py-1 rounded-md ${timeRange === "medium_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Month</button>
@@ -58,11 +58,11 @@ export default function TopArtists({ userId }) {
                 </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 my-4">
-                {topArtists.map((artist) => (
-                    <a href={artist.external_urls.spotify} target="_blank" key={artist.id}className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
-                        <img src={artist.images[0]?.url || "https://via.placeholder.com/150"}alt={artist.name}className="w-24 h-24 rounded-full mb-2 object-cover"/>
-                        <h3 className="text-lg font-semibold">{artist.name}</h3>
-                        <p className="text-sm text-[#888]">{artist.genres.slice(0, 2).join(", ")}</p>
+                {topTracks.map((track) => (
+                    <a href={track.external_urls.spotify} target="_blank" key={track.id} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
+                        <img src={track.album.images[0]?.url || "https://via.placeholder.com/150"} alt={track.name} className="w-24 h-24 rounded-full mb-2 object-cover" />
+                        <h3 className="text-lg font-semibold">{track.name}</h3>
+                        <p className="text-sm text-[#888]">{track.artists.map((artist) => artist.name).join(", ")}</p>
                     </a>
                 ))}
             </div>
