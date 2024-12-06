@@ -7,6 +7,7 @@ import UserData from "@/components/(user)/UserData";
 import NowPlaying from "@/components/(user)/NowPlaying";
 import TopArtists from "@/components/(user)/TopArtists";
 import TopSongs from "@/components/(user)/TopSongs";
+import TopGenres from "@/components/(user)/TopGenres";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAccessToken } from "@/lib/getAccessToken";
 
@@ -62,16 +63,21 @@ export default function UserPage({ userId, initialAccessToken }) {
     }
 
     return (
-        <div className="flex flex-col lg:flex-row min-h-screen p-3 gap-3">
-            <div className="lg:w-1/3 w-full flex flex-col gap-3">
-                <UserData session={session} user={user} userId={userId} />
-                <NowPlaying userId={userId} />
-            </div>
-            <div className="lg:w-2/3 w-full bg-[#121212] rounded-lg p-3">
-                {tabs[activeTabIndex].component}
-                <div className="flex justify-end gap-3">
-                    <button onClick={handlePreviousTab} className="p-2 rounded-full bg-[#1F1F1F] text-white"><ChevronLeft /></button>
-                    <button onClick={handleNextTab} className="p-2 rounded-full bg-[#1F1F1F] text-white"><ChevronRight /></button>
+        <div className="flex flex-col h-screen py-3 gap-3">
+            <div className="flex flex-col lg:flex-row px-3 gap-3 h-full">
+                <div className="lg:w-1/3 w-full flex flex-col gap-3 h-full">
+                    <div className="flex-none"><UserData session={session} user={user} userId={userId} /></div>
+                    <div className="flex-grow"><NowPlaying userId={userId} /></div>
+                </div>
+                <div className="lg:w-2/3 w-full bg-[#121212] rounded-lg p-3 flex flex-col flex-grow">
+                    {tabs[activeTabIndex].component}
+                    <div className="flex justify-end gap-3">
+                        <button onClick={handlePreviousTab} className="p-1 rounded-full bg-[#1F1F1F] text-white"><ChevronLeft /></button>
+                        <button onClick={handleNextTab} className="p-1 rounded-full bg-[#1F1F1F] text-white"><ChevronRight /></button>
+                    </div>
+                </div>
+                <div className="lg:w-1/3 w-full flex flex-col gap-3 h-full">
+                    <div className="flex-grow"><TopGenres userId={userId} /></div>
                 </div>
             </div>
         </div>

@@ -95,9 +95,9 @@ export default function NowPlaying({ userId }) {
     const progressPercent = (progressMs / (song?.durationMs || 1)) * 100;
 
     return (
-        <div className="relative h-full bg-[#121212] rounded-lg">
+        <div className="relative h-full bg-[#121212] rounded-lg flex flex-col">
             {song && song.isPlaying ? (
-                <div className="relative h-full rounded-lg" style={{ backgroundImage: `url(${song.image})`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "300px", }}>
+                <div className="relative flex-grow rounded-lg" style={{ backgroundImage: `url(${song.image})`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "300px", }}>
                     <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-md rounded-lg"></div>
                     <div className="absolute inset-0 flex items-center justify-center z-10">
                         <a href={song.songUrl} target="_blank" rel="noreferrer" className="w-full p-3 text-center">
@@ -109,11 +109,11 @@ export default function NowPlaying({ userId }) {
                     </div>
                 </div>
             ) : (
-                <div className="relative h-full rounded-lg">
+                <div className="relative flex flex-col flex-grow">
                     <h3 className="text-lg font-semibold my-3 mx-3">Recently Played</h3>
-                    <div className="overflow-y-auto max-h-[250px]">
+                    <div className="flex-grow overflow-y-auto px-3 pb-3 max-h-[260px]">
                         {recentSongs.map((recentSong, index) => (
-                            <a key={index}href={recentSong.songUrl}target="_blank"rel="noreferrer"className="flex items-center gap-3 p-3 mx-3 rounded-md hover:bg-[#1f1f1f] transition">
+                            <a key={index} href={recentSong.songUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 rounded-md hover:bg-[#1f1f1f] transition">
                                 <img src={recentSong.image} alt={`Album cover for ${recentSong.title}`} className="w-12 h-12 rounded-md" />
                                 <div>
                                     <h4 className="text-sm font-semibold">{recentSong.title}</h4>
