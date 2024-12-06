@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Loader from "@/components/(layout)/Loader";
 import UserData from "@/components/(user)/UserData";
 import NowPlaying from "@/components/(user)/NowPlaying";
+import RecentSongs from "@/components/(user)/RecentSongs";
 import TopArtists from "@/components/(user)/TopArtists";
 import TopSongs from "@/components/(user)/TopSongs";
 import TopGenres from "@/components/(user)/TopGenres";
@@ -16,6 +17,7 @@ export default function UserPage({ userId, initialAccessToken }) {
     const [user, setUser] = useState(null);
     const [accessToken, setAccessToken] = useState(initialAccessToken);
     const [activeTabIndex, setActiveTabIndex] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const tabs = [
         { id: 0, label: "Top Artists", component: <TopArtists userId={userId} /> },
@@ -63,22 +65,29 @@ export default function UserPage({ userId, initialAccessToken }) {
     }
 
     return (
-        <div className="flex flex-col h-screen py-3 gap-3">
-            <div className="flex flex-col lg:flex-row px-3 gap-3 h-full">
-                <div className="lg:w-1/3 w-full flex flex-col gap-3 h-full">
-                    <div className="flex-none"><UserData session={session} user={user} userId={userId} /></div>
-                    <div className="flex-grow"><NowPlaying userId={userId} /></div>
+        <div className="h-screen p-3">
+            <div className="flex flex-col lg:flex-row gap-3 h-full">
+                <div className="w-full lg:w-1/3 flex flex-col gap-3 h-full">
+                    <UserData session={session} user={user} userId={userId} />
+                    {isPlaying ? (
+                        <NowPlaying userId={userId} onIsPlayingChange={setIsPlaying} />
+                    ) : (
+                        <RecentSongs userId={userId} />
+                    )}
                 </div>
-                <div className="lg:w-2/3 w-full bg-[#121212] rounded-lg p-3 flex flex-col flex-grow">
+                <div className="w-full lg:w-2/3 flex flex-col bg-[#121212] rounded-lg p-3">
                     {tabs[activeTabIndex].component}
                     <div className="flex justify-end gap-3">
                         <button onClick={handlePreviousTab} className="p-1 rounded-full bg-[#1F1F1F] text-white"><ChevronLeft /></button>
                         <button onClick={handleNextTab} className="p-1 rounded-full bg-[#1F1F1F] text-white"><ChevronRight /></button>
                     </div>
                 </div>
-                <div className="lg:w-1/3 w-full flex flex-col gap-3 h-full">
-                    <div className="flex-grow"><TopGenres userId={userId} /></div>
+                <div className="w-full lg:w-1/3 flex flex-col gap-3 h-full">
+                    <TopGenres userId={userId} />
                 </div>
+            </div>
+            <div className="hidden">
+                <NowPlaying userId={userId} onIsPlayingChange={setIsPlaying} />
             </div>
         </div>
     );

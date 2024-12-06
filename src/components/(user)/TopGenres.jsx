@@ -67,19 +67,19 @@ export default function TopGenres({ userId }) {
     };
 
     return (
-        <div className="relative max-h-[calc(100vh-24px)] flex flex-col bg-[#121212] rounded-lg p-3 gap-3">
+        <div className="relative h-full overflow-y-auto bg-[#121212] rounded-lg flex flex-col p-3 gap-3">
             <div className="flex flex-col gap-3">
-                <h2 className="text-xl font-bold">Top Genres</h2>
-                <div className="flex gap-2">
+                <h2 className="text-2xl font-bold">Top Genres</h2>
+                <div className="flex gap-2 justify-center">
                     <button onClick={() => handleTimeRangeChange("short_term")} className={`px-3 py-1 rounded-md ${timeRange === "short_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Week</button>
                     <button onClick={() => handleTimeRangeChange("medium_term")} className={`px-3 py-1 rounded-md ${timeRange === "medium_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Month</button>
                     <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Yeart</button>
                 </div>
             </div>
-            <div className="relative grid grid-flow-row gap-3 my-3 overflow-y-auto">
+            <div className="flex flex-col gap-3">
                 {topGenres.map((genre) => (
                     <div key={genre.genre} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
-                        <h3 className="text-lg font-semibold">{genre.genre}</h3>
+                        <h3 className="text-base font-semibold">{genre.genre}</h3>
                         <p className="text-sm text-[#888]">{genre.count} artists</p>
                     </div>
                 ))}
