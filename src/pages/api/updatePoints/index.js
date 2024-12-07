@@ -21,8 +21,6 @@ export default async function handler(req, res) {
 
             const usersSnapshot = await getDocs(usersQuery);
 
-            console.log(`Batch size fetched: ${usersSnapshot.size}`);
-
             if (usersSnapshot.empty) break;
 
             const users = usersSnapshot.docs.map(doc => ({
