@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import { db } from "@/lib/firebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 
 export default NextAuth({
     providers: [
@@ -26,7 +26,8 @@ export default NextAuth({
         async signIn({ user, account }) {
             if (account.provider === "spotify") {
                 const userRef = doc(db, "users", user.id);
-                await setDoc(userRef, {
+
+                await updateDoc(userRef, {
                     email: user.email || "unknown",
                     name: user.name || "unknown",
                     spotifyId: user.id || "unknown",

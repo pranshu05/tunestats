@@ -73,7 +73,7 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
 
     if (song) {
         return (
-            <div className="relative h-full rounded-lg" style={{ backgroundImage: `url(${song.image})`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "300px" }}>
+            <div className="relative h-full rounded-lg" style={{ backgroundImage: `url(${song.image})`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "290px" }}>
                 <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-lg rounded-lg"></div>
                 <div className="absolute inset-0 flex items-center justify-center z-10">
                     <a href={song.songUrl} target="_blank" rel="noreferrer" className="w-full p-3 text-center">

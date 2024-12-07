@@ -14,7 +14,6 @@ export default function Home() {
                 <>
                     <h1 className="text-xl lg:text-4xl font-bold mb-4">Welcome, {session.user.name}!</h1>
                     <a href={`/user/${session.user.id}`} className="mb-4">Go to your profile.</a>
-                    <button onClick={() => signOut()} className="px-2 py-1 lg:px-4 lg:py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Sign Out</button>
                 </>
             )}
         </div>
