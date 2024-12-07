@@ -1,53 +1,74 @@
 import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, getDocs, query, limit, startAfter, orderBy } from "firebase/firestore";
 import { getAccessToken } from "@/lib/getAccessToken";
 import axios from "axios";
+import pLimit from "p-limit";
+
+const BATCH_SIZE = 10;
+const CONCURRENT_REQUESTS = 10;
 
 export default async function handler(req, res) {
     try {
         const usersCollection = collection(db, "users");
+        let lastVisible = null;
+        let totalProcessed = 0;
 
-        const usersSnapshot = await getDocs(usersCollection);
-        const users = usersSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
+        const limitConcurrency = pLimit(CONCURRENT_REQUESTS);
 
-        let updateMessage = [];
+        do {
+            const usersQuery = lastVisible
+                ? query(usersCollection, orderBy("id"), startAfter(lastVisible), limit(BATCH_SIZE))
+                : query(usersCollection, orderBy("id"), limit(BATCH_SIZE));
 
-        for (const user of users) {
-            const { id: userId, lastUpdated, points = 0 } = user;
-            const token = await getAccessToken(userId);
+            const usersSnapshot = await getDocs(usersQuery);
 
-            if (!token) {
-                return res.status(400).json({ error: "Unable to fetch access token" });
-            }
+            if (usersSnapshot.empty) break;
 
-            const currentTimestamp = Date.now();
-            if (lastUpdated && currentTimestamp - lastUpdated < 55 * 60 * 1000) {
-                updateMessage.push(`User ${userId}'s points were already updated within the last hour.`);
-                continue;
-            }
+            const users = usersSnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
 
-            const oneHourAgo = currentTimestamp - 1 * 60 * 60 * 1000;
+            const updatePromises = users.map((user) =>
+                limitConcurrency(async () => {
+                    const { id: userId, lastUpdated, points = 0 } = user;
+                    const currentTimestamp = Date.now();
 
-            const response = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?after=${oneHourAgo}&limit=50`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const tracksPlayed = response.data.items.length;
+                    if (lastUpdated && currentTimestamp - lastUpdated < 60 * 60 * 1000) return;
 
-            const userDocRef = doc(db, "users", userId);
-            await updateDoc(userDocRef, {
-                points: points + tracksPlayed,
-                lastUpdated: currentTimestamp,
-            });
+                    const token = await getAccessToken(userId);
+                    if (!token) {
+                        console.warn(`Unable to fetch access token for user ${userId}`);
+                        return;
+                    }
 
-            updateMessage.push(`User ${userId}'s points have been successfully updated.`);
-        }
+                    const oneHourAgo = currentTimestamp - 1 * 60 * 60 * 1000;
+                    const response = await axios.get(
+                        `https://api.spotify.com/v1/me/player/recently-played?after=${oneHourAgo}&limit=50`,
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    );
+
+                    const tracksPlayed = response.data.items.length;
+
+                    const userDocRef = doc(db, "users", userId);
+                    await updateDoc(userDocRef, {
+                        points: points + tracksPlayed,
+                        lastUpdated: currentTimestamp,
+                    });
+                })
+            );
+
+            await Promise.all(updatePromises);
+
+            totalProcessed += users.length;
+            lastVisible = usersSnapshot.docs[usersSnapshot.docs.length - 1];
+        } while (lastVisible);
 
         res.status(200).json({
             message: "Points update process completed.",
-            details: updateMessage,
+            totalProcessed,
         });
     } catch (error) {
         console.error("Error updating points:", error);
