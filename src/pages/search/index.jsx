@@ -4,6 +4,7 @@ import { db } from "@/lib/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import Navbar from "@/components/(layout)/NavBar";
 import UserSearchProfile from "@/components/(search)/UserSearchProfile";
+import { Loader2, UserX } from 'lucide-react';
 
 export default function Search() {
     const router = useRouter();
@@ -12,7 +13,11 @@ export default function Search() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!searchQuery) return;
+        if (!searchQuery) {
+            setUsers([]);
+            setLoading(false);
+            return;
+        }
 
         const fetchUsers = async () => {
             setLoading(true);
@@ -40,16 +45,21 @@ export default function Search() {
     return (
         <div className="w-full min-h-screen">
             <Navbar />
-            <div className="w-full p-4">
-                <h2 className="text-2xl font-bold mb-6">Search Results</h2>
+            <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+                <h2 className="text-3xl font-bold mb-6">Search Results</h2>
                 {loading ? (
-                    <p>Loading...</p>
+                    <div className="flex justify-center items-center h-64">
+                        <Loader2 className="w-12 h-12 animate-spin text-[#1DB954]" />
+                    </div>
                 ) : users.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {users.map((user) => (<UserSearchProfile key={user.spotifyId} user={user} />))}
                     </div>
                 ) : (
-                    <p>No users found</p>
+                    <div className="flex flex-col items-center justify-center h-64">
+                        <UserX className="w-16 h-16 mb-4 text-gray-400" />
+                        <p className="text-xl text-gray-400">No users found</p>
+                    </div>
                 )}
             </div>
         </div>

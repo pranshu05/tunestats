@@ -57,8 +57,6 @@ export default function FriendButton({ currentUserId, userId }) {
     if (currentUserId === userId) return null;
 
     return (
-        <button onClick={isFriend ? handleRemoveFriend : handleAddFriend} disabled={loading} className={`px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md`}>
-            {loading ? "Processing..." : isFriend ? "Remove Friend" : "Add Friend"}
-        </button>
+        <button onClick={isFriend ? handleRemoveFriend : handleAddFriend} disabled={loading} className={`px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md`}>{loading ? "Processing..." : isFriend ? "Remove Friend" : "Add Friend"}</button>
     );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { Search } from 'lucide-react';
 
 export default function SearchBar() {
     const [query, setQuery] = useState("");
@@ -17,8 +18,11 @@ export default function SearchBar() {
     };
 
     return (
-        <form className="w-11/12 md:w-3/4 lg:w-1/2">
-            <input type="text" value={query} onChange={handleInputChange} placeholder="Search users by name" className="py-3 px-5 bg-[#121212] rounded-full w-full" />
+        <form className="w-full sm:w-96">
+            <div className="flex items-center justify-between gap-2">
+                <input type="text" value={query} onChange={handleInputChange} placeholder="Search users by name" className="py-2 px-4 pr-10 bg-[#121212] rounded-full w-full focus:outline-none" />
+                <Search className="w-5 h-5 text-gray-400" />
+            </div>
         </form>
     );
 }
