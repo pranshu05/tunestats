@@ -1,10 +1,10 @@
 import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs, query, limit, startAfter, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, limit, startAfter, orderBy, updateDoc, doc } from "firebase/firestore";
 import { getAccessToken } from "@/lib/getAccessToken";
 import axios from "axios";
 import pLimit from "p-limit";
 
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 50;
 const CONCURRENT_REQUESTS = 10;
 
 export default async function handler(req, res) {
@@ -12,46 +12,42 @@ export default async function handler(req, res) {
         const usersCollection = collection(db, "users");
         let lastVisible = null;
         let totalProcessed = 0;
-
         const limitConcurrency = pLimit(CONCURRENT_REQUESTS);
 
         do {
             const usersQuery = lastVisible
-                ? query(usersCollection, orderBy("id"), startAfter(lastVisible), limit(BATCH_SIZE))
-                : query(usersCollection, orderBy("id"), limit(BATCH_SIZE));
+                ? query(usersCollection, orderBy("__name__"), startAfter(lastVisible), limit(BATCH_SIZE))
+                : query(usersCollection, orderBy("__name__"), limit(BATCH_SIZE));
 
             const usersSnapshot = await getDocs(usersQuery);
 
+            console.log(`Batch size fetched: ${usersSnapshot.size}`);
+
             if (usersSnapshot.empty) break;
 
-            const users = usersSnapshot.docs.map((doc) => ({
+            const users = usersSnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
             }));
 
-            const updatePromises = users.map((user) =>
+            const updatePromises = users.map(user =>
                 limitConcurrency(async () => {
                     const { id: userId, lastUpdated, points = 0 } = user;
                     const currentTimestamp = Date.now();
 
-                    if (lastUpdated && currentTimestamp - lastUpdated < 60 * 60 * 1000) return;
+                    if (lastUpdated && currentTimestamp - lastUpdated < 60 * 60 * 1000) {
+                        return;
+                    }
 
                     const token = await getAccessToken(userId);
                     if (!token) {
-                        console.warn(`Unable to fetch access token for user ${userId}`);
                         return;
                     }
 
                     const oneHourAgo = currentTimestamp - 1 * 60 * 60 * 1000;
-                    const response = await axios.get(
-                        `https://api.spotify.com/v1/me/player/recently-played?after=${oneHourAgo}&limit=50`,
-                        {
-                            headers: { Authorization: `Bearer ${token}` },
-                        }
-                    );
+                    const response = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?after=${oneHourAgo}&limit=50`, { headers: { Authorization: `Bearer ${token}` }, });
 
                     const tracksPlayed = response.data.items.length;
-
                     const userDocRef = doc(db, "users", userId);
                     await updateDoc(userDocRef, {
                         points: points + tracksPlayed,
@@ -71,7 +67,6 @@ export default async function handler(req, res) {
             totalProcessed,
         });
     } catch (error) {
-        console.error("Error updating points:", error);
         res.status(500).json({ error: "Error updating points" });
     }
 }
