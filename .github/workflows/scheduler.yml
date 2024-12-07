@@ -1,0 +1,13 @@
+name: Hourly API Trigger
+
+on:
+  schedule:
+    - cron: "0 * * * *" 
+
+jobs:
+  trigger-endpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel API
+        run: |
+          curl -X GET https://tunestats.vercel.app/api/updatePoints

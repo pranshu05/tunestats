@@ -24,7 +24,7 @@ export default async function handler(req, res) {
             }
 
             const currentTimestamp = Date.now();
-            if (lastUpdated && currentTimestamp - lastUpdated < 60 * 60 * 1000) {
+            if (lastUpdated && currentTimestamp - lastUpdated < 55 * 60 * 1000) {
                 updateMessage.push(`User ${userId}'s points were already updated within the last hour.`);
                 continue;
             }
