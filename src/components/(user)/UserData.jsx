@@ -16,7 +16,7 @@ export default function UserData({ session, user, userId }) {
                     (
                         <button onClick={() => signOut()} className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Sign Out</button>
                     ) : (
-                        <FriendButton currentUserId={currentUserId} userId={userId} />
+                        session && <FriendButton currentUserId={currentUserId} userId={userId} />
                     )
                 }
             </div>
