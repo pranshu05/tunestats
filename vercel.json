@@ -1,7 +1,0 @@
-{
-    "functions": {
-        "api/updatePoints/index.js": {
-            "runtime": "nodejs18.x"
-        }
-    }
-}
