@@ -6,22 +6,21 @@ export default function Home() {
 
     if (!session) {
         return (
-            <div>
-                <button onClick={() => signIn("spotify")}>Sign in with Spotify</button>
+            <div className="flex items-center justify-center h-screen">
+                <button className="bg-green-500 text-white font-semibold px-3 py-2 rounded-lg" onClick={() => signIn("spotify")}>Sign in with Spotify</button>
             </div>
         );
     }
 
     return (
-        <div>
-            <p>Signed in as {session.user.email}</p>
-            {/* <p>Access Token: {session.accessToken}</p> */}
-            <button onClick={() => signOut()}>Sign out</button>
-            {/* <button onClick={() => signIn("spotify")}>Sign in with a different account</button> */}
-            <div>
+        <div className="flex items-center justify-center h-screen flex-col">
+            <p>Signed in as <a className="text-green-500">{session.user.email}</a></p>
+            {session.user.image && <img src={session.user.image} alt={session.user.name} className="rounded-full w-24 h-24 mt-4" />}
+            <button className="mt-5 bg-red-600 px-3 py-2 rounded-lg font-semibold" onClick={() => signOut()}>Sign out</button>
+            <div className="mt-5">
                 <h2>Go to your user page:</h2>
                 <Link legacyBehavior href={`/user/${session.user.id}`}>
-                    <a>Go to User Page</a>
+                    <a className="">Go to User Page</a>
                 </Link>
             </div>
         </div>

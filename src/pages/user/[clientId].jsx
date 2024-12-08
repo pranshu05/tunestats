@@ -21,11 +21,11 @@ const UserPage = () => {
     }
 
     return (
-        <div>
+        <div className='flex h-screen justify-center items-center flex-col'>
             <h1>User Information</h1>
             <p>Client ID: {clientId}</p>
-            <p>Name: {session.user.name}</p>
-            <p>Email: {session.user.email}</p>
+            <p className='text-green-500'>Name: {session.user.name}</p>
+            <p className='text-green-400'>Email: {session.user.email}</p>
             {session.user.image && <img src={session.user.image} alt={session.user.name} />}
         </div>
     );
