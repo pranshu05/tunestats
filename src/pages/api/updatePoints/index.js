@@ -33,7 +33,7 @@ export default async function handler(req, res) {
                     const { id: userId, lastUpdated, points = 0 } = user;
                     const currentTimestamp = Date.now();
 
-                    if (lastUpdated && currentTimestamp - lastUpdated < 15 * 60 * 1000) {
+                    if (lastUpdated && currentTimestamp - lastUpdated < 60 * 60 * 1000) {
                         return;
                     }
 
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
                         return;
                     }
 
-                    const oneHourAgo = currentTimestamp - 1 * 15 * 60 * 1000;
+                    const oneHourAgo = currentTimestamp - 1 * 60 * 60 * 1000;
                     const response = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?after=${oneHourAgo}&limit=50`, { headers: { Authorization: `Bearer ${token}` }, });
 
                     const tracksPlayed = response.data.items.length;
