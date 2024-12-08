@@ -11,6 +11,7 @@ import TopSongs from "@/components/(user)/TopSongs";
 import TopGenres from "@/components/(user)/TopGenres";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAccessToken } from "@/lib/getAccessToken";
+import { checkFriendshipStatus } from "@/lib/checkFriendshipStatus";
 
 export default function UserPage({ userId, initialAccessToken }) {
     const { data: session } = useSession();
@@ -18,6 +19,9 @@ export default function UserPage({ userId, initialAccessToken }) {
     const [accessToken, setAccessToken] = useState(initialAccessToken);
     const [activeTabIndex, setActiveTabIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isFriend, setIsFriend] = useState(false);
+    const [isOwner, setIsOwner] = useState(false);
+    const [accountType, setAccountType] = useState("Public");
 
     const tabs = [
         { id: 0, label: "Top Artists", component: <TopArtists userId={userId} /> },
@@ -38,14 +42,25 @@ export default function UserPage({ userId, initialAccessToken }) {
             const userDoc = await getDoc(userRef);
 
             if (userDoc.exists()) {
-                setUser(userDoc.data());
+                const userData = userDoc.data();
+                setUser(userData);
+                setAccountType(userData.accountType || "Public");
             } else {
-                console.log("No such user!");
+                console.error("No such user!");
+            }
+        };
+
+        const checkProfileVisibility = async () => {
+            if (session?.user?.id) {
+                setIsOwner(session.user.id === userId);
+                const { isFriend } = await checkFriendshipStatus(session.user.id, userId);
+                setIsFriend(isFriend);
             }
         };
 
         fetchUserData();
-    }, [userId]);
+        checkProfileVisibility();
+    }, [session, userId]);
 
     useEffect(() => {
         const refreshAccessToken = async () => {
@@ -64,10 +79,12 @@ export default function UserPage({ userId, initialAccessToken }) {
         return <Loader />;
     }
 
-    return (
+    const profileIsVisible = accountType === "Public" || isOwner || isFriend;
+
+    return profileIsVisible ? (
         <div className="h-screen p-3">
             <div className="flex flex-col lg:flex-row gap-3 h-full">
-                <div className="w-full lg:w-1/3 flex flex-col gap-3 h-full">
+                <div className="w-full lg:w-1/4 flex flex-col gap-3 h-full">
                     <UserData session={session} user={user} userId={userId} />
                     {isPlaying ? (
                         <NowPlaying userId={userId} onIsPlayingChange={setIsPlaying} />
@@ -75,19 +92,30 @@ export default function UserPage({ userId, initialAccessToken }) {
                         <RecentSongs userId={userId} />
                     )}
                 </div>
-                <div className="w-full lg:w-2/3 flex flex-col bg-[#121212] rounded-lg p-3">
+                <div className="w-full lg:w-2/4 flex flex-col bg-[#121212] rounded-lg p-3">
                     {tabs[activeTabIndex].component}
                     <div className="flex justify-end gap-3">
                         <button onClick={handlePreviousTab} className="p-1 rounded-full bg-[#1F1F1F] text-white"><ChevronLeft /></button>
                         <button onClick={handleNextTab} className="p-1 rounded-full bg-[#1F1F1F] text-white"><ChevronRight /></button>
                     </div>
                 </div>
-                <div className="w-full lg:w-1/3 flex flex-col gap-3 h-full">
+                <div className="w-full lg:w-1/4 flex flex-col gap-3 h-full">
                     <TopGenres userId={userId} />
                 </div>
             </div>
             <div className="hidden">
                 <NowPlaying userId={userId} onIsPlayingChange={setIsPlaying} />
+            </div>
+        </div>
+    ) : (
+        <div className="h-screen p-3">
+            <div className="flex flex-col lg:flex-row gap-3 h-full">
+                <div className="w-full lg:w-1/4 flex flex-col gap-3 h-full">
+                    <UserData session={session} user={user} userId={userId} />
+                </div>
+                <div className="w-full h-full lg:w-3/4 flex items-center justify-center bg-[#121212] rounded-lg">
+                    <p className="text-white text-center">This profile is private.</p>
+                </div>
             </div>
         </div>
     );

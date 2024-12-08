@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 import FriendButton from "@/components/(user)/FriendButton";
 
 export default function UserData({ session, user, userId }) {
@@ -14,7 +15,10 @@ export default function UserData({ session, user, userId }) {
                 <a href={`https://open.spotify.com/user/${userId}`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#1DB954] rounded-md">Spotify</a>
                 {session?.user?.id === userId ?
                     (
-                        <button onClick={() => signOut()} className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Sign Out</button>
+                        <>
+                            <Link href="/my/account" className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Settings</Link>
+                            <button onClick={() => signOut()} className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Sign Out</button>
+                        </>
                     ) : (
                         session && <FriendButton currentUserId={currentUserId} userId={userId} />
                     )
