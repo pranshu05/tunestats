@@ -27,7 +27,7 @@ export default function TopArtists({ userId }) {
 
         const fetchTopArtists = async () => {
             try {
-                const res = await fetch(`https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=9`, { method: "GET", headers: { Authorization: `Bearer ${accessToken}` }, });
+                const res = await fetch(`https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=50`, { method: "GET", headers: { Authorization: `Bearer ${accessToken}` }, });
 
                 if (res.ok) {
                     const data = await res.json();
@@ -54,7 +54,7 @@ export default function TopArtists({ userId }) {
                 <div className="flex gap-2">
                     <button onClick={() => handleTimeRangeChange("short_term")} className={`px-3 py-1 rounded-md ${timeRange === "short_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Month</button>
                     <button onClick={() => handleTimeRangeChange("medium_term")} className={`px-3 py-1 rounded-md ${timeRange === "medium_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last 6 Months</button>
-                    <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Year</button>
+                    <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>All Time</button>
                 </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 my-4">

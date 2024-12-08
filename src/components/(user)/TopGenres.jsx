@@ -48,7 +48,7 @@ export default function TopGenres({ userId }) {
                     const sortedGenres = Object.entries(genreCounts)
                         .map(([genre, count]) => ({ genre, count }))
                         .sort((a, b) => b.count - a.count)
-                        .slice(0, 10);
+                        .slice(0, 20);
 
                     setTopGenres(sortedGenres);
                 } else {
@@ -73,7 +73,7 @@ export default function TopGenres({ userId }) {
                 <div className="flex gap-2 justify-center">
                     <button onClick={() => handleTimeRangeChange("short_term")} className={`px-3 py-1 rounded-md ${timeRange === "short_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Month</button>
                     <button onClick={() => handleTimeRangeChange("medium_term")} className={`px-3 py-1 rounded-md ${timeRange === "medium_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last 6 Months</button>
-                    <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Year</button>
+                    <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>All Time</button>
                 </div>
             </div>
             <div className="flex flex-col gap-3">

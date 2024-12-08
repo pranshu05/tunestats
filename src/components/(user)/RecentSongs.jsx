@@ -26,7 +26,7 @@ export default function RecentSongs({ userId }) {
 
         const fetchRecentlyPlayed = async () => {
             try {
-                const res = await fetch("https://api.spotify.com/v1/me/player/recently-played", {
+                const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=50", {
                     method: "GET",
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
