@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import Navbar from "@/components/(layout)/NavBar";
+import Loader from "@/components/(layout)/Loader";
 
 export default function MyAccountPage() {
     const { data: session, status } = useSession();
@@ -51,7 +52,7 @@ export default function MyAccountPage() {
         }
     };
 
-    if (status === "loading") return <p className="text-white">Loading...</p>;
+    if (status === "loading") return <Loader />;
     if (!session) return router.push("/");
 
     return (

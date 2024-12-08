@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import Loader from "../(layout)/Loader";
 
 export default function FriendProfileCard({ friendId }) {
     const [friendData, setFriendData] = useState(null);
@@ -28,13 +29,8 @@ export default function FriendProfileCard({ friendId }) {
         fetchFriendData();
     }, [friendId]);
 
-    if (loading) {
-        return <div className="text-white">Loading...</div>;
-    }
-
-    if (!friendData) {
-        return <div className="text-white">Unable to load friend data</div>;
-    }
+    if (loading) { return <Loader />; }
+    if (!friendData) { return <div className="text-white">Unable to load friend data</div>; }
 
     return (
         <div className="flex flex-col items-center bg-[#121212] p-3 rounded-lg gap-2">

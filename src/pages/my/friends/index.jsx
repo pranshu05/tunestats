@@ -6,6 +6,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import FriendProfileCard from "@/components/(my)/FriendProfileCard";
 import Navbar from "@/components/(layout)/NavBar";
+import Loader from "@/components/(layout)/Loader";
 
 export default function Friends() {
     const { data: session, status } = useSession();
@@ -34,7 +35,7 @@ export default function Friends() {
         fetchUserData();
     }, [session]);
 
-    if (status === "loading") return <p className="text-white">Loading...</p>;
+    if (status === "loading") return <Loader />;
     if (!session) return router.push("/");
 
     return (
