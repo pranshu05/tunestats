@@ -1,8 +1,8 @@
-name: API Trigger Every 15 Minutes
+name: API Trigger Every 5 Minutes
 
 on:
   schedule:
-    - cron: "*/15 * * * *" 
+    - cron: "*/5 * * * *" 
 
 jobs:
   trigger-endpoint:
