@@ -2,42 +2,48 @@ import { useEffect, useState } from "react";
 import getNowPlayingItem from "@/utils/getNowPlayingItem";
 import ProgressBar from "@ramonak/react-progress-bar";
 
-export function SpotifyPlayer(props) {
+export function SpotifyPlayer({ accessToken }) {
     const [result, setResult] = useState({});
 
     useEffect(() => {
-        Promise.all([getNowPlayingItem(props.client_id, props.client_secret, props.refresh_token),]).then((results) => { setResult(results[0]); });
-    });
+        const fetchNowPlaying = async () => {
+            const nowPlaying = await getNowPlayingItem(accessToken);
+            setResult(nowPlaying);
+        };
+
+        fetchNowPlaying();
+        const interval = setInterval(fetchNowPlaying, 500);
+
+        return () => clearInterval(interval);
+    }, [accessToken]);
+
+    const formatTime = (ms) => {
+        const minutes = Math.floor(ms / 60000);
+        const seconds = ((ms % 60000) / 1000).toFixed(0);
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
 
     return result.isPlaying ? (
-        <div className="spotify-cont" style={{ backgroundImage: `url(${result.albumImageUrl})`, backgroundSize: "cover", }}>
-            <div className="blur"></div>
-            <div className="spotify-track">
-                <a href={result.songUrl} target="_blank" rel="noreferrer">
-                    <div className="song-img">
-                        <img src={result.albumImageUrl} alt={`Album cover for ${result.title}`} />
-                    </div>
-                    <div className="song-info">
-                        <div className="song-title">{result.title}</div>
-                        <div className="song-artist">by {result.artist}</div>
-                        <ProgressBar completed={result.progressMs} maxCompleted={result.durationMs} bgColor="#777" height="8px" labelColor="#777" baseBgColor="#121212" transitionDuration="0s" />
-                    </div>
-                </a>
-            </div>
-        </div>
-    ) : (
-        <div
-            className="spotify-cont"
-            style={{ backgroundImage: `url(https://e0.pxfuel.com/wallpapers/230/630/desktop-wallpaper-anime-aesthetic-pc-anime-aesthetic-pc-background-on-bat-retro-anime-aesthetic.jpg)`, backgroundSize: "cover", }}>
-            <div className="blur"></div>
-            <div className="spotify-track">
-                <div className="song-img">
-                    <img src="https://github.com/pranshu05/pranshu05/assets/70943732/3d6adedd-1652-4042-8781-698fa1841326" alt="music" />
+        <div className="spotify-card bg-gray-950 text-white p-4 rounded-lg shadow-lg w-80 mt-10">
+            <a href={result.songUrl} target="_blank" rel="noreferrer">
+                <div className="song-img mb-4">
+                    <img src={result.albumImageUrl} alt={`Album cover for ${result.title}`} className="rounded-lg w-full" />
                 </div>
                 <div className="song-info">
-                    <div className="song-title">Not listening to Spotify rn!</div>
+                    <div className="song-title text-lg font-bold text-white">{result.title}</div>
+                    <div className="song-artist text-sm text-white mb-5">by {result.artist}</div>
+                    <ProgressBar classname="mt-4" completed={result.progressMs} maxCompleted={result.durationMs} bgColor="#1DB954" height="8px" labelColor="#1DB954" baseBgColor="#333" margin-top="5px" transitionDuration="0s" />
+                    <div className="time-info text-sm text-gray-400 mt-2">
+                        {formatTime(result.progressMs)} / {formatTime(result.durationMs)}
+                    </div>
                 </div>
+            </a>
+        </div>
+    ) : (
+        <div className="spotify-card bg-gray-800 text-white p-4 rounded-lg shadow-lg w-80 mt-10">
+            <div className="song-info">
+                <div className="song-title text-md font-semibold">Not listening to Spotify right now!</div>
             </div>
         </div>
-    )
+    );
 }

@@ -1,5 +1,6 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from 'next/link';
+import { SpotifyPlayer } from "@/components/SpotifyPlayer";
 
 export default function Home() {
     const { data: session } = useSession();
@@ -23,6 +24,7 @@ export default function Home() {
                     <a className="">Go to User Page</a>
                 </Link>
             </div>
+            {/* <SpotifyPlayer accessToken={session.accessToken} /> */}
         </div>
     );
 }
