@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, startAt, endAt, getDocs, limit } from "firebase/firestore";
 import Navbar from "@/components/(layout)/NavBar";
 import UserSearchProfile from "@/components/(search)/UserSearchProfile";
-import { Loader2, UserX } from 'lucide-react';
+import { Loader2, UserX } from "lucide-react";
+
+const BATCH_SIZE = 20;
 
 export default function Search() {
     const router = useRouter();
     const { query: searchQuery } = router.query;
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [lastVisible, setLastVisible] = useState(null);
 
     useEffect(() => {
         if (!searchQuery) {
@@ -23,15 +26,24 @@ export default function Search() {
             setLoading(true);
             try {
                 const usersRef = collection(db, "users");
-                const querySnapshot = await getDocs(usersRef);
 
-                const filteredUsers = querySnapshot.docs
-                    .map((doc) => doc.data())
-                    .filter((user) =>
-                        user.name.toLowerCase().includes(searchQuery.toLowerCase())
-                    );
+                const firestoreQuery = query(
+                    usersRef,
+                    orderBy("name"),
+                    startAt(searchQuery),
+                    endAt(searchQuery + "\uf8ff"),
+                    limit(BATCH_SIZE)
+                );
 
-                setUsers(filteredUsers);
+                const querySnapshot = await getDocs(firestoreQuery);
+
+                const fetchedUsers = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+
+                setUsers(fetchedUsers);
+                setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
             } catch (error) {
                 console.error("Error fetching users:", error);
             } finally {
@@ -53,7 +65,9 @@ export default function Search() {
                     </div>
                 ) : users.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {users.map((user) => (<UserSearchProfile key={user.spotifyId} user={user} />))}
+                        {users.map((user) => (
+                            <UserSearchProfile key={user.id} user={user} />
+                        ))}
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-64">

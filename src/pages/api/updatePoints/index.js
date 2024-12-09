@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs, query, limit, startAfter, orderBy, updateDoc, doc } from "firebase/firestore";
+import { collection, getDocs, query, limit, startAfter, orderBy, writeBatch } from "firebase/firestore";
 import { getAccessToken } from "@/lib/getAccessToken";
 import axios from "axios";
 import pLimit from "p-limit";
@@ -20,13 +20,10 @@ export default async function handler(req, res) {
                 : query(usersCollection, orderBy("__name__"), limit(BATCH_SIZE));
 
             const usersSnapshot = await getDocs(usersQuery);
-
             if (usersSnapshot.empty) break;
 
-            const users = usersSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
+            const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const batch = writeBatch(db);
 
             const updatePromises = users.map(user =>
                 limitConcurrency(async () => {
@@ -38,16 +35,25 @@ export default async function handler(req, res) {
                     }
 
                     const token = await getAccessToken(userId);
-                    if (!token) {
-                        return;
-                    }
+                    if (!token) return;
 
                     const oneHourAgo = currentTimestamp - 1 * 60 * 60 * 1000;
-                    const response = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?after=${oneHourAgo}&limit=50`, { headers: { Authorization: `Bearer ${token}` }, });
 
-                    const tracksPlayed = response.data.items.length;
+                    let response;
+                    for (let attempt = 1; attempt <= 3; attempt++) {
+                        try {
+                            response = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?after=${oneHourAgo}&limit=50`, { headers: { Authorization: `Bearer ${token}` } });
+                            break;
+                        } catch (err) {
+                            if (attempt === 3 || err.response?.status !== 429) throw err;
+                            await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+                        }
+                    }
+
+                    const tracksPlayed = response?.data?.items?.length || 0;
+
                     const userDocRef = doc(db, "users", userId);
-                    await updateDoc(userDocRef, {
+                    batch.update(userDocRef, {
                         points: points + tracksPlayed,
                         lastUpdated: currentTimestamp,
                     });
@@ -55,6 +61,7 @@ export default async function handler(req, res) {
             );
 
             await Promise.all(updatePromises);
+            await batch.commit();
 
             totalProcessed += users.length;
             lastVisible = usersSnapshot.docs[usersSnapshot.docs.length - 1];
@@ -65,6 +72,7 @@ export default async function handler(req, res) {
             totalProcessed,
         });
     } catch (error) {
+        console.error("Error updating points:", error);
         res.status(500).json({ error: "Error updating points" });
     }
 }
