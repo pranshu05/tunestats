@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs, query, limit, startAfter, orderBy, writeBatch } from "firebase/firestore";
+import { collection, getDocs, query, limit, startAfter, orderBy, writeBatch, doc } from "firebase/firestore";
 import { getAccessToken } from "@/lib/getAccessToken";
 import axios from "axios";
 import pLimit from "p-limit";
