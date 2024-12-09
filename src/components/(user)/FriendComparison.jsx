@@ -100,7 +100,7 @@ export default function FriendComparison({ userId }) {
         <div className="flex flex-col items-center p-3 gap-3 bg-[#121212] rounded-md w-full lg:w-2/3">
             <h2 className="text-2xl font-bold text-center">Friends Music Matches</h2>
             <div className="w-full">
-                <h3 className="text-xl font-bold text-[#1DB954] mb-4">Top 3 Matches</h3>
+                <h3 className="text-xl font-bold text-[#1DB954] mb-4">Top Matches</h3>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {matches.slice(0, 3).map(({ friendId, matchPercentage }) => (
                         <FriendMatchCard key={friendId} friendId={friendId} matchPercentage={matchPercentage} />
