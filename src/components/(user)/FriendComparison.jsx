@@ -94,6 +94,8 @@ export default function FriendComparison({ userId }) {
         fetchMatches();
     }, [friends, userId]);
 
+    if(loading || !matches.length) return null;
+
     return (
         <div className="flex flex-col items-center p-3 gap-3 bg-[#121212] rounded-md w-full lg:w-2/3">
             <h2 className="text-2xl font-bold text-center">Friends Music Matches</h2>
