@@ -48,7 +48,7 @@ export default function TopArtists({ userId }) {
     };
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col rounded-md gap-3 overflow-y-auto">
             <div className="flex flex-col lg:flex-row lg:justify-between items-center gap-3">
                 <h2 className="text-2xl font-bold">Top Artists</h2>
                 <div className="flex gap-2">
@@ -57,12 +57,12 @@ export default function TopArtists({ userId }) {
                     <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>All Time</button>
                 </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 my-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {topArtists.map((artist) => (
                     <a href={artist.external_urls.spotify} target="_blank" key={artist.id}className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
                         <img src={artist.images[0]?.url || "https://via.placeholder.com/150"}alt={artist.name}className="w-24 h-24 rounded-full mb-2 object-cover"/>
                         <h3 className="text-base font-semibold">{artist.name}</h3>
-                        <p className="text-sm text-[#888]">{artist.genres.slice(0, 2).join(", ")}</p>
+                        <p className="text-xs lg:text-sm text-[#888]">{artist.genres.slice(0, 2).join(", ")}</p>
                     </a>
                 ))}
             </div>

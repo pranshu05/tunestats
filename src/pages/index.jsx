@@ -17,13 +17,13 @@ export default function Home() {
                         <>
                             <h1 className="text-3xl md:text-5xl font-bold tracking-tighter bg-gradient-to-r from-white to-green-500 bg-clip-text text-transparent">Welcome to TuneStats</h1>
                             <p className="text-lg md:text-xl text-gray-400">Discover your Spotify stats and connect with music lovers. Dive deep into your listening habits and share your musical journey.</p>
-                            <div onClick={() => signIn("spotify")} className="bg-[#1DB954] text-black font-bold py-3 px-6 text-sm lg:text-base w-fit rounded-md mx-auto">Login with Spotify</div>
+                            <div onClick={() => signIn("spotify")} className="cursor-pointer bg-[#1DB954] text-black font-bold py-3 px-6 text-sm lg:text-base w-fit rounded-md mx-auto">Login with Spotify</div>
                         </>
                     ) : (
                         <>
                             <h1 className="text-3xl md:text-5xl font-bold tracking-tighter bg-gradient-to-r from-white to-green-500 bg-clip-text text-transparent">Welcome back, {session.user.name}!</h1>
                             <p className="text-lg md:text-xl text-gray-400">Ready to explore your latest stats?</p>
-                            <div asChild className="bg-[#1DB954] text-black font-bold py-3 px-6 text-sm lg:text-base w-fit rounded-md mx-auto"><Link href={`/user/${session.user.id}`}>Go to Your Profile</Link></div>
+                            <div className="cursor-pointer bg-[#1DB954] text-black font-bold py-3 px-6 text-sm lg:text-base w-fit rounded-md mx-auto"><Link href={`/user/${session.user.id}`}>Go to Your Profile</Link></div>
                         </>
                     )}
                 </div>
@@ -45,7 +45,7 @@ export default function Home() {
                     <div className="max-w-4xl mx-auto">
                         <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to dive into your music stats?</h2>
                         <p className="text-xl mb-8 text-gray-400">Join TuneStats today and start exploring your Spotify data!</p>
-                        <div onClick={() => signIn("spotify")} className="bg-[#1DB954] text-black font-bold py-3 px-6 text-sm lg:text-base w-fit rounded-md mx-auto">Get Started</div>
+                        <div onClick={() => signIn("spotify")} className="cursor-pointer bg-[#1DB954] text-black font-bold py-3 px-6 text-sm lg:text-base w-fit rounded-md mx-auto">Get Started</div>
                     </div>
                 </section>
             )}

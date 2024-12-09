@@ -48,7 +48,7 @@ export default function TopSongs({ userId }) {
     };
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col rounded-md gap-3 overflow-y-auto">
             <div className="flex flex-col lg:flex-row lg:justify-between items-center gap-3">
                 <h2 className="text-2xl font-bold">Top Songs</h2>
                 <div className="flex gap-2">
@@ -57,7 +57,7 @@ export default function TopSongs({ userId }) {
                     <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>All Time</button>
                 </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 my-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {topTracks.map((track) => (
                     <a href={track.external_urls.spotify} target="_blank" key={track.id} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
                         <img src={track.album.images[0]?.url || "https://via.placeholder.com/150"} alt={track.name} className="w-24 h-24 rounded-full mb-2 object-cover" />

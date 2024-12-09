@@ -92,7 +92,7 @@ export default function UserPage({ userId, initialAccessToken }) {
                         <RecentSongs userId={userId} />
                     )}
                 </div>
-                <div className="w-full lg:w-2/4 flex flex-col bg-[#121212] rounded-lg p-3 overflow-y-auto">
+                <div className="w-full lg:w-2/4 flex flex-col gap-3 h-full bg-[#121212] rounded-lg p-3">
                     {tabs[activeTabIndex].component}
                     <div className="flex justify-end gap-3">
                         <button onClick={handlePreviousTab} className="p-1 rounded-full bg-[#1F1F1F] text-white"><ChevronLeft /></button>

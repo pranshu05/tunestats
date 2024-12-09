@@ -76,7 +76,7 @@ export default function TopGenres({ userId }) {
                     <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>All Time</button>
                 </div>
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-2 gap-3">
                 {topGenres.map((genre) => (
                     <div key={genre.genre} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
                         <h3 className="text-base font-semibold">{genre.genre}</h3>
