@@ -9,7 +9,6 @@ import RecentSongs from "@/components/(user)/RecentSongs";
 import TopArtists from "@/components/(user)/TopArtists";
 import TopSongs from "@/components/(user)/TopSongs";
 import TopGenres from "@/components/(user)/TopGenres";
-import FriendComparison from "@/components/(user)/FriendComparison";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAccessToken } from "@/lib/getAccessToken";
 import { checkFriendshipStatus } from "@/lib/checkFriendshipStatus";
@@ -83,8 +82,8 @@ export default function UserPage({ userId, initialAccessToken }) {
     const profileIsVisible = accountType === "Public" || isOwner || isFriend;
 
     return profileIsVisible ? (
-        <div className="flex flex-col gap-3 p-3">
-            <div className="flex flex-col lg:flex-row gap-3 lg:h-screen">
+        <div className="h-screen p-3">
+            <div className="flex flex-col lg:flex-row gap-3 h-full">
                 <div className="w-full lg:w-1/4 flex flex-col gap-3 h-full">
                     <UserData session={session} user={user} userId={userId} />
                     {isPlaying ? (
@@ -103,9 +102,6 @@ export default function UserPage({ userId, initialAccessToken }) {
                 <div className="w-full lg:w-1/4 flex flex-col gap-3 h-full">
                     <TopGenres userId={userId} />
                 </div>
-            </div>
-            <div className="flex flex-col lg:flex-row gap-3">
-                <FriendComparison userId={userId} />
             </div>
             <div className="hidden">
                 <NowPlaying userId={userId} onIsPlayingChange={setIsPlaying} />
