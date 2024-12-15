@@ -12,15 +12,18 @@ export default function UserData({ session, user, userId }) {
             <h1 className="text-2xl lg:text-3xl font-bold mb-3">{user.name}</h1>
             <p className="text-sm lg:text-base text-[#888] mb-3">{user.points || 0} TuneStats Points</p>
             <div className="w-full flex justify-center gap-2 text-sm">
-                <a href={`https://open.spotify.com/user/${userId}`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#1DB954] rounded-md">Spotify</a>
                 {session?.user?.id === userId ?
                     (
                         <>
+                            <Link href="/my/charts" className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Charts</Link>
                             <Link href="/my/account" className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Settings</Link>
                             <button onClick={() => signOut()} className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">Sign Out</button>
                         </>
                     ) : (
-                        session && <FriendButton currentUserId={currentUserId} userId={userId} />
+                        <>
+                            <a href={`https://open.spotify.com/user/${userId}`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#1DB954] rounded-md">Spotify</a>
+                            session && <FriendButton currentUserId={currentUserId} userId={userId} />
+                        </>
                     )
                 }
             </div>
