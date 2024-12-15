@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-import FriendProfileCard from "@/components/(my)/FriendProfileCard";
+import FriendProfileCard from "@/components/(my)/(friends)/FriendProfileCard";
 import Navbar from "@/components/(layout)/NavBar";
 import Loader from "@/components/(layout)/Loader";
 
