@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-import Loader from "../(layout)/Loader";
+import Loader from "@/components/(layout)/Loader";
 
 export default function FriendProfileCard({ friendId }) {
     const [friendData, setFriendData] = useState(null);
