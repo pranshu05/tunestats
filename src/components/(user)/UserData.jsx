@@ -22,7 +22,7 @@ export default function UserData({ session, user, userId }) {
                     ) : (
                         <>
                             <a href={`https://open.spotify.com/user/${userId}`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#1DB954] rounded-md">Spotify</a>
-                            session && <FriendButton currentUserId={currentUserId} userId={userId} />
+                            {session && <FriendButton currentUserId={currentUserId} userId={userId} />}
                         </>
                     )
                 }
