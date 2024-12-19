@@ -1,6 +1,6 @@
 import axios from "axios";
 import { db } from "@/lib/firebaseConfig";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 export async function getAccessToken(userId) {
     const userRef = doc(db, "users", userId);
@@ -10,10 +10,9 @@ export async function getAccessToken(userId) {
         throw new Error("User not found");
     }
 
-    const { refreshToken } = userDoc.data();
-
-    if (!refreshToken || refreshToken === "unknown") {
-        throw new Error("No refresh token found");
+    const { refreshToken } = userDoc.data(); 
+    if (!refreshToken) {
+        throw new Error("No refresh token found for the user");
     }
 
     try {
@@ -26,13 +25,11 @@ export async function getAccessToken(userId) {
             },
         });
 
-        const newAccessToken = response.data.access_token;
+        const accessToken = response.data.access_token;
 
-        await updateDoc(userRef, { accessToken: newAccessToken });
-
-        return newAccessToken;
+        return accessToken;
     } catch (error) {
-        console.error("Error refreshing Spotify access token", error);
+        console.error("Error refreshing Spotify access token:", error.response?.data || error.message);
         throw new Error("Failed to refresh access token");
     }
 }

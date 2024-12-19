@@ -1,66 +1,29 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
-import { getAccessToken } from "@/lib/getAccessToken";
 
 export default function TopGenres({ userId }) {
-    const [accessToken, setAccessToken] = useState(null);
     const [topGenres, setTopGenres] = useState([]);
     const [timeRange, setTimeRange] = useState("short_term");
 
     useEffect(() => {
-        const fetchAccessToken = async () => {
-            try {
-                const token = await getAccessToken(userId);
-                setAccessToken(token);
-            } catch (error) {
-                console.error("Error fetching access token:", error);
-            }
-        };
-
-        if (userId) {
-            fetchAccessToken();
-        }
-    }, [userId]);
-
-    useEffect(() => {
-        if (!accessToken) return;
-
         const fetchTopGenres = async () => {
             try {
-                const res = await fetch(
-                    `https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=50`,
-                    {
-                        method: "GET",
-                        headers: { Authorization: `Bearer ${accessToken}` },
-                    }
-                );
-
+                const res = await fetch(`/api/top-genres?userId=${userId}&timeRange=${timeRange}`);
                 if (res.ok) {
                     const data = await res.json();
-
-                    const genreCounts = {};
-                    data.items.forEach((artist) => {
-                        artist.genres.forEach((genre) => {
-                            genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-                        });
-                    });
-
-                    const sortedGenres = Object.entries(genreCounts)
-                        .map(([genre, count]) => ({ genre, count }))
-                        .sort((a, b) => b.count - a.count)
-                        .slice(0, 20);
-
-                    setTopGenres(sortedGenres);
+                    setTopGenres(data.topGenres);
                 } else {
-                    console.error("Failed to fetch top artists", res.statusText);
+                    console.error("Failed to fetch top genres");
                 }
             } catch (error) {
                 console.error("Error fetching top genres:", error);
             }
         };
 
-        fetchTopGenres();
-    }, [accessToken, timeRange]);
+        if (userId) {
+            fetchTopGenres();
+        }
+    }, [userId, timeRange]);
 
     const handleTimeRangeChange = (range) => {
         setTimeRange(range);

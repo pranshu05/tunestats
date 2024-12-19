@@ -10,13 +10,11 @@ import TopArtists from "@/components/(user)/TopArtists";
 import TopSongs from "@/components/(user)/TopSongs";
 import TopGenres from "@/components/(user)/TopGenres";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getAccessToken } from "@/lib/getAccessToken";
 import { checkFriendshipStatus } from "@/lib/checkFriendshipStatus";
 
-export default function UserPage({ userId, initialAccessToken }) {
+export default function UserPage({ userId }) {
     const { data: session } = useSession();
     const [user, setUser] = useState(null);
-    const [accessToken, setAccessToken] = useState(initialAccessToken);
     const [activeTabIndex, setActiveTabIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
@@ -62,20 +60,7 @@ export default function UserPage({ userId, initialAccessToken }) {
         checkProfileVisibility();
     }, [session, userId]);
 
-    useEffect(() => {
-        const refreshAccessToken = async () => {
-            if (!accessToken) {
-                const newAccessToken = await getAccessToken(userId);
-                setAccessToken(newAccessToken);
-            }
-        };
-
-        if (!accessToken) {
-            refreshAccessToken();
-        }
-    }, [userId, accessToken]);
-
-    if (!user || !accessToken) {
+    if (!user) {
         return <Loader />;
     }
 
@@ -131,25 +116,8 @@ export async function getServerSideProps(context) {
     }
 
     try {
-        const userRef = doc(db, "users", userId);
-        const userDoc = await getDoc(userRef);
-
-        let accessToken = null;
-        if (userDoc.exists()) {
-            accessToken = userDoc.data().accessToken;
-        }
-
-        if (!accessToken) {
-            return {
-                notFound: true,
-            };
-        }
-
         return {
-            props: {
-                userId,
-                initialAccessToken: accessToken,
-            },
+            props: { userId }
         };
     } catch (error) {
         console.error("Error fetching user data:", error);

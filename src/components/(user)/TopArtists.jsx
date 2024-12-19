@@ -1,47 +1,29 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
-import { getAccessToken } from "@/lib/getAccessToken";
 
 export default function TopArtists({ userId }) {
-    const [accessToken, setAccessToken] = useState(null);
     const [topArtists, setTopArtists] = useState([]);
     const [timeRange, setTimeRange] = useState("short_term");
 
     useEffect(() => {
-        const fetchAccessToken = async () => {
+        const fetchTopArtists = async () => {
             try {
-                const token = await getAccessToken(userId);
-                setAccessToken(token);
+                const res = await fetch(`/api/top-artists?userId=${userId}&timeRange=${timeRange}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setTopArtists(data.topArtists);
+                } else {
+                    console.error("Failed to fetch top artists");
+                }
             } catch (error) {
-                console.error("Error fetching access token:", error);
+                console.error("Error fetching top artists:", error);
             }
         };
 
         if (userId) {
-            fetchAccessToken();
+            fetchTopArtists();
         }
-    }, [userId]);
-
-    useEffect(() => {
-        if (!accessToken) return;
-
-        const fetchTopArtists = async () => {
-            try {
-                const res = await fetch(`https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=50`, { method: "GET", headers: { Authorization: `Bearer ${accessToken}` }, });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    setTopArtists(data.items);
-                } else {
-                    console.error("Failed to fetch top artists", res.statusText);
-                }
-            } catch (error) {
-                console.error("Error fetching top artists data:", error);
-            }
-        };
-
-        fetchTopArtists();
-    }, [accessToken, timeRange]);
+    }, [userId, timeRange]);
 
     const handleTimeRangeChange = (range) => {
         setTimeRange(range);
@@ -59,8 +41,8 @@ export default function TopArtists({ userId }) {
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {topArtists.map((artist) => (
-                    <a href={artist.external_urls.spotify} target="_blank" key={artist.id}className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
-                        <img src={artist.images[0]?.url || "https://via.placeholder.com/150"}alt={artist.name}className="w-24 h-24 rounded-full mb-2 object-cover"/>
+                    <a href={artist.external_urls.spotify} target="_blank" key={artist.id} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
+                        <img src={artist.images[0]?.url || "https://via.placeholder.com/150"} alt={artist.name} className="w-24 h-24 rounded-full mb-2 object-cover" />
                         <h3 className="text-base font-semibold">{artist.name}</h3>
                         <p className="text-xs lg:text-sm text-[#888]">{artist.genres.slice(0, 2).join(", ")}</p>
                     </a>

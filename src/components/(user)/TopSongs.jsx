@@ -1,47 +1,29 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
-import { getAccessToken } from "@/lib/getAccessToken";
 
 export default function TopSongs({ userId }) {
-    const [accessToken, setAccessToken] = useState(null);
     const [topTracks, setTopTracks] = useState([]);
     const [timeRange, setTimeRange] = useState("short_term");
 
     useEffect(() => {
-        const fetchAccessToken = async () => {
+        const fetchTopTracks = async () => {
             try {
-                const token = await getAccessToken(userId);
-                setAccessToken(token);
+                const res = await fetch(`/api/top-tracks?userId=${userId}&timeRange=${timeRange}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setTopTracks(data.topTracks);
+                } else {
+                    console.error("Failed to fetch top tracks");
+                }
             } catch (error) {
-                console.error("Error fetching access token:", error);
+                console.error("Error fetching top tracks:", error);
             }
         };
 
         if (userId) {
-            fetchAccessToken();
+            fetchTopTracks();
         }
-    }, [userId]);
-
-    useEffect(() => {
-        if (!accessToken) return;
-
-        const fetchTopTracks = async () => {
-            try {
-                const res = await fetch(`https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}&limit=50`, { method: "GET", headers: { Authorization: `Bearer ${accessToken}` }, });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    setTopTracks(data.items);
-                } else {
-                    console.error("Failed to fetch top tracks", res.statusText);
-                }
-            } catch (error) {
-                console.error("Error fetching top tracks data:", error);
-            }
-        };
-
-        fetchTopTracks();
-    }, [accessToken, timeRange]);
+    }, [userId, timeRange]);
 
     const handleTimeRangeChange = (range) => {
         setTimeRange(range);

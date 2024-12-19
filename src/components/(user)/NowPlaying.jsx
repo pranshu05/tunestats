@@ -1,38 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 import ProgressBar from "@ramonak/react-progress-bar";
-import { getAccessToken } from "@/lib/getAccessToken";
 
 export default function NowPlaying({ userId, onIsPlayingChange }) {
-    const [accessToken, setAccessToken] = useState(null);
     const [song, setSong] = useState(null);
     const [progressMs, setProgressMs] = useState(0);
 
     useEffect(() => {
-        const fetchAccessToken = async () => {
-            try {
-                const token = await getAccessToken(userId);
-                setAccessToken(token);
-            } catch (error) {
-                console.error("Error fetching access token:", error);
-            }
-        };
-
-        if (userId) {
-            fetchAccessToken();
-        }
-    }, [userId]);
-
-    useEffect(() => {
-        if (!accessToken) return;
-
         const fetchCurrentlyPlaying = async () => {
             try {
-                const res = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
-                    method: "GET",
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                });
-
+                const res = await fetch(`/api/currently-playing?userId=${userId}`);
                 if (res.ok) {
                     const data = await res.json();
                     const isPlaying = data?.is_playing || false;
@@ -54,11 +31,11 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
 
                     onIsPlayingChange(isPlaying);
                 } else {
-                    console.error("Failed to fetch currently playing song", res.statusText);
+                    console.error("Failed to fetch currently playing song");
                     onIsPlayingChange(false);
                 }
             } catch (error) {
-                console.error("Error fetching song data:", error);
+                console.error("Error fetching currently playing:", error);
                 onIsPlayingChange(false);
             }
         };
@@ -67,7 +44,7 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
         fetchCurrentlyPlaying();
 
         return () => clearInterval(interval);
-    }, [accessToken, onIsPlayingChange]);
+    }, [userId, onIsPlayingChange]);
 
     const progressPercent = (progressMs / (song?.durationMs || 1)) * 100;
 

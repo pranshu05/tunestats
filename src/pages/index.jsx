@@ -1,5 +1,5 @@
-import { useSession, signIn } from "next-auth/react";
 import Link from 'next/link';
+import { useSession, signIn } from "next-auth/react";
 import Navbar from "@/components/(layout)/NavBar";
 import { BarChart2, Share2, UserPlus } from 'lucide-react';
 
@@ -10,7 +10,6 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-black text-white">
             <Navbar />
-
             <section className="flex flex-col items-center justify-center py-24 px-6 md:px-12 text-center">
                 <div className="space-y-8 max-w-4xl">
                     {!session ? (
@@ -28,7 +27,6 @@ export default function Home() {
                     )}
                 </div>
             </section>
-
             <section className="py-20 px-6 md:px-12">
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why TuneStats?</h2>
@@ -39,7 +37,6 @@ export default function Home() {
                     </div>
                 </div>
             </section>
-
             {!session && (
                 <section className="py-20 px-6 md:px-12 text-center">
                     <div className="max-w-4xl mx-auto">
