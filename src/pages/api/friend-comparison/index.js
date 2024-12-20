@@ -1,4 +1,3 @@
-// /pages/api/friend-comparison.js
 import { getAccessToken } from "@/lib/getAccessToken";
 import { db } from "@/lib/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";

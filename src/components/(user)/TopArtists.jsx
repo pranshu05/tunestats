@@ -41,10 +41,10 @@ export default function TopArtists({ userId }) {
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {topArtists.map((artist) => (
-                    <a href={artist.external_urls.spotify} target="_blank" key={artist.id} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
-                        <img src={artist.images[0]?.url || "https://via.placeholder.com/150"} alt={artist.name} className="w-24 h-24 rounded-full mb-2 object-cover" />
+                    <a href={artist.url} target="_blank" key={artist.id} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
+                        <img src={artist.image || "https://via.placeholder.com/150"} alt={artist.name} className="w-24 h-24 rounded-full mb-2 object-cover" />
                         <h3 className="text-base font-semibold">{artist.name}</h3>
-                        <p className="text-xs lg:text-sm text-[#888]">{artist.genres.slice(0, 2).join(", ")}</p>
+                        <p className="text-xs lg:text-sm text-[#888]">{artist.genres}</p>
                     </a>
                 ))}
             </div>

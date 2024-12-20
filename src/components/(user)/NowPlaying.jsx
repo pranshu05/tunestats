@@ -4,7 +4,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 
 export default function NowPlaying({ userId, onIsPlayingChange }) {
     const [song, setSong] = useState(null);
-    const [progressMs, setProgressMs] = useState(0);
+    const [progressPercent, setProgressPercent] = useState(0);
 
     useEffect(() => {
         const fetchCurrentlyPlaying = async () => {
@@ -14,17 +14,16 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
                     const data = await res.json();
                     const isPlaying = data?.is_playing || false;
 
-                    if (data.item) {
+                    if (data) {
                         setSong({
-                            title: data.item.name,
-                            artist: data.item.artists.map((artist) => artist.name).join(", "),
-                            album: data.item.album.name,
-                            image: data.item.album.images[0]?.url,
-                            progressMs: data.progress_ms,
-                            durationMs: data.item.duration_ms,
-                            songUrl: data.item.external_urls.spotify,
+                            title: data.title,
+                            artist: data.artist,
+                            album: data.album,
+                            image: data.image,
+                            progressPercent: data.progressPercent,
+                            songUrl: data.songUrl,
                         });
-                        setProgressMs(data.progress_ms);
+                        setProgressPercent(data.progressPercent);
                     } else {
                         setSong(null);
                     }
@@ -45,8 +44,6 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
 
         return () => clearInterval(interval);
     }, [userId, onIsPlayingChange]);
-
-    const progressPercent = (progressMs / (song?.durationMs || 1)) * 100;
 
     if (song) {
         return (

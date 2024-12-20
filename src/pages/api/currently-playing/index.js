@@ -12,12 +12,22 @@ export default async function handler(req, res) {
 
         if (response.ok) {
             const data = await response.json();
-            res.status(200).json(data);
+            const progressPercent = (data.progress_ms / (data.item.duration_ms || 1)) * 100;
+            const currentlyPlaying = {
+                title: data.item.name,
+                artist: data.item.artists.map((artist) => artist.name).join(", "),
+                album: data.item.album.name,
+                image: data.item.album.images[0]?.url,
+                progressPercent: progressPercent,
+                songUrl: data.item.external_urls.spotify,
+                is_playing: data.is_playing,
+            };
+            res.status(200).json(currentlyPlaying);
         } else {
             res.status(response.status).json({ error: "Failed to fetch currently playing" });
         }
     } catch (error) {
         console.error("Error fetching currently playing track:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error" }); 
     }
 }

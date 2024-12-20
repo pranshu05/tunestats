@@ -13,7 +13,15 @@ export default async function handler(req, res) {
 
         if (response.ok) {
             const data = await response.json();
-            res.status(200).json({ topTracks: data.items });
+            const topTracks = data.items.map((track) => ({
+                id: track.id,
+                name: track.name,
+                artist: track.artists.map((_artist) => _artist.name).join(", "),
+                album: track.album.name,
+                image: track.album.images[0].url,
+                url: track.external_urls.spotify,
+            }));
+            res.status(200).json({ topTracks });
         } else {
             console.error("Failed to fetch top tracks", response.statusText);
             res.status(response.status).json({ error: "Failed to fetch top tracks" });

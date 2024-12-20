@@ -18,6 +18,7 @@ export default async function handler(req, res) {
                 album: item.track.album.name,
                 image: item.track.album.images[0]?.url,
                 songUrl: item.track.external_urls.spotify,
+                played_at: item.played_at,
             }));
             res.status(200).json({ recentSongs });
         } else {

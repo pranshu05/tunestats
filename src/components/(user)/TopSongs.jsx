@@ -41,10 +41,10 @@ export default function TopSongs({ userId }) {
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {topTracks.map((track) => (
-                    <a href={track.external_urls.spotify} target="_blank" key={track.id} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
-                        <img src={track.album.images[0]?.url || "https://via.placeholder.com/150"} alt={track.name} className="w-24 h-24 rounded-full mb-2 object-cover" />
+                    <a href={track.url} target="_blank" key={track.id} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
+                        <img src={track.image || "https://via.placeholder.com/150"} alt={track.name} className="w-24 h-24 rounded-full mb-2 object-cover" />
                         <h3 className="text-base font-semibold">{track.name}</h3>
-                        <p className="text-sm text-[#888]">{track.artists.map((artist) => artist.name).join(", ")}</p>
+                        <p className="text-sm text-[#888]">{track.artist}</p>
                     </a>
                 ))}
             </div>
