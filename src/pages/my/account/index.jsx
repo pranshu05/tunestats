@@ -60,7 +60,7 @@ export default function MyAccountPage() {
             <Navbar />
             <div className="flex-grow flex flex-col justify-center items-center p-4">
                 {userData ? (
-                    <div className="bg-[#121212] p-6 rounded-lg shadow-lg max-w-sm w-full border-[2px] border-[#333]">
+                    <div className="bg-[#121212] p-4 rounded-lg shadow-lg max-w-sm w-full border-[2px] border-[#333]">
                         <div className="flex flex-col items-center">
                             <img src={session.user.image || "https://github.com/user-attachments/assets/bf57cb96-b259-4290-b35b-0ede9d618802"} alt="Profile Picture" className="w-32 h-32 lg:w-52 lg:h-52 rounded-full mb-4 object-cover" />
                             <h2 className="text-xl font-bold text-white">{session.user.name || "Anonymous"}</h2>

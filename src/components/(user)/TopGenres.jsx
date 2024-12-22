@@ -1,9 +1,15 @@
-/* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function TopGenres({ userId }) {
     const [topGenres, setTopGenres] = useState([]);
     const [timeRange, setTimeRange] = useState("short_term");
+
+    const timeRanges = [
+        { value: 'short_term', label: 'Last 4 weeks' },
+        { value: 'medium_term', label: 'Last 6 months' },
+        { value: 'long_term', label: 'All time' }
+    ];
 
     useEffect(() => {
         const fetchTopGenres = async () => {
@@ -25,27 +31,27 @@ export default function TopGenres({ userId }) {
         }
     }, [userId, timeRange]);
 
-    const handleTimeRangeChange = (range) => {
-        setTimeRange(range);
-    };
-
     return (
-        <div className="relative h-full overflow-y-auto bg-[#121212] rounded-lg flex flex-col p-3 gap-3">
-            <div className="flex flex-col gap-3">
-                <h2 className="text-2xl font-bold">Top Genres</h2>
-                <div className="flex gap-2 justify-center">
-                    <button onClick={() => handleTimeRangeChange("short_term")} className={`px-3 py-1 rounded-md ${timeRange === "short_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Month</button>
-                    <button onClick={() => handleTimeRangeChange("medium_term")} className={`px-3 py-1 rounded-md ${timeRange === "medium_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last 6 Months</button>
-                    <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>All Time</button>
+        <div>
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h2 className="text-2xl font-bold">Top Genres</h2>
+                    <Select value={timeRange} onValueChange={setTimeRange}>
+                        <SelectTrigger className="w-[180px] mt-2 bg-transparent border-none text-sm text-zinc-400 hover:text-white"><SelectValue /></SelectTrigger>
+                        <SelectContent>{timeRanges.map(range => (<SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>))}</SelectContent>
+                    </Select>
                 </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-                {topGenres.map((genre) => (
-                    <div key={genre.genre} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
-                        <h3 className="text-base font-semibold">{genre.genre}</h3>
-                        <p className="text-sm text-[#888]">{genre.count} artists</p>
+            <div className="overflow-x-auto">
+                <div className="w-max min-w-full">
+                    <div className="flex gap-4">
+                        {topGenres.map((genre) => (
+                            <div key={genre.genre} className="p-4 bg-zinc-800/50 rounded-lg">
+                                <div className="font-medium text-lg mb-1">{genre.genre}</div>
+                            </div>
+                        ))}
                     </div>
-                ))}
+                </div>
             </div>
         </div>
     );

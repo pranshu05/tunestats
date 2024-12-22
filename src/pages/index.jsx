@@ -30,7 +30,7 @@ export default function Home() {
             <section className="py-20 px-6 md:px-12">
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why TuneStats?</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <FeatureCard icon={<BarChart2 size={48} />} title="Detailed Stats" description="Get in-depth insights into your listening habits and favorite tracks." />
                         <FeatureCard icon={<Share2 size={48} />} title="Shareable Profile" description="Create a unique, shareable page showcasing your music taste." />
                         <FeatureCard icon={<UserPlus size={48} />} title="Connect with Friends" description="Find and add friends to compare music preferences." />
@@ -47,7 +47,7 @@ export default function Home() {
                 </section>
             )}
 
-            <footer className="p-6 md:px-12 border-t text-center">
+            <footer className="p-4 md:px-12 border-t text-center">
                 <p className="text-sm text-gray-400">&copy; {currentYear} TuneStats. All rights reserved.</p>
             </footer>
         </div>
@@ -56,7 +56,7 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description }) {
     return (
-        <div className="group relative overflow-hidden rounded-lg border p-6">
+        <div className="group relative overflow-hidden rounded-lg border p-4">
             <div className="mb-4 text-green-500 flex justify-center">{icon}</div>
             <h3 className="text-xl font-semibold text-center mb-2">{title}</h3>
             <p className="text-gray-400 text-center">{description}</p>

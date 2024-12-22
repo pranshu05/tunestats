@@ -42,10 +42,10 @@ export default function Friends() {
         <div className="w-full min-h-screen">
             <Navbar />
             {userData ? (
-                <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+                <div className="max-w-7xl mx-auto p-4">
                     <h2 className="text-3xl font-bold mb-6">Friends</h2>
                     {friends.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {friends.map((friendId) => (<FriendProfileCard key={friendId} friendId={friendId} />))}
                         </div>
                     ) : (

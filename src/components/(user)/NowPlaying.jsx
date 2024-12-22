@@ -6,7 +6,7 @@ import ColorThief from "colorthief";
 export default function NowPlaying({ userId, onIsPlayingChange }) {
     const [song, setSong] = useState(null);
     const [progressPercent, setProgressPercent] = useState(0);
-    const [gradientColors, setGradientColors] = useState(["#121212", "#1DB954"]);
+    const [gradientColors, setGradientColors] = useState(["#1a1a1a", "#333333"]);
 
     useEffect(() => {
         const fetchCurrentlyPlaying = async () => {
@@ -34,9 +34,7 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
                             const colorThief = new ColorThief();
                             const colors = colorThief.getPalette(img, 2);
                             if (colors) {
-                                const [color1, color2] = colors.map(
-                                    (rgb) => `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
-                                );
+                                const [color1, color2] = colors.map((rgb) => `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`);
                                 setGradientColors([color1, color2]);
                             }
                         };
@@ -63,13 +61,14 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
 
     if (song) {
         return (
-            <div className="relative h-full rounded-lg"style={{backgroundImage: `linear-gradient(135deg, ${gradientColors[0]}, ${gradientColors[1]})`,minHeight: "290px",}}>
-                <div className="absolute inset-0 flex items-center justify-center z-10">
-                    <a href={song.songUrl} target="_blank" rel="noreferrer" className="w-full p-3 text-center">
-                        <img src={song.image} alt={`Album cover for ${song.title}`} className="w-32 h-32 mb-4 rounded-lg shadow-lg mx-auto" />
-                        <h3 className="text-xl font-semibold mb-2">{song.title}</h3>
-                        <p className="text-base mb-4">{song.artist} - {song.album}</p>
-                        <ProgressBar completed={progressPercent} bgColor="#1DB954" height="8px" labelColor="#1DB954" baseBgColor="#121212" transitionDuration="0.5s" />
+            <div className="relative overflow-hidden rounded-md shadow-lg" style={{ backgroundImage: `linear-gradient(135deg, ${gradientColors[0]}, ${gradientColors[1]})`, minHeight: "290px", }}>
+                <div className="absolute inset-0 backdrop-blur-sm bg-black/30"></div>
+                <div className="relative z-10 p-4 flex flex-col items-center text-center">
+                    <a href={song.songUrl} target="_blank" rel="noreferrer" className="block w-full">
+                        <img src={song.image} alt={`Album cover for ${song.title}`} className="w-40 h-40 rounded-lg shadow-lg mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
+                        <h3 className="text-xl font-bold mb-2 truncate">{song.title}</h3>
+                        <p className="text-sm mb-4 opacity-75 truncate">{song.artist} - {song.album}</p>
+                        <ProgressBar completed={progressPercent} bgColor="#1DB954" height="8px" labelColor="#1DB954" baseBgColor="rgba(255,255,255,0.2)" transitionDuration="0.3s" className="w-full max-w-xs mx-auto" />
                     </a>
                 </div>
             </div>
