@@ -1,10 +1,11 @@
+import Link from 'next/link';
 import { useSession, signIn } from "next-auth/react";
-import Navbar from "@/components/(layout)/NavBar";
 import { useState, useEffect } from 'react';
 import { BarChart2, Share2, UserPlus, Lock, Users } from 'lucide-react';
 
 export default function Home() {
     const { data: session } = useSession();
+  
 
     const [currentText, setCurrentText] = useState("Welcome to TuneStats 🎵");
     const texts = ["Discover Your Spotify Stats 🎶", "Share, Compare, and Explore Your Music Journey!", "Welcome to TuneStats 🎵"];
@@ -22,7 +23,7 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-black text-white">
-            <Navbar />
+         
 
             {/* Hero Section */}
             <section className="flex flex-col items-center justify-center py-24 px-4 md:px-12 text-center">
@@ -118,7 +119,7 @@ export default function Home() {
 
             {/* Call to Action Section */}
             {!session && (
-                <section className="py-20 text-center">
+                <section className="py-20 px-6 md:px-12 text-center">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="text-3xl md:text-4xl font-bold mb-6">
                             Ready to dive into your music stats?
@@ -137,34 +138,7 @@ export default function Home() {
             )}
 
             {/* Footer */}
-            <footer className="p-6 md:px-12 bg-black text-gray-400">
-                <div className="max-w-screen-xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 text-sm">
-                    <FooterSection
-                        title="TuneStats 🎵"
-                        content="Track your Spotify stats, share profiles, and compare music tastes with friends."
-                        extra="Music data, album covers, and song previews are provided by Spotify. Spotify is a trademark of Spotify AB."
-                    />
-                    <FooterSection title="TOOLS" links={["Roast my Spotify 🔥"]} />
-                    <FooterSection
-                        title="GLOBAL"
-                        links={[
-                            "Most Followed Artists",
-                            "Most Popular Artists",
-                            "Most Popular Songs",
-                            "Most Popular Albums",
-                        ]}
-                    />
-                    <FooterSection
-                        title="MORE"
-                        links={["Blog", "Terms of Service", "Privacy Policy", "Permissions"]}
-                    />
-                </div>
-                <div className="mt-12 border-t border-gray-700 pt-6 text-center">
-                    <p className="text-gray-500 font-medium">
-                        &copy; {currentYear} TuneStats. All rights reserved.
-                    </p>
-                </div>
-            </footer>
+           
         </div>
     );
 }
@@ -181,21 +155,4 @@ function FeatureCard({ icon, title, description }) {
     );
 }
 
-function FooterSection({ title, content, links, extra }) {
-    return (
-        <div>
-            <h3 className="text-lg font-bold text-white mb-4">{title}</h3>
-            {content && <p>{content}</p>}
-            {extra && <p className="mt-4">{extra}</p>}
-            {links && (
-                <ul className="space-y-3">
-                    {links.map((link, idx) => (
-                        <li key={idx}>
-                            <a href="#" className="hover:text-white transition-colors">{link}</a>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
-}
+
