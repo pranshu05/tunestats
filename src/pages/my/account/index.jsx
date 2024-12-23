@@ -62,16 +62,16 @@ export default function MyAccountPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">My Account</h1>
+        <div className="max-w-4xl mx-auto p-4 space-y-4">
+            <h1 className="text-3xl font-bold">My Account</h1>
             {userData ? (
-                <Card>
+                <Card className="p-4 space-y-4">
                     <CardHeader>
                         <CardTitle className="text-center">Profile Information</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex flex-col items-center">
-                            <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
+                        <div className="flex flex-col items-center space-y-4">
+                            <div className="w-32 h-32 rounded-full overflow-hidden">
                                 {session.user.image ? (
                                     <img src={session.user.image} alt="Profile Picture" className="w-full h-full object-cover" />
                                 ) : (
@@ -80,18 +80,18 @@ export default function MyAccountPage() {
                                     </div>
                                 )}
                             </div>
-                            <h2 className="text-xl font-bold mb-1">{session.user.name || "Anonymous"}</h2>
-                            <p className="text-zinc-400 mb-4">{session.user.email}</p>
-                            <div className="flex items-center gap-2 mb-6">
+                            <h2 className="text-xl font-bold">{session.user.name || "Anonymous"}</h2>
+                            <p className="text-zinc-400">{session.user.email}</p>
+                            <div className="flex items-center gap-2">
                                 <span className="font-medium">Account Type:</span>
                                 <div className="flex items-center">
                                     <span className="mr-2">{accountType}</span>
                                     <Switch checked={accountType === "Public"} onCheckedChange={handleAccountTypeToggle} disabled={loading} />
                                 </div>
                             </div>
-                            <div className="flex flex-col sm:flex-row gap-4 w-full">
-                                <Button asChild className="w-full"><Link href={`/user/${session.user.id}`}><User className="w-4 h-4 mr-2" />View Profile</Link></Button>
-                                <Button asChild variant="outline" className="w-full"><Link href="/my/friends"><Users className="w-4 h-4 mr-2" />View Friends</Link></Button>
+                            <div className="flex flex-col lg:flex-row gap-4">
+                                <Button asChild className="w-fit"><Link href={`/user/${session.user.id}`}><User className="mr-2" />View Profile</Link></Button>
+                                <Button asChild variant="outline" className="w-fit"><Link href="/my/friends"><Users className="mr-2" />View Friends</Link></Button>
                             </div>
                         </div>
                     </CardContent>

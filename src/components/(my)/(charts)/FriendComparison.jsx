@@ -46,7 +46,7 @@ export default function FriendComparison({ userId }) {
     const CustomTooltip = ({ active, payload }) => {
         if (active && payload && payload.length) {
             return (
-                <div className="bg-[#1F1F1F] p-2 rounded-md">
+                <div className="bg-zinc-900 p-2 rounded-md">
                     <p className="text-[#1DB954] font-bold">{`${payload[0].payload.matchPercentage}%`}</p>
                 </div>
             );
@@ -75,13 +75,13 @@ export default function FriendComparison({ userId }) {
     };
 
     return (
-        <div className="flex flex-col items-center p-3 gap-3 bg-[#121212] rounded-md w-full">
+        <div className="flex flex-col items-center p-4 gap-4 bg-zinc-900/50 rounded-md w-full">
             <h2 className="text-2xl font-bold text-center">Friends Music Matches</h2>
             <div className="w-full">
                 <h3 className="text-xl font-bold text-[#1DB954] mb-4">Top Matches</h3>
                 <div className="space-y-4">
                     {topMatches.map((match, index) => (
-                        <Link href={`/user/${match.friendId}`} key={match.friendId} className="flex items-center justify-between bg-[#1F1F1F] p-4 rounded-lg">
+                        <Link href={`/user/${match.friendId}`} key={match.friendId} className="flex items-center justify-between bg-zinc-800/50 p-4 rounded-lg">
                             <div className="flex items-center gap-4">
                                 <span className="text-2xl font-bold">{index + 1}</span>
                                 <img src={match.image} alt={match.name} className="w-12 h-12 rounded-full object-cover" />

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import Loader from "@/components/(layout)/Loader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { User } from 'lucide-react';
 
@@ -35,20 +37,24 @@ export default function FriendProfileCard({ friendId }) {
     if (!friendData) return <div className="text-white">Unable to load friend data</div>;
 
     return (
-        <div className="bg-zinc-800 rounded-lg overflow-hidden">
-            <div className="aspect-square relative">
-                {friendData.image && friendData.image !== "unknown" ? (
-                    <img src={friendData.image} alt={friendData.name} className="w-full h-full object-cover" />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-zinc-700">
-                        <User className="w-1/2 h-1/2 text-zinc-500" />
+        <Card className="overflow-hidden p-4">
+            <CardContent>
+                <div className="flex flex-col items-center">
+                    <div className="w-32 h-32 rounded-full overflow-hidden">
+                        {friendData.image && friendData.image !== "unknown" ? (
+                            <img src={friendData.image} alt={friendData.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-zinc-700">
+                                <User className="w-1/2 h-1/2 text-zinc-400" />
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-            <div className="p-4">
-                <h3 className="text-xl font-bold text-white mb-2 truncate">{friendData.name}</h3>
-                <Link href={`/user/${friendId}`} className="block w-full text-center px-4 py-2 bg-[#1DB954] text-black font-semibold rounded-md transition-colors duration-300 hover:bg-[#1ed760]">View Profile</Link>
-            </div>
-        </div>
+                    <h3 className="text-xl font-bold text-center mb-4">{friendData.name}</h3>
+                    <Button asChild className="w-full">
+                        <Link href={`/user/${friendId}`}>View Profile</Link>
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

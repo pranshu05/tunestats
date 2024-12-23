@@ -26,4 +26,4 @@ export default function UserSearchProfile({ user }) {
             </CardContent>
         </Card>
     );
-}
+} 

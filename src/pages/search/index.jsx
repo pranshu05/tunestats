@@ -54,27 +54,25 @@ export default function Search() {
     }, [searchQuery]);
 
     return (
-        <div className="min-h-screen bg-black text-white">
-            <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-                <h1 className="text-3xl font-bold mb-6">Search Results</h1>
-                {loading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <Loader2 className="w-12 h-12 animate-spin text-[#1DB954]" />
-                    </div>
-                ) : users.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {users.map((user) => (
-                            <UserSearchProfile key={user.id} user={user} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center h-64">
-                        <UserX className="w-16 h-16 mb-4 text-zinc-600" />
-                        <p className="text-xl text-zinc-400">No users found</p>
-                        <p className="mt-2 text-zinc-500">Try adjusting your search terms</p>
-                    </div>
-                )}
-            </div>
+        <div className="max-w-7xl mx-auto p-4">
+            <h1 className="text-3xl font-bold mb-6">Search Results</h1>
+            {loading ? (
+                <div className="flex justify-center items-center h-64">
+                    <Loader2 className="w-12 h-12 animate-spin text-[#1DB954]" />
+                </div>
+            ) : users.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {users.map((user) => (
+                        <UserSearchProfile key={user.id} user={user} />
+                    ))}
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center h-64">
+                    <UserX className="w-16 h-16 mb-4 text-zinc-600" />
+                    <p className="text-xl text-zinc-400">No users found</p>
+                    <p className="mt-2 text-zinc-500">Try adjusting your search terms</p>
+                </div>
+            )}
         </div>
     );
 }

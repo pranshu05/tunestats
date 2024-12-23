@@ -11,10 +11,12 @@ export const metadata = {
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     return (
         <SessionProvider session={session}>
-            <div className="min-h-screen bg-black text-white">
+            <div className="min-h-screen bg-black text-white flex flex-col">
                 <Navbar />
-                <Component {...pageProps} />
-                {/* <Footer /> */}
+                <div className="flex-1">
+                    <Component {...pageProps} />
+                </div>
+                <Footer />
             </div>
         </SessionProvider>
     )

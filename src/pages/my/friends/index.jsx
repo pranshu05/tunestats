@@ -41,7 +41,7 @@ export default function Friends() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-4">
+        <div className="max-w-7xl mx-auto p-4"> 
             <h1 className="text-3xl font-bold mb-6">Your Friends</h1>
             {userData ? (
                 friends.length > 0 ? (
