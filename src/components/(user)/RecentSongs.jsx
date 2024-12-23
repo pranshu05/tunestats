@@ -30,7 +30,7 @@ export default function RecentSongs({ userId }) {
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Clock className="w-5 h-5" />Recently Played</h3>
             <div className="space-y-4">
                 {recentSongs.map((recentSong, index) => (
-                    <a key={index} href={recentSong.songUrl} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-2 rounded-lg hover:bg-zinc-800/50 transition-colors">
+                    <a key={index} href={`/track/${recentSong.id}`} className="flex items-center gap-4 p-2 rounded-lg hover:bg-zinc-800/50 transition-colors">
                         <img src={recentSong.image} alt={`Album cover for ${recentSong.title}`} className="w-12 h-12 rounded-md object-cover" />
                         <div className="flex-grow min-w-0">
                             <h4 className="text-sm font-semibold truncate">{recentSong.title}</h4>

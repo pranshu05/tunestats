@@ -32,11 +32,11 @@ export default function TrackArtistInfo({ userId, artistId }) {
             {artist ? (
                 <div className="flex flex-col justify-center items-center space-y-4">
                     <h1 className="text-2xl font-bold">Artist Info</h1>
-                    <img src={artist.artistImageUrl} alt={artist.artistName} className="w-36 lg:w-48 rounded-md" />
+                    <a className="w-36 lg:w-48" href={`/artist/${artist.artistId}`}><img src={artist.artistImageUrl} alt={artist.artistName} className="w-36 lg:w-48 rounded-md" /></a>
                     <div className="flex-col justify-center items-center text-center space-y-1">
                         <h1 className="text-xl font-bold">{artist.artistName}</h1>
                         <p className="text-gray-300">{formatFollowers(artist.artistFollowers)} followers</p>
-                        <a href={artist.artistUrl} target="_blank" rel="noopener noreferrer"><p className="w-fit p-2 rounded-md bg-zinc-800/50 mt-2">Listen on Spotify</p></a>
+                        <a href={artist.artistUrl} target="_blank" rel="noopener noreferrer"><p className="w-fit p-2 mx-auto rounded-md bg-zinc-800/50 mt-2">Listen on Spotify</p></a>
                     </div>
                 </div>
             ) : (

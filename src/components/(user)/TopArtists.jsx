@@ -51,7 +51,7 @@ export default function TopArtists({ userId, viewMode, onViewModeChange }) {
                     <div className="w-max min-w-full">
                         <div className="flex gap-4">
                             {topArtists.map((artist) => (
-                                <a key={artist.id} href={artist.url} target="_blank" rel="noopener noreferrer" className="w-32 lg:w-36 group">
+                                <a key={artist.id} href={`/artist/${artist.id}`} className="w-32 lg:w-36 group">
                                     <div className="aspect-square mb-4">
                                         <img src={artist.image || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover rounded-full" />
                                     </div>
@@ -67,7 +67,7 @@ export default function TopArtists({ userId, viewMode, onViewModeChange }) {
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {topArtists.map((artist) => (
-                        <a key={artist.id} href={artist.url} target="_blank" rel="noopener noreferrer" className="group">
+                        <a key={artist.id} href={`/artist/${artist.id}`} className="group">
                             <div className="aspect-square mb-4">
                                 <img src={artist.image || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover rounded-full" />
                             </div>

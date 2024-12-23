@@ -18,6 +18,7 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
 
                     if (data) {
                         setSong({
+                            id: data.id,
                             title: data.title,
                             artist: data.artist,
                             album: data.album,
@@ -64,7 +65,7 @@ export default function NowPlaying({ userId, onIsPlayingChange }) {
             <div className="relative overflow-hidden rounded-md shadow-lg" style={{ backgroundImage: `linear-gradient(135deg, ${gradientColors[0]}, ${gradientColors[1]})`, minHeight: "290px", }}>
                 <div className="absolute inset-0 backdrop-blur-sm bg-black/30"></div>
                 <div className="relative z-10 p-4 flex flex-col items-center text-center">
-                    <a href={song.songUrl} target="_blank" rel="noreferrer" className="block w-full">
+                    <a href={`/track/${song.id}`}  className="block w-full">
                         <img src={song.image} alt={`Album cover for ${song.title}`} className="w-40 h-40 rounded-lg shadow-lg mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
                         <h3 className="text-xl font-bold mb-2 truncate">{song.title}</h3>
                         <p className="text-sm mb-4 opacity-75 truncate">{song.artist} - {song.album}</p>
