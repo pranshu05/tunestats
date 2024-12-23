@@ -31,7 +31,7 @@ export default function TrackAlbumInfo({ userId, albumId }) {
                 <div className="flex flex-col h-full justify-center items-center space-y-4">
                     <h1 className="text-2xl font-bold">Album Info</h1>
                     <img src={album.albumImageUrl} alt={album.albumName} className="w-36 lg:w-48 rounded-md" />
-                    <div className="flex-col items-center text-center space-y-1">
+                    <div className="flex-col justify-center items-center text-center space-y-1">
                         <h1 className="text-xl font-bold">{album.albumName}</h1>
                         <a href={album.albumUrl} target="_blank" rel="noopener noreferrer"><p className="w-fit p-2 rounded-md bg-zinc-800/50 mt-2">Listen on Spotify</p></a>
                     </div>
