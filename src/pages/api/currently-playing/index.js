@@ -14,6 +14,7 @@ export default async function handler(req, res) {
             const data = await response.json();
             const progressPercent = (data.progress_ms / (data.item.duration_ms || 1)) * 100;
             const currentlyPlaying = {
+                id: data.item.id,
                 title: data.item.name,
                 artist: data.item.artists.map((artist) => artist.name).join(", "),
                 album: data.item.album.name,

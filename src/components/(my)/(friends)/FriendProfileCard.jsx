@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import Loader from "@/components/(layout)/Loader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
+import { User } from 'lucide-react';
 
 export default function FriendProfileCard({ friendId }) {
     const [friendData, setFriendData] = useState(null);
@@ -29,14 +33,28 @@ export default function FriendProfileCard({ friendId }) {
         fetchFriendData();
     }, [friendId]);
 
-    if (loading) { return <Loader />; }
-    if (!friendData) { return <div className="text-white">Unable to load friend data</div>; }
+    if (loading) return <Loader />;
+    if (!friendData) return <div className="text-white">Unable to load friend data</div>;
 
     return (
-        <div className="flex flex-col items-center bg-[#121212] p-3 rounded-lg gap-2">
-            <img src={friendData.image === "unknown" ? "https://github.com/user-attachments/assets/bf57cb96-b259-4290-b35b-0ede9d618802" : friendData.image} alt={friendData.name} className="w-32 h-32 rounded-full object-cover" />
-            <h3 className="text-xl font-bold">{friendData.name}</h3>
-            <a href={`/user/${friendId}`} className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">View Profile</a>
-        </div>
+        <Card className="overflow-hidden p-4">
+            <CardContent>
+                <div className="flex flex-col items-center">
+                    <div className="w-32 h-32 rounded-full overflow-hidden">
+                        {friendData.image && friendData.image !== "unknown" ? (
+                            <img src={friendData.image} alt={friendData.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-zinc-700">
+                                <User className="w-1/2 h-1/2 text-zinc-400" />
+                            </div>
+                        )}
+                    </div>
+                    <h3 className="text-xl font-bold text-center mb-4">{friendData.name}</h3>
+                    <Button asChild className="w-full">
+                        <Link href={`/user/${friendId}`}>View Profile</Link>
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

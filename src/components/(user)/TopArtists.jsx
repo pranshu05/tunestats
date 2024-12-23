@@ -1,9 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { LayoutGrid, Grid } from 'lucide-react';
 
-export default function TopArtists({ userId }) {
+export default function TopArtists({ userId, viewMode, onViewModeChange }) {
     const [topArtists, setTopArtists] = useState([]);
     const [timeRange, setTimeRange] = useState("short_term");
+
+    const timeRanges = [
+        { value: 'short_term', label: 'Last 4 weeks' },
+        { value: 'medium_term', label: 'Last 6 months' },
+        { value: 'long_term', label: 'All time' }
+    ];
 
     useEffect(() => {
         const fetchTopArtists = async () => {
@@ -25,29 +34,51 @@ export default function TopArtists({ userId }) {
         }
     }, [userId, timeRange]);
 
-    const handleTimeRangeChange = (range) => {
-        setTimeRange(range);
-    };
-
     return (
-        <div className="flex flex-col rounded-md gap-3 overflow-y-auto">
-            <div className="flex flex-col lg:flex-row lg:justify-between items-center gap-3">
-                <h2 className="text-2xl font-bold">Top Artists</h2>
-                <div className="flex gap-2">
-                    <button onClick={() => handleTimeRangeChange("short_term")} className={`px-3 py-1 rounded-md ${timeRange === "short_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last Month</button>
-                    <button onClick={() => handleTimeRangeChange("medium_term")} className={`px-3 py-1 rounded-md ${timeRange === "medium_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>Last 6 Months</button>
-                    <button onClick={() => handleTimeRangeChange("long_term")} className={`px-3 py-1 rounded-md ${timeRange === "long_term" ? "bg-[#1DB954]" : "bg-[#1F1F1F]"}`}>All Time</button>
+        <div>
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h2 className="text-2xl font-bold">Top Artists</h2>
+                    <Select value={timeRange} onValueChange={setTimeRange}>
+                        <SelectTrigger className="w-[180px] mt-2 bg-transparent border-none text-sm text-zinc-400 hover:text-white"><SelectValue /></SelectTrigger>
+                        <SelectContent>{timeRanges.map(range => (<SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>))}</SelectContent>
+                    </Select>
                 </div>
+                <Button variant="ghost" size="icon" onClick={() => onViewModeChange(viewMode === 'grid' ? 'list' : 'grid')} className="rounded-full hover:bg-white/10">{viewMode === 'list' ? <LayoutGrid className="w-5 h-5" /> : <Grid className="w-5 h-5" />}</Button>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                {topArtists.map((artist) => (
-                    <a href={artist.url} target="_blank" key={artist.id} className="flex flex-col items-center bg-[#1F1F1F] rounded-lg p-3 text-center">
-                        <img src={artist.image || "https://via.placeholder.com/150"} alt={artist.name} className="w-24 h-24 rounded-full mb-2 object-cover" />
-                        <h3 className="text-base font-semibold">{artist.name}</h3>
-                        <p className="text-xs lg:text-sm text-[#888]">{artist.genres}</p>
-                    </a>
-                ))}
-            </div>
+            {viewMode === 'list' ? (
+                <div className="overflow-x-auto">
+                    <div className="w-max min-w-full">
+                        <div className="flex gap-4">
+                            {topArtists.map((artist) => (
+                                <a key={artist.id} href={`/artist/${artist.id}`} className="w-32 lg:w-36 group">
+                                    <div className="aspect-square mb-4">
+                                        <img src={artist.image || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                    <div>
+                                        <div className="font-medium mb-1 truncate group-hover:text-green-400">{artist.name}</div>
+                                        <div className="text-sm text-zinc-400 truncate">{artist.genres}</div>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {topArtists.map((artist) => (
+                        <a key={artist.id} href={`/artist/${artist.id}`} className="group">
+                            <div className="aspect-square mb-4">
+                                <img src={artist.image || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover rounded-full" />
+                            </div>
+                            <div>
+                                <div className="font-medium mb-1 truncate group-hover:text-green-400">{artist.name}</div>
+                                <div className="text-sm text-zinc-400 truncate">{artist.genres}</div>
+                            </div>
+                        </a>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

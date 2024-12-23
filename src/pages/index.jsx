@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { useSession, signIn } from "next-auth/react";
 import Navbar from "@/components/(layout)/NavBar";
 import { useState, useEffect } from 'react';
@@ -6,7 +5,6 @@ import { BarChart2, Share2, UserPlus, Lock, Users } from 'lucide-react';
 
 export default function Home() {
     const { data: session } = useSession();
-    const currentYear = new Date().getFullYear();
 
     const [currentText, setCurrentText] = useState("Welcome to TuneStats 🎵");
     const texts = ["Discover Your Spotify Stats 🎶", "Share, Compare, and Explore Your Music Journey!", "Welcome to TuneStats 🎵"];
@@ -120,7 +118,7 @@ export default function Home() {
 
             {/* Call to Action Section */}
             {!session && (
-                <section className="py-20 px-6 md:px-12 text-center">
+                <section className="py-20 text-center">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="text-3xl md:text-4xl font-bold mb-6">
                             Ready to dive into your music stats?

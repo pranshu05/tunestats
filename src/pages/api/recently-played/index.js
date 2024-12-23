@@ -13,6 +13,7 @@ export default async function handler(req, res) {
         if (response.ok) {
             const data = await response.json();
             const recentSongs = data.items.map((item) => ({
+                id: item.track.id,
                 title: item.track.name,
                 artist: item.track.artists.map((artist) => artist.name).join(", "),
                 album: item.track.album.name,
