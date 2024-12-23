@@ -9,6 +9,9 @@
 - **Friend Comparable Charts**: Compare your Spotify stats with friends in personalized charts.
 - **Add Friends**: Build a network of friends and explore their music preferences.
 - **Privacy Control**: Set your profile as public or private based on your preference.
+- **Responsive Design**: Enjoy a seamless experience across all devices.
+- **Artist Page**: View detailed information about your favorite artists.
+- **Track Page**: Explore detailed insights about your top tracks.
 
 ---
 
