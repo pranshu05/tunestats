@@ -5,8 +5,11 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-import Navbar from "@/components/(layout)/NavBar";
 import Loader from "@/components/(layout)/Loader";
+import { User, Users } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 
 export default function MyAccountPage() {
     const { data: session, status } = useSession();
@@ -53,32 +56,49 @@ export default function MyAccountPage() {
     };
 
     if (status === "loading") return <Loader />;
-    if (!session) return router.push("/");
+    if (!session) {
+        router.push("/");
+        return null;
+    }
 
     return (
-        <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <div className="flex-grow flex flex-col justify-center items-center p-4">
-                {userData ? (
-                    <div className="bg-[#121212] p-4 rounded-lg shadow-lg max-w-sm w-full border-[2px] border-[#333]">
+        <div className="max-w-4xl mx-auto p-4">
+            <h1 className="text-3xl font-bold mb-6">My Account</h1>
+            {userData ? (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-center">Profile Information</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <div className="flex flex-col items-center">
-                            <img src={session.user.image || "https://github.com/user-attachments/assets/bf57cb96-b259-4290-b35b-0ede9d618802"} alt="Profile Picture" className="w-32 h-32 lg:w-52 lg:h-52 rounded-full mb-4 object-cover" />
-                            <h2 className="text-xl font-bold text-white">{session.user.name || "Anonymous"}</h2>
-                            <p className="text-gray-400">{session.user.email}</p>
+                            <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
+                                {session.user.image ? (
+                                    <img src={session.user.image} alt="Profile Picture" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-zinc-700">
+                                        <User className="w-1/2 h-1/2 text-zinc-400" />
+                                    </div>
+                                )}
+                            </div>
+                            <h2 className="text-xl font-bold mb-1">{session.user.name || "Anonymous"}</h2>
+                            <p className="text-zinc-400 mb-4">{session.user.email}</p>
+                            <div className="flex items-center gap-2 mb-6">
+                                <span className="font-medium">Account Type:</span>
+                                <div className="flex items-center">
+                                    <span className="mr-2">{accountType}</span>
+                                    <Switch checked={accountType === "Public"} onCheckedChange={handleAccountTypeToggle} disabled={loading} />
+                                </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-4 w-full">
+                                <Button asChild className="w-full"><Link href={`/user/${session.user.id}`}><User className="w-4 h-4 mr-2" />View Profile</Link></Button>
+                                <Button asChild variant="outline" className="w-full"><Link href="/my/friends"><Users className="w-4 h-4 mr-2" />View Friends</Link></Button>
+                            </div>
                         </div>
-                        <div className="mt-6">
-                            <label htmlFor="accountType" className="block text-base font-medium text-center">Account Type</label>
-                            <button onClick={handleAccountTypeToggle} disabled={loading} className="w-full mt-2 px-4 py-2 bg-[#121212] border-[2px] border-[#333] text-white rounded-md hover:bg-[#1a1a1a] disabled:bg-[#252525] transition-all">{loading ? "Updating..." : `Set to ${accountType === "Public" ? "Private" : "Public"}`}</button>
-                        </div>
-                        <div className="flex gap-3 justify-center items-center mt-6">
-                            <Link href={`/user/${session.user.id}`} className="px-4 py-2 w-full text-center bg-[#121212] border-[2px] border-[#333] text-white rounded-md hover:bg-[#1a1a1a] transition-all">View Profile</Link>
-                            <Link href="/my/friends" className="px-4 py-2 w-full text-center bg-[#121212] border-[2px] border-[#333] text-white rounded-md hover:bg-[#1a1a1a] transition-all">View Friends</Link>
-                        </div>
-                    </div>
-                ) : (
-                    <p className="text-white">Loading profile...</p>
-                )}
-            </div>
+                    </CardContent>
+                </Card>
+            ) : (
+                <Loader />
+            )}
         </div>
     );
 }

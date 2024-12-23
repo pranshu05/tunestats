@@ -60,24 +60,22 @@ export default function UserPage({ userId }) {
     };
 
     return profileIsVisible ? (
-        <div className="min-h-screen bg-black text-white p-4">
-            <div className="max-w-7xl mx-auto space-y-4">
-                <div className="bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 rounded-md p-4"><UserData session={session} user={user} userId={userId} /></div>
-                {isPlaying && <NowPlaying userId={userId} onIsPlayingChange={setIsPlaying} />}
-                <div className="bg-zinc-900/50 rounded-md p-4"><TopSongs userId={userId} viewMode={viewModes.songs} onViewModeChange={(mode) => handleViewModeChange('songs', mode)} /></div>
-                <div className="bg-zinc-900/50 rounded-md p-4"><TopArtists userId={userId} viewMode={viewModes.artists} onViewModeChange={(mode) => handleViewModeChange('artists', mode)} /></div>
-                <div className="bg-zinc-900/50 rounded-md p-4"><TopGenres userId={userId} /></div>
-                <RecentSongs userId={userId} />
-            </div>
+        <div className="p-4 max-w-7xl mx-auto space-y-4">
+            <div className="bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 rounded-md p-4"><UserData session={session} user={user} userId={userId} /></div>
+            {isPlaying && <NowPlaying userId={userId} onIsPlayingChange={setIsPlaying} />}
+            <div className="bg-zinc-900/50 rounded-md p-4"><TopSongs userId={userId} viewMode={viewModes.songs} onViewModeChange={(mode) => handleViewModeChange('songs', mode)} /></div>
+            <div className="bg-zinc-900/50 rounded-md p-4"><TopArtists userId={userId} viewMode={viewModes.artists} onViewModeChange={(mode) => handleViewModeChange('artists', mode)} /></div>
+            <div className="bg-zinc-900/50 rounded-md p-4"><TopGenres userId={userId} /></div>
+            <RecentSongs userId={userId} />
             <div className="hidden">
                 <NowPlaying userId={userId} onIsPlayingChange={setIsPlaying} />
             </div>
         </div>
     ) : (
-        <div className="min-h-screen bg-black text-white p-4 flex items-center justify-center">
-            <div className="w-full h-full bg-zinc-900/50 rounded-md p-4 text-center">
+        <div className="p-4 max-w-7xl mx-auto space-y-4">
+            <div className="bg-zinc-900/50 rounded-md p-4 text-center">
                 <UserData session={session} user={user} userId={userId} />
-                <p className="mt-6 text-xl">This profile is private.</p>
+                <p className="mt-6 text-lg">This profile is private.</p>
             </div>
         </div>
     );

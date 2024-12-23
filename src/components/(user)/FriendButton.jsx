@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import { Button } from "@/components/ui/button";
+import { UserPlus, UserMinus } from 'lucide-react';
 
 export default function FriendButton({ currentUserId, userId }) {
     const [isFriend, setIsFriend] = useState(false);
@@ -57,6 +59,14 @@ export default function FriendButton({ currentUserId, userId }) {
     if (currentUserId === userId) return null;
 
     return (
-        <button onClick={isFriend ? handleRemoveFriend : handleAddFriend} disabled={loading} className={`px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md`}>{loading ? "Processing..." : isFriend ? "Remove Friend" : "Add Friend"}</button>
+        <Button onClick={isFriend ? handleRemoveFriend : handleAddFriend} disabled={loading} variant={isFriend ? "destructive" : "default"}>
+            {loading ? (
+                "Processing..."
+            ) : isFriend ? (
+                <><UserMinus className="w-4 h-4 mr-2" />Remove Friend</>
+            ) : (
+                <><UserPlus className="w-4 h-4 mr-2" />Add Friend</>
+            )}
+        </Button>
     );
 }

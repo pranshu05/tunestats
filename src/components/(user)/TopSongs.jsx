@@ -51,7 +51,7 @@ export default function TopSongs({ userId, viewMode, onViewModeChange }) {
                     <div className="w-max min-w-full">
                         <div className="flex gap-4">
                             {topTracks.map((track) => (
-                                <a key={track.id} href={track.url} target="_blank" rel="noopener noreferrer" className="w-48 group">
+                                <a key={track.id} href={track.url} target="_blank" rel="noopener noreferrer" className="w-32 lg:w-36 group">
                                     <div className="aspect-square mb-4">
                                         <img src={track.image || "/placeholder.svg"} alt={track.name} className="w-full h-full object-cover rounded-md" />
                                     </div>

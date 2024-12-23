@@ -46,8 +46,8 @@ export default function TopGenres({ userId }) {
                 <div className="w-max min-w-full">
                     <div className="flex gap-4">
                         {topGenres.map((genre) => (
-                            <div key={genre.genre} className="p-4 bg-zinc-800/50 rounded-lg">
-                                <div className="font-medium text-lg mb-1">{genre.genre}</div>
+                            <div key={genre.genre} className="px-4 py-2 bg-zinc-800/50 rounded-lg">
+                                <div className="font-medium text-base">{genre.genre}</div>
                             </div>
                         ))}
                     </div>

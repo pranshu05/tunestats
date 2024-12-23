@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import Loader from "@/components/(layout)/Loader";
+import Link from "next/link";
+import { User } from 'lucide-react';
 
 export default function FriendProfileCard({ friendId }) {
     const [friendData, setFriendData] = useState(null);
@@ -29,14 +31,24 @@ export default function FriendProfileCard({ friendId }) {
         fetchFriendData();
     }, [friendId]);
 
-    if (loading) { return <Loader />; }
-    if (!friendData) { return <div className="text-white">Unable to load friend data</div>; }
+    if (loading) return <Loader />;
+    if (!friendData) return <div className="text-white">Unable to load friend data</div>;
 
     return (
-        <div className="flex flex-col items-center bg-[#121212] p-3 rounded-lg gap-2">
-            <img src={friendData.image === "unknown" ? "https://github.com/user-attachments/assets/bf57cb96-b259-4290-b35b-0ede9d618802" : friendData.image} alt={friendData.name} className="w-32 h-32 rounded-full object-cover" />
-            <h3 className="text-xl font-bold">{friendData.name}</h3>
-            <a href={`/user/${friendId}`} className="px-4 py-2 bg-[#121212] border-[2px] border-[#333] rounded-md">View Profile</a>
+        <div className="bg-zinc-800 rounded-lg overflow-hidden">
+            <div className="aspect-square relative">
+                {friendData.image && friendData.image !== "unknown" ? (
+                    <img src={friendData.image} alt={friendData.name} className="w-full h-full object-cover" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-zinc-700">
+                        <User className="w-1/2 h-1/2 text-zinc-500" />
+                    </div>
+                )}
+            </div>
+            <div className="p-4">
+                <h3 className="text-xl font-bold text-white mb-2 truncate">{friendData.name}</h3>
+                <Link href={`/user/${friendId}`} className="block w-full text-center px-4 py-2 bg-[#1DB954] text-black font-semibold rounded-md transition-colors duration-300 hover:bg-[#1ed760]">View Profile</Link>
+            </div>
         </div>
     );
 }

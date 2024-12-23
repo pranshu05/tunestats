@@ -17,11 +17,16 @@ export default function SearchBar() {
         }
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (query.trim()) { router.push(`/search?query=${encodeURIComponent(query)}`); }
+    };
+
     return (
-        <form className="w-full sm:w-96">
-            <div className="flex items-center justify-between gap-2">
-                <input type="text" value={query} onChange={handleInputChange} placeholder="Search users by name" className="py-2 px-4 pr-10 bg-[#121212] rounded-full w-full focus:outline-none" />
-                <Search className="w-5 h-5 text-gray-400" />
+        <form onSubmit={handleSubmit} className="w-full">
+            <div className="relative">
+                <input type="text" value={query} onChange={handleInputChange} placeholder="Search users by name" className="w-full py-2 px-4 pr-10 bg-zinc-800 text-white placeholder-zinc-400 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1DB954] transition duration-300" />
+                <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-[#1DB954] transition duration-300"><Search className="w-5 h-5" /></button>
             </div>
         </form>
     );

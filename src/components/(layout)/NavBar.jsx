@@ -9,7 +9,7 @@ export default function Navbar() {
     const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
     return (
-        <nav className="bg-black border-b p-3">
+        <nav className="bg-black border-b border-zinc-900 p-4">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 <Link href="/" className="text-[#1DB954] font-semibold text-xl"><span>TuneStats</span></Link>
                 <div className="sm:hidden"><button onClick={toggleMenu}className="text-[#1DB954] focus:outline-none"aria-label="Toggle Menu"><AlignJustify /></button></div>

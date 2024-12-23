@@ -24,7 +24,7 @@ export default async function handler(req, res) {
             const sortedGenres = Object.entries(genreCounts)
                 .map(([genre, count]) => ({ genre, count }))
                 .sort((a, b) => b.count - a.count)
-                .slice(0, 20);
+                .slice(0, 30);
 
             res.status(200).json({ topGenres: sortedGenres });
         } else {
