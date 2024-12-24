@@ -27,6 +27,24 @@ Make sure you have the following installed:
 - Firebase account for database configuration
 - Spotify Developer account to set up API credentials
 
+
+### File Structure
+```
+root/
+├── public/           # Static assets
+├── src/              # Source code
+│   ├── components/   # Reusable components
+│   ├── pages/        # Page components
+│   ├── styles/       # CSS and styling
+│   ├── utils/        # Utility functions
+│   └── hooks/        # Custom hooks
+├── .env.local        # Environment variables
+├── package.json      # Dependencies and scripts
+├── README.md         # Project documentation
+└── next.config.js    # Next.js configuration
+```
+
+
 ### Installation
 
 1. **Fork the Repository**
@@ -106,6 +124,16 @@ We welcome contributions! Follow these steps to contribute:
    Go to the original repository and open a pull request describing your changes.
 
 ---
+
+
+## 📬 Community and Support
+
+- Join our [Discord Server](https://discord.gg/example) for discussions and support.
+- Follow us on [Twitter](https://twitter.com/example) for updates.
+- Report issues or feature requests via [GitHub Issues](https://github.com/pranshu05/tunestats/issues).
+
+---
+
 
 ## 📝 License
 
