@@ -1,14 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-export default function AlbumInfo({ album }) {
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const month = date.toLocaleString('default', { month: 'short' });
-        const year = date.getFullYear();
-        const daySuffix = day % 10 === 1 && day !== 11 ? 'st' : day % 10 === 2 && day !== 12 ? 'nd' : day % 10 === 3 && day !== 13 ? 'rd' : 'th';
-        return `${day}${daySuffix} ${month} ${year}`;
-    };
+import { formatDate } from "@/lib/format";
 
+export default function AlbumInfo({ album }) {
     return (
         <div className="p-4 rounded-lg bg-zinc-900/50 space-y-6">
             <div className="flex items-center space-x-4">

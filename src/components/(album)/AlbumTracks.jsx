@@ -70,7 +70,7 @@ export default function AlbumTracks({ userId, tracks }) {
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         {trackDetails.map((track) => (
-                            <a key={track.trackId} href={`/track/${track.id}`} className="group">
+                            <a key={track.trackId} href={`/track/${track.trackId}`} className="group">
                                 <div className="aspect-square mb-4">
                                     <img src={track.trackAlbumImageUrl || "/placeholder.svg"} alt={track.trackName} className="w-full h-full object-cover rounded-md" />
                                 </div>
