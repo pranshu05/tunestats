@@ -16,7 +16,12 @@ export default NextAuth({
                         "user-read-recently-played",
                         "user-top-read",
                         "user-library-read",
+                        "user-library-modify",
+                        "playlist-modify-public",
+                        "playlist-modify-private",
                         "user-read-email",
+                        "user-follow-read",
+                        "user-follow-modify"
                     ].join(" "),
                 },
             },
