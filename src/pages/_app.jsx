@@ -3,7 +3,6 @@ import Navbar from "@/components/(layout)/NavBar";
 import Footer from "@/components/(layout)/Footer";
 import '../styles/globals.css';
 
-
 export const metadata = {
     title: "TuneStats",
     description: "Display your Spotify activity in a unique way!",

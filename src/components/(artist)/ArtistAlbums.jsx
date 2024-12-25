@@ -46,7 +46,7 @@ export default function ArtistAlbums({ userId, artistId }) {
                         <div className="w-max min-w-full">
                             <div className="flex gap-4">
                                 {albums.map((album) => (
-                                    <a key={album.albumId} href={album.albumUrl} target="_blank" rel="noopener noreferrer" className="w-32 lg:w-36 group">
+                                    <a key={album.albumId} href={`/album/${album.albumId}`} className="w-32 lg:w-36 group">
                                         <div className="aspect-square mb-4"><img src={album.albumImageUrl || "/placeholder.svg"} alt={album.albumName} className="w-full h-full object-cover rounded-md" /></div>
                                         <div className="font-medium mb-1 truncate group-hover:text-green-400">{album.albumName}</div>
                                     </a>
@@ -57,7 +57,7 @@ export default function ArtistAlbums({ userId, artistId }) {
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         {albums.map((album) => (
-                            <a key={album.albumId} href={album.albumUrl} target="_blank" rel="noopener noreferrer" className="group">
+                            <a key={album.albumId} href={`/album/${album.albumId}`} className="group">
                                 <div className="aspect-square mb-4"><img src={album.albumImageUrl || "/placeholder.svg"} alt={album.albumName} className="w-full h-full object-cover rounded-md" /></div>
                                 <div className="font-medium mb-1 truncate group-hover:text-green-400">{album.albumName}</div>
                             </a>
