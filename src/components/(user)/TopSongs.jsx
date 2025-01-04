@@ -17,7 +17,7 @@ export default function TopSongs({ userId, viewMode, onViewModeChange }) {
     useEffect(() => {
         const fetchTopTracks = async () => {
             try {
-                const res = await fetch(`/api/top-tracks?userId=${userId}&timeRange=${timeRange}`);
+                const res = await fetch(`/api/getUserTopTracks?userId=${userId}&timeRange=${timeRange}`);
                 if (res.ok) {
                     const data = await res.json();
                     setTopTracks(data.topTracks);

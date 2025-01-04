@@ -43,16 +43,12 @@ export default function RecentSongs({ userId }) {
                     }
                 }
 
-                // Sort tracks by timestamp (latest to oldest)
                 trackEntries.sort((a, b) => b.timestamp - a.timestamp);
 
-                // Fetch detailed track information for each unique track
                 const detailedTracks = await Promise.all(
                     trackEntries.map(async ({ trackId, timestamp }) => {
                         const trackDetails = await fetchTrackDetails(userId, trackId);
-                        return trackDetails
-                            ? { ...trackDetails, timestamp }
-                            : null;
+                        return trackDetails ? { ...trackDetails, timestamp } : null;
                     })
                 );
 
@@ -76,27 +72,12 @@ export default function RecentSongs({ userId }) {
             <h3 className="text-xl font-bold mb-4">Recently Played</h3>
             <div className="space-y-4">
                 {recentSongs.map((recentSong, index) => (
-                    <a
-                        key={index}
-                        href={recentSong.url}
-                        className="flex items-center gap-4 p-2 rounded-lg hover:bg-zinc-800/50 transition-colors"
-                    >
-                        <img
-                            src={recentSong.image}
-                            alt={`Album cover for ${recentSong.title}`}
-                            className="w-12 h-12 rounded-md object-cover"
-                        />
+                    <a key={index} href={recentSong.url} className="flex items-center gap-4 p-2 rounded-lg hover:bg-zinc-800/50 transition-colors">
+                        <img src={recentSong.image} alt={`Album cover for ${recentSong.title}`} className="w-12 h-12 rounded-md object-cover" />
                         <div className="flex-grow min-w-0">
-                            <h4 className="text-sm font-semibold truncate">
-                                {recentSong.title}
-                            </h4>
-                            <p className="text-xs text-gray-400 truncate">
-                                {recentSong.artist}
-                            </p>
+                            <h4 className="text-sm font-semibold truncate">{recentSong.title}</h4>
+                            <p className="text-xs text-gray-400 truncate">{recentSong.artist}</p>
                         </div>
-                        <span className="text-xs text-gray-400">
-                            {new Date(recentSong.timestamp).toLocaleString()}
-                        </span>
                     </a>
                 ))}
             </div>

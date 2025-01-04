@@ -17,7 +17,7 @@ export default function TopArtists({ userId, viewMode, onViewModeChange }) {
     useEffect(() => {
         const fetchTopArtists = async () => {
             try {
-                const res = await fetch(`/api/top-artists?userId=${userId}&timeRange=${timeRange}`);
+                const res = await fetch(`/api/getUserTopArtistss?userId=${userId}&timeRange=${timeRange}`);
                 if (res.ok) {
                     const data = await res.json();
                     setTopArtists(data.topArtists);

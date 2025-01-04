@@ -14,7 +14,7 @@ export default function TopGenres({ userId }) {
     useEffect(() => {
         const fetchTopGenres = async () => {
             try {
-                const res = await fetch(`/api/top-genres?userId=${userId}&timeRange=${timeRange}`);
+                const res = await fetch(`/api/getUserTopGenres?userId=${userId}&timeRange=${timeRange}`);
                 if (res.ok) {
                     const data = await res.json();
                     setTopGenres(data.topGenres);

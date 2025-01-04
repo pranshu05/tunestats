@@ -13,7 +13,6 @@ export default function UserData({ session, user, userId }) {
             <img src={user.image === 'unknown' ? 'https://github.com/user-attachments/assets/bf57cb96-b259-4290-b35b-0ede9d618802' : user.image} alt={user.name} className="w-40 h-40 rounded-full object-cover" />
             <div className="flex-1 text-center md:text-left">
                 <h1 className="text-5xl font-bold mb-4">{user.name}</h1>
-                <p className="text-xl text-zinc-400 mb-6">{user.points || 0} TuneStats Points</p>
                 <div className="flex flex-wrap gap-3 justify-center md:justify-start">
                     {session?.user?.id === userId ? (
                         <>
