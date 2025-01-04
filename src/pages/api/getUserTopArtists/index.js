@@ -14,11 +14,10 @@ export default async function handler(req, res) {
         if (response.ok) {
             const data = await response.json();
             const topArtists = data.items.map((artist) => ({
-                id: artist.id,
-                name: artist.name,
-                genres: artist.genres.slice(0, 2).join(", "),
-                url: artist.external_urls.spotify,
-                image: artist.images[0]?.url,
+                artistId: artist.id,
+                artistName: artist.name,
+                artistGenres: artist.genres.slice(0, 2).join(", "),
+                artistImage: artist.images[0]?.url,
             }))
             res.status(200).json({ topArtists});
         } else {

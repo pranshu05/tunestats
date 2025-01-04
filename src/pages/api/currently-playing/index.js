@@ -20,7 +20,6 @@ export default async function handler(req, res) {
                 album: data.item.album.name,
                 image: data.item.album.images[0]?.url,
                 progressPercent: progressPercent,
-                songUrl: data.item.external_urls.spotify,
                 is_playing: data.is_playing,
             };
             res.status(200).json(currentlyPlaying);

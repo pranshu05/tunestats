@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, Grid } from 'lucide-react';
+import Loader from "../(layout)/Loader";
 
 export default function TopArtists({ userId, viewMode, onViewModeChange }) {
     const [topArtists, setTopArtists] = useState([]);
     const [timeRange, setTimeRange] = useState("short_term");
+    const [loading, setLoading] = useState(true);
 
     const timeRanges = [
         { value: 'short_term', label: 'Last 4 weeks' },
@@ -21,11 +23,13 @@ export default function TopArtists({ userId, viewMode, onViewModeChange }) {
                 if (res.ok) {
                     const data = await res.json();
                     setTopArtists(data.topArtists);
+                    setLoading(false);
                 } else {
                     console.error("Failed to fetch top artists");
                 }
             } catch (error) {
                 console.error("Error fetching top artists:", error);
+                setLoading(false);
             }
         };
 
@@ -46,38 +50,40 @@ export default function TopArtists({ userId, viewMode, onViewModeChange }) {
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => onViewModeChange(viewMode === 'grid' ? 'list' : 'grid')} className="rounded-full hover:bg-white/10">{viewMode === 'list' ? <LayoutGrid className="w-5 h-5" /> : <Grid className="w-5 h-5" />}</Button>
             </div>
-            {viewMode === 'list' ? (
-                <div className="overflow-x-auto">
-                    <div className="w-max min-w-full">
-                        <div className="flex gap-4">
-                            {topArtists.map((artist) => (
-                                <a key={artist.id} href={`/artist/${artist.id}`} className="w-32 lg:w-36 group">
-                                    <div className="aspect-square mb-4">
-                                        <img src={artist.image || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover rounded-full" />
-                                    </div>
-                                    <div>
-                                        <div className="font-medium mb-1 truncate group-hover:text-green-400">{artist.name}</div>
-                                        <div className="text-sm text-zinc-400 truncate">{artist.genres}</div>
-                                    </div>
-                                </a>
-                            ))}
+            {loading ? <Loader /> : (
+                viewMode === 'list' ? (
+                    <div className="overflow-x-auto">
+                        <div className="w-max min-w-full">
+                            <div className="flex gap-4">
+                                {topArtists.map((artist) => (
+                                    <a key={artist.artistId} href={`/artist/${artist.artistId}`} className="w-32 lg:w-36 group">
+                                        <div className="aspect-square mb-4">
+                                            <img src={artist.artistImage || "/placeholder.svg"} alt={artist.artistName} className="w-full h-full object-cover rounded-full" />
+                                        </div>
+                                        <div>
+                                            <div className="font-medium mb-1 truncate group-hover:text-green-400">{artist.artistName}</div>
+                                            <div className="text-sm text-zinc-400 truncate">{artist.artistGenres}</div>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
-            ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {topArtists.map((artist) => (
-                        <a key={artist.id} href={`/artist/${artist.id}`} className="group">
-                            <div className="aspect-square mb-4">
-                                <img src={artist.image || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover rounded-full" />
-                            </div>
-                            <div>
-                                <div className="font-medium mb-1 truncate group-hover:text-green-400">{artist.name}</div>
-                                <div className="text-sm text-zinc-400 truncate">{artist.genres}</div>
-                            </div>
-                        </a>
-                    ))}
-                </div>
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {topArtists.map((artist) => (
+                            <a key={artist.artistId} href={`/artist/${artist.artistId}`} className="group">
+                                <div className="aspect-square mb-4">
+                                    <img src={artist.artistImage || "/placeholder.svg"} alt={artist.artistName} className="w-full h-full object-cover rounded-full" />
+                                </div>
+                                <div>
+                                    <div className="font-medium mb-1 truncate group-hover:text-green-400">{artist.artistName}</div>
+                                    <div className="text-sm text-zinc-400 truncate">{artist.artistGenres}</div>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                )
             )}
         </div>
     );

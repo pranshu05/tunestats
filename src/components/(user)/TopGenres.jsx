@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Loader from "../(layout)/Loader";
 
 export default function TopGenres({ userId }) {
     const [topGenres, setTopGenres] = useState([]);
     const [timeRange, setTimeRange] = useState("short_term");
+    const [loading, setLoading] = useState(true);
 
     const timeRanges = [
         { value: 'short_term', label: 'Last 4 weeks' },
@@ -18,11 +20,13 @@ export default function TopGenres({ userId }) {
                 if (res.ok) {
                     const data = await res.json();
                     setTopGenres(data.topGenres);
+                    setLoading(false);
                 } else {
                     console.error("Failed to fetch top genres");
                 }
             } catch (error) {
                 console.error("Error fetching top genres:", error);
+                setLoading(false);
             }
         };
 
@@ -42,6 +46,7 @@ export default function TopGenres({ userId }) {
                     </Select>
                 </div>
             </div>
+            {loading && <Loader />}
             <div className="overflow-x-auto">
                 <div className="w-max min-w-full">
                     <div className="flex gap-4">

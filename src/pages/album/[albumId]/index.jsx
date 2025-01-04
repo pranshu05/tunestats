@@ -32,7 +32,7 @@ export default function AlbumPage({ albumId }) {
             {album ? (
                 <>
                     <AlbumInfo album={album} />
-                    <AlbumTracks tracks={album.tracks} userId={userId} />
+                    <AlbumTracks tracks={album.albumTracks} userId={userId} />
                 </>
             ) : (
                 <Loader />

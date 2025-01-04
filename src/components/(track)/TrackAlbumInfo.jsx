@@ -30,10 +30,10 @@ export default function TrackAlbumInfo({ userId, albumId }) {
             {album ? (
                 <div className="flex flex-col h-full justify-center items-center space-y-4">
                     <h1 className="text-2xl font-bold">Album Info</h1>
-                    <a href={`/album/${album.id}`} ><img src={album.imageUrl} alt={album.name} className="w-36 lg:w-48 rounded-md" /></a>
+                    <a href={`/album/${album.albumId}`} ><img src={album.albumImageUrl} alt={album.albumName} className="w-36 lg:w-48 rounded-md" /></a>
                     <div className="flex-col justify-center items-center text-center space-y-1">
-                        <h1 className="text-xl font-bold">{album.name}</h1>
-                        <a href={album.spotifyUrl} target="_blank" rel="noopener noreferrer"><p className="w-fit p-2 mx-auto rounded-md bg-zinc-800/50 mt-2">Listen on Spotify</p></a>
+                        <h1 className="text-xl font-bold">{album.albumName}</h1>
+                        <a href={album.albumSpotifyUrl} target="_blank" rel="noopener noreferrer"><p className="w-fit p-2 mx-auto rounded-md bg-zinc-800/50 mt-2">Listen on Spotify</p></a>
                     </div>
                 </div>
             ) : (

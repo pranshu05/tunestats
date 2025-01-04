@@ -18,19 +18,19 @@ export default async function handler(req, res) {
         });
 
         const albumDetails = {
-            id: albumResponse.data.id,
-            name: albumResponse.data.name,
-            artists: albumResponse.data.artists.map((artist) => ({
+            albumId: albumResponse.data.id,
+            albumName: albumResponse.data.name,
+            albumArtists: albumResponse.data.artists.map((artist) => ({
                 id: artist.id,
                 name: artist.name,
             })),
-            popularity: albumResponse.data.popularity,
-            imageUrl: albumResponse.data.images[0]?.url || "",
-            releaseDate: albumResponse.data.release_date,
-            totalTracks: albumResponse.data.total_tracks,
-            totalDuration: albumResponse.data.tracks.items.reduce((acc, track) => acc + track.duration_ms, 0),
-            spotifyUrl: albumResponse.data.external_urls.spotify,
-            tracks: albumResponse.data.tracks.items.map((track) => ({
+            albumPopularity: albumResponse.data.popularity,
+            albumImageUrl: albumResponse.data.images[0]?.url || "",
+            albumReleaseDate: albumResponse.data.release_date,
+            albumTotalTracks: albumResponse.data.total_tracks,
+            albumTotalDuration: albumResponse.data.tracks.items.reduce((acc, track) => acc + track.duration_ms, 0),
+            albumSpotifyUrl: albumResponse.data.external_urls.spotify,
+            albumTracks: albumResponse.data.tracks.items.map((track) => ({
                 id: track.id,
                 name: track.name,
             })),
