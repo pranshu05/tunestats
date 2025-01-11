@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import Loader from "../(layout)/Loader";
 import ReactPaginate from "react-paginate";
@@ -10,9 +10,9 @@ export default function RecentSongs({ userId }) {
     const [recentSongs, setRecentSongs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
+    const [totalSongs, setTotalSongs] = useState(0);
 
-    const songsPerPage = 15; 
-    const pageCount = Math.ceil(recentSongs.length / songsPerPage);
+    const songsPerPage = 15;
 
     const fetchTrackDetails = async (userId, trackId) => {
         try {
@@ -36,12 +36,15 @@ export default function RecentSongs({ userId }) {
         }
     };
 
-    useEffect(() => {
-        const userRef = doc(db, "recentlyPlayed", userId);
+    const fetchRecentSongs = async (pageNumber) => {
+        setLoading(true);
 
-        const unsubscribe = onSnapshot(userRef, async (docSnapshot) => {
-            if (docSnapshot.exists()) {
-                const data = docSnapshot.data();
+        try {
+            const userRef = doc(db, "recentlyPlayed", userId);
+            const userSnapshot = await getDoc(userRef);
+
+            if (userSnapshot.exists()) {
+                const data = userSnapshot.data();
                 const trackEntries = [];
 
                 for (const [trackId, trackInfo] of Object.entries(data)) {
@@ -52,32 +55,40 @@ export default function RecentSongs({ userId }) {
 
                 trackEntries.sort((a, b) => b.timestamp - a.timestamp);
 
+                setTotalSongs(trackEntries.length);
+
+                const start = pageNumber * songsPerPage;
+                const end = start + songsPerPage;
+
                 const detailedTracks = await Promise.all(
-                    trackEntries.map(async ({ trackId, timestamp }) => {
+                    trackEntries.slice(start, end).map(async ({ trackId, timestamp }) => {
                         const trackDetails = await fetchTrackDetails(userId, trackId);
                         return trackDetails ? { ...trackDetails, timestamp } : null;
                     })
                 );
 
                 setRecentSongs(detailedTracks.filter(Boolean));
-                setLoading(false);
             } else {
+                console.error("No recent songs found for user");
                 setRecentSongs([]);
-                setLoading(false);
+                setTotalSongs(0);
             }
-        });
+        } catch (error) {
+            console.error("Error fetching recent songs:", error);
+        }
 
-        return () => unsubscribe();
-    }, [userId]);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchRecentSongs(currentPage);
+    }, [userId, currentPage]);
 
     const handlePageClick = ({ selected }) => {
         setCurrentPage(selected);
     };
 
-    const displaySongs = recentSongs.slice(
-        currentPage * songsPerPage,
-        (currentPage + 1) * songsPerPage
-    );
+    const pageCount = Math.ceil(totalSongs / songsPerPage);
 
     return (
         <div className="bg-zinc-900/50 rounded-md p-4 shadow-lg">
@@ -87,9 +98,9 @@ export default function RecentSongs({ userId }) {
             ) : (
                 <div>
                     <div className="space-y-2">
-                        {displaySongs.map((recentSong, index) => (
-                            <a key={index}href={`/track/${recentSong.id}`}className="flex items-center gap-4 p-2 rounded-lg hover:bg-zinc-800/50 transition-colors">
-                                <img src={recentSong.image}alt={`Album cover for ${recentSong.title}`}className="w-12 h-12 rounded-md object-cover"/>
+                        {recentSongs.map((recentSong, index) => (
+                            <a key={index} href={`/track/${recentSong.id}`} className="flex items-center gap-4 p-2 rounded-lg hover:bg-zinc-800/50 transition-colors">
+                                <img src={recentSong.image} alt={`Album cover for ${recentSong.title}`} className="w-12 h-12 rounded-md object-cover" />
                                 <div className="flex-grow min-w-0">
                                     <h4 className="text-sm font-semibold truncate">{recentSong.title}</h4>
                                     <p className="text-xs text-gray-400 truncate">{recentSong.artist}</p>
@@ -108,8 +119,9 @@ export default function RecentSongs({ userId }) {
                         containerClassName={"pagination flex items-center justify-center mt-4 gap-4"}
                         previousClassName={"p-2 bg-zinc-800 rounded-md"}
                         nextClassName={"p-2 bg-zinc-800 rounded-md"}
-                        activeClassName={"py-1 px-2 bg-zinc-800 rounded-md text-white aspact-sqaure"}
+                        activeClassName={"py-1 px-2 bg-zinc-800 rounded-md text-white"}
                         disabledClassName={"p-2 text-gray-500"}
+                        forcePage={currentPage}
                     />
                 </div>
             )}
