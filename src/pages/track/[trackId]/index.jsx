@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Loader from "@/components/(layout)/Loader";
+import UserTrackStats from "@/components/(track)/UserTrackStats";
 import TrackStats from "@/components/(track)/TrackStats";
 import TrackAlbumInfo from "@/components/(track)/TrackAlbumInfo";
 import TrackArtistInfo from "@/components/(track)/TrackArtistInfo";
@@ -42,6 +43,7 @@ export default function TrackPage({ trackId }) {
                             </div>
                         </div>
                     </div>
+                    {session?.user?.id && <UserTrackStats trackId={trackId} userId={userId} />}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                         <TrackStats track={track} />
                         <TrackAlbumInfo userId={userId} albumId={track.trackAlbumId} />

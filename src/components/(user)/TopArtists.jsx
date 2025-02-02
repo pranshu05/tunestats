@@ -7,13 +7,13 @@ import Loader from "../(layout)/Loader";
 
 export default function TopArtists({ userId, viewMode, onViewModeChange }) {
     const [topArtists, setTopArtists] = useState([]);
-    const [timeRange, setTimeRange] = useState("short_term");
+    const [timeRange, setTimeRange] = useState("week");
     const [loading, setLoading] = useState(true);
 
     const timeRanges = [
-        { value: 'short_term', label: 'Last 4 weeks' },
-        { value: 'medium_term', label: 'Last 6 months' },
-        { value: 'long_term', label: 'All time' }
+        { value: 'week', label: 'Last week' },
+        { value: 'month', label: 'Last month' },
+        { value: 'year', label: 'Last Year' }
     ];
 
     useEffect(() => {

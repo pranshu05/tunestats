@@ -7,13 +7,13 @@ import Loader from "../(layout)/Loader";
 
 export default function TopSongs({ userId, viewMode, onViewModeChange }) {
     const [topTracks, setTopTracks] = useState([]);
-    const [timeRange, setTimeRange] = useState("short_term");
+    const [timeRange, setTimeRange] = useState("week");
     const [loading, setLoading] = useState(true);
 
     const timeRanges = [
-        { value: 'short_term', label: 'Last 4 weeks' },
-        { value: 'medium_term', label: 'Last 6 months' },
-        { value: 'long_term', label: 'All time' }
+        { value: 'week', label: 'Last Week' },
+        { value: 'month', label: 'Last Month' },
+        { value: 'year', label: 'Last Year' }
     ];
 
     useEffect(() => {
