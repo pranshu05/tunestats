@@ -28,7 +28,7 @@ export default function SharedTracks({ tracks }: SharedTracksProps) {
             <h3 className="text-xl font-semibold mb-4">Top Shared Tracks</h3>
             <ul className="space-y-3">
                 {tracks.map((track) => (
-                    <li key={track.trackId} className="flex items-center p-3 bg-black border border-white rounded-lg">
+                    <a href={`/track/${track.trackId}`} key={track.trackId} className="flex items-center p-3 bg-black border border-white rounded-lg">
                         <div className="w-10 h-10 bg-black border border-white rounded-full flex items-center justify-center mr-3">
                             <BiMusic className="w-5 h-5 text-purple-800" />
                         </div>
@@ -36,7 +36,7 @@ export default function SharedTracks({ tracks }: SharedTracksProps) {
                             <p className="font-medium">{track.name}</p>
                             <p className="text-sm text-gray-300">{track.artistName}</p>
                         </div>
-                    </li>
+                    </a>
                 ))}
             </ul>
         </div>

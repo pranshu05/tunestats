@@ -27,14 +27,14 @@ export default function SharedArtists({ artists }: SharedArtistsProps) {
             <h3 className="text-xl font-semibold mb-4">Top Shared Artists</h3>
             <ul className="space-y-3">
                 {artists.map((artist) => (
-                    <li key={artist.artistId} className="flex items-center p-3 bg-black border border-white rounded-lg">
+                    <a href={`/artist/${artist.artistId}`} key={artist.artistId} className="flex items-center p-3 bg-black border border-white rounded-lg">
                         <div className="w-10 h-10 bg-black border border-white rounded-full flex items-center justify-center mr-3">
                             <span className="text-indigo-800 font-bold">{artist.name.charAt(0).toUpperCase()}</span>
                         </div>
                         <div>
                             <p className="font-medium">{artist.name}</p>
                         </div>
-                    </li>
+                    </a>
                 ))}
             </ul>
         </div>
