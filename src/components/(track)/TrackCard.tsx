@@ -15,9 +15,12 @@ interface Track {
 
 export default function TrackCard({ trackId }: { trackId: string }) {
     const { data: track, error } = useSWR<Track>(`/api/track/${trackId}`, fetcher);
+    const { data: playcount, error: playcountError } = useSWR<{ playcount: string }>(`/api/track/${trackId}/playcount`, fetcher);
 
+    if (playcountError) return <FetchError />;
     if (error) return <FetchError />;
     if (!track) return <FetchLoader />;
+    if (!playcount) return <FetchLoader />;
 
     return (
         <div className="border border-white bg-black rounded-md p-4 flex flex-col md:flex-row gap-4 w-full">
@@ -26,6 +29,7 @@ export default function TrackCard({ trackId }: { trackId: string }) {
                 <h1 className="text-2xl font-bold mb-1">{track.name}</h1>
                 <p className="text-sm text-gray-400">Duration: {Math.floor(track.duration / 1000 / 60)}:{String(track.duration % 60).padStart(2, "0")} mins</p>
                 <p className="text-sm text-gray-400">Popularity: {track.popularity}</p>
+                <p className="text-sm text-gray-400">Global Playcount: {playcount.playcount}</p>
             </div>
         </div>
     );

@@ -17,9 +17,12 @@ interface Album {
 
 export default function AlbumCard({ albumId }: { albumId: string }) {
     const { data: album, error } = useSWR<Album>(`/api/album/${albumId}`, fetcher);
+    const { data: playcount, error: playcountError } = useSWR<{ playcount: string }>(`/api/album/${albumId}/playcount`, fetcher);
 
     if (error) return <FetchError />;
+    if (playcountError) return <FetchError />;
     if (!album) return <FetchLoader />;
+    if (!playcount) return <FetchLoader />;
 
     return (
         <div className="p-4 space-y-4 text-white">
@@ -30,6 +33,7 @@ export default function AlbumCard({ albumId }: { albumId: string }) {
                     <p className="text-zinc-400">by {album.artistName}</p>
                     <p className="text-zinc-500 text-sm">Released: {album.releaseDate}</p>
                     <p className="text-zinc-500 text-sm">Total Tracks: {album.totalTracks}</p>
+                    <p className="text-zinc-500 text-sm">Global Playcount: {playcount.playcount}</p>
                 </div>
             </div>
         </div>
