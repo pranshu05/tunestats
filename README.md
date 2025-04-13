@@ -52,15 +52,11 @@ Make sure you have the following installed:
 4. **Set Up Environment Variables**
    Create a `.env` file in the root directory and configure the following environment variables:
    ```env
-    SPOTIFY_CLIENT_SECRET = 
-    SPOTIFY_CLIENT_ID = 
-    FIREBASE_API_KEY = 
-    FIREBASE_AUTH_DOMAIN = 
-    FIREBASE_PROJECT_ID = 
-    FIREBASE_STORAGE_BUCKET = 
-    FIREBASE_MESSAGING_SENDER_ID = 
-    FIREBASE_APP_ID = 
-    NEXTAUTH_URL = 
+   SPOTIFY_CLIENT_ID=`your_spotify_client_id`
+   SPOTIFY_CLIENT_SECRET=`your_spotify_client_secret`
+   NEXTAUTH_SECRET=`your_nextauth_secret`
+   NEXTAUTH_URL=`http://localhost:3000`
+   DATABASE_URL=`your_database_url`(neon db)
    ```
 
 5. **Run the Development Server**
