@@ -117,18 +117,18 @@ export default function MusicMatchPage() {
     return (
         <div className="bg-[#121212] text-white font-sans mx-auto px-4 py-8 space-y-8">
             <h1 className="text-3xl font-bold mb-8 text-[#e6d2c0]">Your Music Matches</h1>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div className="md:col-span-1"><FriendList friends={friends} selectedFriend={selectedFriend} onSelectFriend={(friend: FriendMatch) => setSelectedFriend(friend)} /></div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="lg:col-span-1"><FriendList friends={friends} selectedFriend={selectedFriend} onSelectFriend={(friend: FriendMatch) => setSelectedFriend(friend)} /></div>
                 {selectedFriend && (
-                    <div className="md:col-span-3 space-y-8">
-                        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
+                    <div className="lg:col-span-3 space-y-8">
+                        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
                             <h2 className="text-2xl font-semibold mb-6 text-[#e6d2c0]">Your Music Match with {selectedFriend.friendInfo.name}</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                <div className="md:col-span-1"><CompatibilityScore score={selectedFriend.compatibilityScore} /></div>
-                                <div className="md:col-span-2"><StatsSummary stats={selectedFriend.stats} /></div>
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div className="lg:col-span-1"><CompatibilityScore score={selectedFriend.compatibilityScore} /></div>
+                                <div className="lg:col-span-2"><StatsSummary stats={selectedFriend.stats} /></div>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <SharedArtists artists={selectedFriend.topSharedArtists} />
                             <SharedTracks tracks={selectedFriend.topSharedTracks} />
                         </div>

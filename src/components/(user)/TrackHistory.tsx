@@ -23,20 +23,22 @@ export default function TrackHistory({ userId }: { userId: string }) {
     if (!data) return <FetchLoader />
 
     return (
-        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
-            <div className="flex items-center gap-2 mb-6">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
+            <div className="flex items-center gap-2 mb-2 lg:mb-4 ">
                 <History className="text-[#c38e70]" />
                 <h3 className="text-xl font-bold text-[#e6d2c0]">Listening History</h3>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 lg:space-y-3">
                 {data.tracks.map((t: Track) => (
-                    <a href={`/track/${t.trackId}`}key={t.trackId}className="bg-[#2a211c] hover:bg-[#342820] transition-colors rounded-lg p-3 flex items-center gap-4">
+                    <a href={`/track/${t.trackId}`} key={t.trackId} className="bg-[#2a211c] hover:bg-[#342820] transition-colors rounded-lg p-2 lg:p-3 flex items-center gap-4">
                         <div className="bg-[#e6d2c0] p-1.5 rounded">
-                            <img alt={t.trackName}src={t.imageUrl || "/placeholder.svg"}className="w-12 h-12 object-cover rounded"/>
+                            <div className="aspect-square">
+                                <img alt={t.trackName} src={t.imageUrl || "/placeholder.svg"} className="w-12 h-auto object-cover rounded" />
+                            </div>
                         </div>
                         <div>
-                            <p className="font-medium text-[#e6d2c0]">{t.trackName}</p>
-                            <p className="text-sm text-[#a18072]">{t.artistName}</p>
+                            <p className="font-medium text-[#e6d2c0] line-clamp-1" title={t.trackName}>{t.trackName.length > 30 ? `${t.trackName.slice(0, 30)}...` : t.trackName}</p>
+                            <p className="text-sm text-[#a18072] line-clamp-1">{t.artistName}</p>
                         </div>
                     </a>
                 ))}

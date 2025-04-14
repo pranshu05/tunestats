@@ -33,18 +33,16 @@ export default function ArtistTracks({ artistId }: { artistId: string }) {
     }
 
     return (
-        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
-            <div className="flex items-center gap-2 mb-6">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
+            <div className="flex items-center gap-2 mb-2 lg:mb-4">
                 <Music className="text-[#c38e70]" />
                 <h2 className="text-xl font-bold text-[#e6d2c0]">Popular Tracks</h2>
             </div>
             <div className="relative">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10">
-                    <button onClick={scrollLeft} className="p-2 rounded-full bg-[#2a211c] text-[#e6d2c0] hover:bg-[#3d2e23] shadow-lg"><ChevronLeft size={20} /></button>
-                </div>
-                <div ref={(el) => { scrollContainerRef[0] = el; }} className="flex gap-5 overflow-x-auto pb-4 px-2 hide-scrollbar snap-x snap-mandatory">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10"><button onClick={scrollLeft} className="p-2 rounded-full bg-[#2a211c] text-[#e6d2c0] hover:bg-[#3d2e23] shadow-lg"><ChevronLeft size={20} /></button></div>
+                <div ref={(el) => { scrollContainerRef[0] = el; }} className="flex gap-2 lg:gap-5 overflow-x-auto px-2 hide-scrollbar snap-x snap-mandatory">
                     {tracks.map((track) => (
-                        <a href={`/track/${track.trackId}`} key={track.trackId} className="snap-start flex-shrink-0 w-[220px] group">
+                        <a href={`/track/${track.trackId}`} key={track.trackId} className="snap-start flex-shrink-0 w-[150px] lg:w-[220px] group">
                             <div className="bg-[#2a211c] rounded-lg p-3 transform transition-transform group-hover:-translate-y-1 shadow-md hover:shadow-lg">
                                 <div className="relative mb-3 bg-[#e6d2c0] p-2 rounded">
                                     <img src={track.imageUrl || "/placeholder.svg"} alt={track.name} className="w-full aspect-square object-cover rounded" />

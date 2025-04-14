@@ -19,7 +19,7 @@ export default function TrackAlbum({ trackId }: { trackId: string }) {
     if (!album) return <FetchLoader />
 
     return (
-        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex items-center gap-2 mb-4">
                 <Disc className="text-[#c38e70]" />
                 <h2 className="text-xl font-bold text-[#e6d2c0]">Album</h2>

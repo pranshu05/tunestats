@@ -29,15 +29,15 @@ export default function TrackCard({ trackId }: { trackId: string }) {
     const formattedPlaycount = Number.parseInt(playcount.playcount).toLocaleString()
 
     return (
-        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-                <div className="bg-[#e6d2c0] p-3 rounded md:w-48 md:h-48 flex-shrink-0">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
+            <div className="flex flex-col lg:flex-row gap-6 lg:items-center">
+                <div className="bg-[#e6d2c0] p-3 rounded lg:w-48 lg:h-48 flex-shrink-0">
                     <img src={track.imageUrl || "/placeholder.svg"} alt={track.name} className="w-full h-full object-cover rounded" />
                 </div>
                 <div className="flex flex-col justify-between flex-grow">
                     <div>
-                        <h1 className="text-3xl font-bold text-[#e6d2c0] mb-2">{track.name}</h1>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <h1 className="text-xl lg:text-3xl font-bold text-[#e6d2c0] mb-2">{track.name}</h1>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
                             <div className="flex items-center gap-2 text-[#a18072]">
                                 <Clock size={18} className="text-[#c38e70]" />
                                 <span className="text-[#e6d2c0]">{formattedDuration}</span>

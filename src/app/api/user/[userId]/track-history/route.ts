@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/auth";
 import { sql } from "@/utils/db";
 
 const PAGE_SIZE = 10;
@@ -10,17 +8,13 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
     const page = parseInt(searchParams.get('page') || '0');
     const offset = page * PAGE_SIZE;
 
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id)
-        return new NextResponse("Unauthorized", { status: 401 });
-
     if (!params) {
         return new NextResponse("Missing query parameters", { status: 400 });
     }
 
     try {
         const tracks = await sql`
-            SELECT th."timestamp", t."name" AS "trackName", a."name" AS "artistName", al."imageUrl"
+            SELECT th."timestamp", t."name" AS "trackName", t."trackId" AS "trackId", a."name" AS "artistName", al."imageUrl"
             FROM "trackHistory" th
             JOIN "tracks" t ON th."trackId" = t."trackId"
             JOIN "artists" a ON th."artistId" = a."artistId"

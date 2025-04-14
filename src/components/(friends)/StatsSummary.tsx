@@ -21,12 +21,12 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
     const artistPercentage = calculatePercentage(stats.sharedArtists, stats.totalUniqueArtists)
 
     return (
-        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
-            <div className="flex items-center gap-2 mb-6">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
+            <div className="flex items-center gap-2 mb-2 lg:mb-4">
                 <BarChart3 className="text-[#c38e70]" />
                 <h3 className="text-xl font-bold text-[#e6d2c0]">Listening Stats (Past Week)</h3>
             </div>
-            <div className="space-y-6">
+            <div className="space-y-3 lg:space-y-6">
                 <div>
                     <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center">

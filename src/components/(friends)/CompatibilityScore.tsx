@@ -35,8 +35,8 @@ export default function CompatibilityScore({ score }: CompatibilityScoreProps) {
     }
 
     return (
-        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg text-center">
-            <div className="flex items-center gap-2 mb-6 justify-center">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg text-center">
+            <div className="flex items-center gap-2 mb-2 lg:mb-4 justify-center">
                 <Percent className="text-[#c38e70]" />
                 <h3 className="text-xl font-bold text-[#e6d2c0]">Compatibility</h3>
             </div>

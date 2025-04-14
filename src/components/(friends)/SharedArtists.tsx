@@ -12,7 +12,7 @@ interface SharedArtistsProps {
 export default function SharedArtists({ artists }: SharedArtistsProps) {
     if (artists.length === 0) {
         return (
-            <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
+            <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
                 <div className="flex items-center gap-2 mb-4">
                     <Users className="text-[#c38e70]" />
                     <h3 className="text-xl font-bold text-[#e6d2c0]">Shared Artists</h3>
@@ -26,7 +26,7 @@ export default function SharedArtists({ artists }: SharedArtistsProps) {
     }
 
     return (
-        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex items-center gap-2 mb-4">
                 <Users className="text-[#c38e70]" />
                 <h3 className="text-xl font-bold text-[#e6d2c0]">Top Shared Artists</h3>

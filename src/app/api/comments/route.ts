@@ -8,10 +8,6 @@ export async function GET(req: NextRequest) {
     const entityId = searchParams.get('entityId');
     const entityType = searchParams.get('entityType');
 
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id)
-        return new NextResponse("Unauthorized", { status: 401 });
-
     if (!entityId || !entityType) {
         return new NextResponse("Missing query parameters", { status: 400 });
     }

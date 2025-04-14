@@ -14,7 +14,7 @@ interface SharedTracksProps {
 export default function SharedTracks({ tracks }: SharedTracksProps) {
     if (tracks.length === 0) {
         return (
-            <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
+            <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
                 <div className="flex items-center gap-2 mb-4">
                     <Music className="text-[#c38e70]" />
                     <h3 className="text-xl font-bold text-[#e6d2c0]">Shared Tracks</h3>
@@ -28,7 +28,7 @@ export default function SharedTracks({ tracks }: SharedTracksProps) {
     }
 
     return (
-        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex items-center gap-2 mb-4">
                 <Music className="text-[#c38e70]" />
                 <h3 className="text-xl font-bold text-[#e6d2c0]">Top Shared Tracks</h3>
