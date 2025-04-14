@@ -24,12 +24,13 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
 
     try {
         const result = await sql`
-            SELECT t."trackId", t."name", a."imageUrl" AS "albumImage", COUNT(*) AS "playCount"
+            SELECT t."trackId", t."name", a."imageUrl" AS "albumImage", COUNT(*) AS "playCount", ar.name AS "artistName"
             FROM "trackHistory" th
             JOIN "tracks" t ON th."trackId" = t."trackId"
             JOIN "albums" a ON t."albumId" = a."albumId"
+            JOIN "artists" ar ON a."artistId" = ar."artistId"
             WHERE th."userId" = ${params.userId} AND th."timestamp" >= NOW() - ${sql.unsafe(`INTERVAL '${days} days'`)}
-            GROUP BY t."trackId", t."name", a."imageUrl"
+            GROUP BY t."trackId", t."name", a."imageUrl", ar.name
             ORDER BY "playCount" DESC
             LIMIT 50
         `;

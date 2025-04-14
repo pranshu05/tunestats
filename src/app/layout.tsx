@@ -13,12 +13,10 @@ export const metadata = {
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
     return (
         <html lang="en">
-            <body className={`${inter.className} antialiased min-h-screen bg-black text-white flex flex-col`}>
+            <body className={`${inter.className} antialiased min-h-screen flex flex-col`}>
                 <Providers>
                     <Navbar />
-                    <div className="flex-1">
-                        {children}
-                    </div>
+                    <div className="flex-1">{children}</div>
                 </Providers>
             </body>
         </html>

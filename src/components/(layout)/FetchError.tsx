@@ -1,11 +1,11 @@
-import { CiWarning } from "react-icons/ci";
+import { AlertTriangle } from "lucide-react"
 
 export default function FetchError() {
     return (
-        <div className="flex flex-col items-center text-center p-8">
-            <div className="text-4xl"><CiWarning /></div>
-            <h2 className="mt-4 text-lg font-semibold">Something went wrong</h2>
-            <p className="mt-2 text-gray-600">Error fetching the data. Please try again later.</p>
+        <div className="flex flex-col items-center justify-center p-8 rounded-lg bg-[#1e1814] border border-red-500">
+            <AlertTriangle className="h-8 w-8 text-red-500 mb-2" />
+            <p className="font-medium text-red-500">Failed to load data</p>
+            <p className="text-sm text-[#a18072] mt-2">Please try refreshing the page</p>
         </div>
-    );
+    )
 }

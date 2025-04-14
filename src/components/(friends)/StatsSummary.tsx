@@ -1,5 +1,4 @@
-import { FaUsers } from "react-icons/fa"
-import { BiMusic } from "react-icons/bi"
+import { Music, Users, BarChart3 } from "lucide-react"
 
 interface Stats {
     sharedTracks: number
@@ -22,42 +21,45 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
     const artistPercentage = calculatePercentage(stats.sharedArtists, stats.totalUniqueArtists)
 
     return (
-        <div className="space-y-6">
-            <h3 className="text-xl font-semibold mb-4">Listening Stats (Past Week)</h3>
-            <div className="space-y-4">
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-6 shadow-lg">
+            <div className="flex items-center gap-2 mb-6">
+                <BarChart3 className="text-[#c38e70]" />
+                <h3 className="text-xl font-bold text-[#e6d2c0]">Listening Stats (Past Week)</h3>
+            </div>
+            <div className="space-y-6">
                 <div>
-                    <div className="flex justify-between items-center mb-1">
+                    <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center">
-                            <BiMusic className="w-4 h-4 mr-2" />
-                            <span className="text-sm font-medium">Shared Tracks</span>
+                            <Music className="w-4 h-4 mr-2 text-[#c38e70]" />
+                            <span className="text-sm font-medium text-[#e6d2c0]">Shared Tracks</span>
                         </div>
-                        <span className="text-sm font-medium">{stats.sharedTracks} of {stats.totalUniqueTracks}</span>
+                        <span className="text-sm font-medium text-[#e6d2c0]">{stats.sharedTracks} of {stats.totalUniqueTracks}</span>
                     </div>
-                    <div className="w-full bg-black border border-white rounded-full h-2">
-                        <div className="bg-blue-500 rounded-full h-2 transition-all duration-700" style={{ width: `${trackPercentage}%` }}></div>
+                    <div className="w-full bg-[#2a211c] rounded-full h-2.5">
+                        <div className="bg-[#c38e70] rounded-full h-2.5 transition-all duration-700" style={{ width: `${trackPercentage}%` }}></div>
                     </div>
                 </div>
                 <div>
-                    <div className="flex justify-between items-center mb-1">
+                    <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center">
-                            <FaUsers className="w-4 h-4 mr-2" />
-                            <span className="text-sm font-medium">Shared Artists</span>
+                            <Users className="w-4 h-4 mr-2 text-[#c38e70]" />
+                            <span className="text-sm font-medium text-[#e6d2c0]">Shared Artists</span>
                         </div>
-                        <span className="text-sm font-medium">{stats.sharedArtists} of {stats.totalUniqueArtists}</span>
+                        <span className="text-sm font-medium text-[#e6d2c0]">{stats.sharedArtists} of {stats.totalUniqueArtists}</span>
                     </div>
-                    <div className="w-full bg-black border border-white rounded-full h-2">
-                        <div className="bg-purple-500 rounded-full h-2 transition-all duration-700" style={{ width: `${artistPercentage}%` }}></div>
+                    <div className="w-full bg-[#2a211c] rounded-full h-2.5">
+                        <div className="bg-[#c38e70] rounded-full h-2.5 transition-all duration-700" style={{ width: `${artistPercentage}%` }}></div>
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 bg-black border border-white p-4 rounded-lg">
-                <div className="text-center">
-                    <p className="text-sm text-gray-300">Shared Tracks</p>
-                    <p className="text-xl font-bold">{stats.sharedTracks}</p>
+            <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="text-center p-4 bg-[#2a211c] rounded-lg">
+                    <p className="text-sm text-[#a18072] mb-1">Shared Tracks</p>
+                    <p className="text-2xl font-bold text-[#e6d2c0]">{stats.sharedTracks}</p>
                 </div>
-                <div className="text-center">
-                    <p className="text-sm text-gray-300">Shared Artists</p>
-                    <p className="text-xl font-bold">{stats.sharedArtists}</p>
+                <div className="text-center p-4 bg-[#2a211c] rounded-lg">
+                    <p className="text-sm text-[#a18072] mb-1">Shared Artists</p>
+                    <p className="text-2xl font-bold text-[#e6d2c0]">{stats.sharedArtists}</p>
                 </div>
             </div>
         </div>

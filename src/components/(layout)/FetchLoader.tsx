@@ -1,9 +1,10 @@
-import { ImSpinner2 } from "react-icons/im";
+import { Loader2 } from "lucide-react"
 
 export default function FetchLoader() {
     return (
-        <div className="flex items-center justify-center min-h-24">
-            <ImSpinner2 className="animate-spin text-gray-500 text-4xl" />
+        <div className="flex flex-col items-center justify-center p-8 rounded-lg bg-[#1e1814] border border-[#3d2e23]">
+            <Loader2 className="h-8 w-8 animate-spin text-[#c38e70] mb-2" />
+            <p className="font-medium text-[#e6d2c0]">Loading...</p>
         </div>
-    );
-};
+    )
+}
