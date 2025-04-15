@@ -4,6 +4,7 @@ import RatingComponent from "@/components/(ratings)/RatingComponent"
 import ArtistCard from "@/components/(artist)/ArtistCard"
 import ArtistAlbums from "@/components/(artist)/ArtistAlbums"
 import ArtistTracks from "@/components/(artist)/ArtistTracks"
+import TopListeners from "@/components/(layout)/TopListeners"
 
 export default function ArtistPage({ params }: { params: { artistId: string } }) {
     return (
@@ -12,6 +13,7 @@ export default function ArtistPage({ params }: { params: { artistId: string } })
             <ArtistAlbums artistId={params.artistId} />
             <ArtistTracks artistId={params.artistId} />
             <RatingComponent entityId={params.artistId} entityType="artist" />
+            <TopListeners entityId={params.artistId} entityType="artist" />
             <CommentSection entityId={params.artistId} entityType="artist" />
         </div>
     )
