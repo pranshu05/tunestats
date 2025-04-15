@@ -44,6 +44,7 @@ export default function TrackHistory({ userId }: { userId: string }) {
                 ))}
             </div>
             <ReactPaginate
+                forcePage={page}
                 pageCount={data.totalPages}
                 onPageChange={({ selected }) => setPage(selected)}
                 containerClassName="flex items-center justify-center gap-2 mt-6"
