@@ -26,59 +26,64 @@ export async function GET() {
         for (const friend of friends) {
             const friendId = friend.friend_id;
 
+            const userTracks = sql`
+                SELECT "trackId", COUNT(*) as play_count
+                FROM "trackHistory"
+                WHERE "userId" = ${session.user.id}
+                AND "timestamp" >= ${oneWeekAgo.toISOString()}
+                GROUP BY "trackId"
+            `;
+
+            const friendTracks = sql`
+                SELECT "trackId", COUNT(*) as play_count
+                FROM "trackHistory"
+                WHERE "userId" = ${friendId}
+                AND "timestamp" >= ${oneWeekAgo.toISOString()}
+                GROUP BY "trackId"
+            `;
+
+            const userArtists = sql`
+                SELECT "artistId", COUNT(*) as listen_count
+                FROM "trackHistory"
+                WHERE "userId" = ${session.user.id}
+                AND "timestamp" >= ${oneWeekAgo.toISOString()}
+                GROUP BY "artistId"
+            `;
+
+            const friendArtists = sql`
+                SELECT "artistId", COUNT(*) as listen_count
+                FROM "trackHistory"
+                WHERE "userId" = ${friendId}
+                AND "timestamp" >= ${oneWeekAgo.toISOString()}
+                GROUP BY "artistId"
+            `;
+
             const compatibilityResult = await sql`
-                WITH user_tracks AS (
-                    SELECT "trackId", COUNT(*) as play_count
-                    FROM "trackHistory"
-                    WHERE "userId" = ${session.user.id}
-                    AND "timestamp" >= ${oneWeekAgo.toISOString()}
-                    GROUP BY "trackId"
-                ),
-                friend_tracks AS (
-                    SELECT "trackId", COUNT(*) as play_count
-                    FROM "trackHistory"
-                    WHERE "userId" = ${friendId}
-                    AND "timestamp" >= ${oneWeekAgo.toISOString()}
-                    GROUP BY "trackId"
-                ),
-                user_artists AS (
-                    SELECT "artistId", COUNT(*) as listen_count
-                    FROM "trackHistory" 
-                    WHERE "userId" = ${session.user.id}
-                    AND "timestamp" >= ${oneWeekAgo.toISOString()}
-                    GROUP BY "artistId"
-                ),
-                friend_artists AS (
-                    SELECT "artistId", COUNT(*) as listen_count
-                    FROM "trackHistory"
-                    WHERE "userId" = ${friendId}
-                    AND "timestamp" >= ${oneWeekAgo.toISOString()}
-                    GROUP BY "artistId"
-                ),
+                WITH 
                 shared_tracks AS (
                     SELECT COUNT(DISTINCT ut."trackId") as count
-                    FROM user_tracks ut
-                    JOIN friend_tracks ft ON ut."trackId" = ft."trackId"
+                    FROM (${userTracks}) ut
+                    JOIN (${friendTracks}) ft ON ut."trackId" = ft."trackId"
                 ),
                 shared_artists AS (
                     SELECT COUNT(DISTINCT ua."artistId") as count
-                    FROM user_artists ua
-                    JOIN friend_artists fa ON ua."artistId" = fa."artistId"
+                    FROM (${userArtists}) ua
+                    JOIN (${friendArtists}) fa ON ua."artistId" = fa."artistId"
                 ),
                 total_unique_tracks AS (
                     SELECT COUNT(DISTINCT "trackId") as count
                     FROM (
-                        SELECT "trackId" FROM user_tracks
+                        SELECT "trackId" FROM (${userTracks})
                         UNION
-                        SELECT "trackId" FROM friend_tracks
+                        SELECT "trackId" FROM (${friendTracks})
                     ) as combined
                 ),
                 total_unique_artists AS (
                     SELECT COUNT(DISTINCT "artistId") as count
                     FROM (
-                        SELECT "artistId" FROM user_artists
+                        SELECT "artistId" FROM (${userArtists})
                         UNION
-                        SELECT "artistId" FROM friend_artists
+                        SELECT "artistId" FROM (${friendArtists})
                     ) as combined
                 )
                 SELECT 
@@ -90,51 +95,40 @@ export async function GET() {
                     tut.count as total_unique_tracks,
                     sa.count as shared_artists_count,
                     tua.count as total_unique_artists
-                    FROM shared_tracks st, shared_artists sa, 
-                    total_unique_tracks tut, total_unique_artists tua
+                FROM shared_tracks st, shared_artists sa, 
+                total_unique_tracks tut, total_unique_artists tua
             `;
 
             const sharedArtists = await sql`
-                WITH user_artists AS (
-                    SELECT DISTINCT a."artistId", a."name"
-                    FROM "trackHistory" th
-                    JOIN artists a ON th."artistId" = a."artistId"
-                    WHERE th."userId" = ${session.user.id}
-                    AND th."timestamp" >= ${oneWeekAgo.toISOString()}
-                ),
-                friend_artists AS (
-                    SELECT DISTINCT a."artistId", a."name"
-                    FROM "trackHistory" th
-                    JOIN artists a ON th."artistId" = a."artistId"
-                    WHERE th."userId" = ${friendId}
-                    AND th."timestamp" >= ${oneWeekAgo.toISOString()}
+                SELECT DISTINCT a."artistId", a."name"
+                FROM "trackHistory" th
+                JOIN artists a ON th."artistId" = a."artistId"
+                WHERE th."userId" = ${session.user.id}
+                AND th."timestamp" >= ${oneWeekAgo.toISOString()}
+                AND EXISTS (
+                    SELECT 1
+                    FROM "trackHistory" th2
+                    WHERE th2."userId" = ${friendId}
+                    AND th2."artistId" = th."artistId"
+                    AND th2."timestamp" >= ${oneWeekAgo.toISOString()}
                 )
-                SELECT ua.*
-                FROM user_artists ua
-                JOIN friend_artists fa ON ua."artistId" = fa."artistId"
                 LIMIT 5
             `;
 
             const sharedTracks = await sql`
-                WITH user_tracks AS (
-                    SELECT DISTINCT t."trackId", t."name", a."name" as "artistName"
-                    FROM "trackHistory" th
-                    JOIN tracks t ON th."trackId" = t."trackId"
-                    JOIN artists a ON t."artistId" = a."artistId"
-                    WHERE th."userId" = ${session.user.id}
-                    AND th."timestamp" >= ${oneWeekAgo.toISOString()}
-                ),
-                friend_tracks AS (
-                    SELECT DISTINCT t."trackId", t."name", a."name" as "artistName"
-                    FROM "trackHistory" th
-                    JOIN tracks t ON th."trackId" = t."trackId"
-                    JOIN artists a ON t."artistId" = a."artistId"
-                    WHERE th."userId" = ${friendId}
-                    AND th."timestamp" >= ${oneWeekAgo.toISOString()}
+                SELECT DISTINCT t."trackId", t."name", a."name" as "artistName"
+                FROM "trackHistory" th
+                JOIN tracks t ON th."trackId" = t."trackId"
+                JOIN artists a ON t."artistId" = a."artistId"
+                WHERE th."userId" = ${session.user.id}
+                AND th."timestamp" >= ${oneWeekAgo.toISOString()}
+                AND EXISTS (
+                    SELECT 1
+                    FROM "trackHistory" th2
+                    WHERE th2."userId" = ${friendId}
+                    AND th2."trackId" = th."trackId"
+                    AND th2."timestamp" >= ${oneWeekAgo.toISOString()}
                 )
-                SELECT ut.*
-                FROM user_tracks ut
-                JOIN friend_tracks ft ON ut."trackId" = ft."trackId"
                 LIMIT 5
             `;
 

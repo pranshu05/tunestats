@@ -10,12 +10,12 @@ export async function GET(req: NextRequest) {
 
     try {
         const result = await sql`
-            SELECT th."userId", COUNT(*) AS "playcount", u.name
+            SELECT th."userId", COUNT(*) AS "playCount", u.name
             FROM "trackHistory" th JOIN tracks t ON t."trackId" = th."trackId"
             JOIN users u ON u."userId" = th."userId"
             WHERE t."artistId" = ${artistId}
             GROUP BY u."userId", th."userId"
-            ORDER BY "playcount" DESC
+            ORDER BY "playCount" DESC
             LIMIT 5;
         `;
 
