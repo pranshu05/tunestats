@@ -5,15 +5,17 @@ import { fetcher } from "@/utils/fetcher"
 import FetchError from "../(layout)/FetchError"
 import FetchLoader from "../(layout)/FetchLoader"
 import { Calendar, Music } from "lucide-react"
+import { BsVinyl } from "react-icons/bs"
 
 interface Album {
     albumId: string
     name: string
     imageUrl: string
     releaseDate: string
-    totalTracks: number
+    trackCount: number
     artistId: string
     artistName: string
+    label: string
 }
 
 export default function AlbumCard({ albumId }: { albumId: string }) {
@@ -37,14 +39,18 @@ export default function AlbumCard({ albumId }: { albumId: string }) {
                     <div>
                         <h1 className="text-xl lg:text-3xl font-bold text-[#e6d2c0] mb-2">{album.name}</h1>
                         <p className="text-[#a18072] mb-4">by{" "}<a href={`/artist/${album.artistId}`} className="text-[#c38e70] hover:underline">{album.artistName}</a></p>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+                        <div className="space-y-4 mt-4">
                             <div className="flex items-center gap-2 text-[#a18072]">
                                 <Calendar size={18} className="text-[#c38e70]" />
                                 <span className="text-[#e6d2c0]">Released: {album.releaseDate}</span>
                             </div>
                             <div className="flex items-center gap-2 text-[#a18072]">
                                 <Music size={18} className="text-[#c38e70]" />
-                                <span className="text-[#e6d2c0]">Tracks: {album.totalTracks}</span>
+                                <span className="text-[#e6d2c0]">Tracks: {album.trackCount}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[#a18072]">
+                                <BsVinyl size={18} className="text-[#c38e70]" />
+                                <span className="text-[#e6d2c0]">Label: {album.label}</span>
                             </div>
                         </div>
                     </div>

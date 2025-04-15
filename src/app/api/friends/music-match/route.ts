@@ -31,33 +31,29 @@ export async function GET() {
                     SELECT "trackId", COUNT(*) as play_count
                     FROM "trackHistory"
                     WHERE "userId" = ${session.user.id}
-                      AND "timestamp" >= ${oneWeekAgo.toISOString()}
+                    AND "timestamp" >= ${oneWeekAgo.toISOString()}
                     GROUP BY "trackId"
                 ),
                 friend_tracks AS (
                     SELECT "trackId", COUNT(*) as play_count
                     FROM "trackHistory"
                     WHERE "userId" = ${friendId}
-                      AND "timestamp" >= ${oneWeekAgo.toISOString()}
+                    AND "timestamp" >= ${oneWeekAgo.toISOString()}
                     GROUP BY "trackId"
                 ),
                 user_artists AS (
-                    SELECT a."artistId", COUNT(*) as listen_count
-                    FROM "trackHistory" th
-                    JOIN tracks t ON th."trackId" = t."trackId"
-                    JOIN artists a ON t."artistId" = a."artistId"
-                    WHERE th."userId" = ${session.user.id}
-                      AND th."timestamp" >= ${oneWeekAgo.toISOString()}
-                    GROUP BY a."artistId"
+                    SELECT "artistId", COUNT(*) as listen_count
+                    FROM "trackHistory" 
+                    WHERE "userId" = ${session.user.id}
+                    AND "timestamp" >= ${oneWeekAgo.toISOString()}
+                    GROUP BY "artistId"
                 ),
                 friend_artists AS (
-                    SELECT a."artistId", COUNT(*) as listen_count
-                    FROM "trackHistory" th
-                    JOIN tracks t ON th."trackId" = t."trackId"
-                    JOIN artists a ON t."artistId" = a."artistId"
-                    WHERE th."userId" = ${friendId}
-                      AND th."timestamp" >= ${oneWeekAgo.toISOString()}
-                    GROUP BY a."artistId"
+                    SELECT "artistId", COUNT(*) as listen_count
+                    FROM "trackHistory"
+                    WHERE "userId" = ${friendId}
+                    AND "timestamp" >= ${oneWeekAgo.toISOString()}
+                    GROUP BY "artistId"
                 ),
                 shared_tracks AS (
                     SELECT COUNT(DISTINCT ut."trackId") as count
@@ -94,26 +90,24 @@ export async function GET() {
                     tut.count as total_unique_tracks,
                     sa.count as shared_artists_count,
                     tua.count as total_unique_artists
-                FROM shared_tracks st, shared_artists sa, 
-                     total_unique_tracks tut, total_unique_artists tua
+                    FROM shared_tracks st, shared_artists sa, 
+                    total_unique_tracks tut, total_unique_artists tua
             `;
 
             const sharedArtists = await sql`
                 WITH user_artists AS (
                     SELECT DISTINCT a."artistId", a."name"
                     FROM "trackHistory" th
-                    JOIN tracks t ON th."trackId" = t."trackId"
-                    JOIN artists a ON t."artistId" = a."artistId"
+                    JOIN artists a ON th."artistId" = a."artistId"
                     WHERE th."userId" = ${session.user.id}
-                      AND th."timestamp" >= ${oneWeekAgo.toISOString()}
+                    AND th."timestamp" >= ${oneWeekAgo.toISOString()}
                 ),
                 friend_artists AS (
                     SELECT DISTINCT a."artistId", a."name"
                     FROM "trackHistory" th
-                    JOIN tracks t ON th."trackId" = t."trackId"
-                    JOIN artists a ON t."artistId" = a."artistId"
+                    JOIN artists a ON th."artistId" = a."artistId"
                     WHERE th."userId" = ${friendId}
-                      AND th."timestamp" >= ${oneWeekAgo.toISOString()}
+                    AND th."timestamp" >= ${oneWeekAgo.toISOString()}
                 )
                 SELECT ua.*
                 FROM user_artists ua
@@ -128,7 +122,7 @@ export async function GET() {
                     JOIN tracks t ON th."trackId" = t."trackId"
                     JOIN artists a ON t."artistId" = a."artistId"
                     WHERE th."userId" = ${session.user.id}
-                      AND th."timestamp" >= ${oneWeekAgo.toISOString()}
+                    AND th."timestamp" >= ${oneWeekAgo.toISOString()}
                 ),
                 friend_tracks AS (
                     SELECT DISTINCT t."trackId", t."name", a."name" as "artistName"
@@ -136,7 +130,7 @@ export async function GET() {
                     JOIN tracks t ON th."trackId" = t."trackId"
                     JOIN artists a ON t."artistId" = a."artistId"
                     WHERE th."userId" = ${friendId}
-                      AND th."timestamp" >= ${oneWeekAgo.toISOString()}
+                    AND th."timestamp" >= ${oneWeekAgo.toISOString()}
                 )
                 SELECT ut.*
                 FROM user_tracks ut

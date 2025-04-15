@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     try {
         const result = await sql`
             SELECT "artistId", COUNT(*) AS "playcount" 
-            FROM "artistHistory" WHERE "artistId" = ${artistId} GROUP BY "artistId";
+            FROM "trackHistory" WHERE "artistId" = ${artistId} GROUP BY "artistId";
         `;
 
         if (!result || result.length === 0) {

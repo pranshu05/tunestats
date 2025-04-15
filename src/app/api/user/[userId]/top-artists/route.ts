@@ -19,9 +19,9 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
     try {
         const result = await sql`
             SELECT ar."artistId", ar."name", ar."imageUrl", COUNT(*) AS "playCount"
-            FROM "artistHistory" ah
-            JOIN "artists" ar ON ah."artistId" = ar."artistId"
-            WHERE ah."userId" = ${params.userId} AND ah."timestamp" >= NOW() - ${sql.unsafe(`INTERVAL '${days} days'`)}
+            FROM "trackHistory" th
+            JOIN "artists" ar ON th."artistId" = ar."artistId"
+            WHERE th."userId" = ${params.userId} AND th."timestamp" >= NOW() - ${sql.unsafe(`INTERVAL '${days} days'`)}
             GROUP BY ar."artistId", ar."name", ar."imageUrl"
             ORDER BY "playCount" DESC
             LIMIT 50

@@ -8,7 +8,6 @@ interface Comment {
     text: string
     userId: string
     name: string
-    image?: string
     timestamp: string
     upvoteCount: number
     parentCommentId?: number | null

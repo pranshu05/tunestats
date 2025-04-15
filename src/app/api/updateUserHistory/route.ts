@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
                 continue;
             }
 
-            // Get recently played tracks from Spotify
             const limit = limitParam ? parseInt(limitParam) : 1;
             const spotifyResponse = await fetch(
                 `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
@@ -47,7 +46,6 @@ export async function GET(request: NextRequest) {
                 const { id: trackId, artists, album } = track;
                 const artist = artists[0];
 
-                // Check if this track already exists in history
                 if (!forceRefresh) {
                     const existingHistory = await sql`
                         SELECT 1 FROM "trackHistory"
@@ -59,12 +57,10 @@ export async function GET(request: NextRequest) {
                     }
                 }
 
-                // Process Artist - First check if exists
                 const artistExists = await sql`
                     SELECT 1 FROM artists WHERE "artistId" = ${artist.id} LIMIT 1
                 `;
                 if (!artistExists.length) {
-                    // Fetch complete artist data from Spotify
                     const artistResponse = await fetch(
                         `https://api.spotify.com/v1/artists/${artist.id}`,
                         {
@@ -79,20 +75,16 @@ export async function GET(request: NextRequest) {
                     const artistData = await artistResponse.json();
 
                     await sql`
-                        INSERT INTO artists ("artistId", name, "spotifyUrl", genres, popularity, followers, "imageUrl") 
+                        INSERT INTO artists ("artistId", name, genres, "imageUrl") 
                         VALUES (
                             ${artistData.id},
                             ${artistData.name},
-                            ${artistData.external_urls.spotify},
                             ${artistData.genres},
-                            ${artistData.popularity},
-                            ${artistData.followers?.total},
                             ${artistData.images?.[0]?.url ?? null}
                         )
                     `;
                 }
 
-                // Process Album - First check if exists
                 const albumExists = await sql`
                     SELECT 1 FROM albums WHERE "albumId" = ${album.id} LIMIT 1
                 `;
@@ -118,55 +110,39 @@ export async function GET(request: NextRequest) {
                     }
 
                     await sql`
-                        INSERT INTO albums ("albumId", name, "artistId", "releaseDate", "totalTracks","albumType", "spotifyUrl", genres, label, "imageUrl")
+                        INSERT INTO albums ("albumId", name, "artistId", "releaseDate", "albumType", label, "imageUrl")
                         VALUES (
                             ${albumData.id},
                             ${albumData.name},
                             ${artist.id}, 
                             ${releaseDate},
-                            ${albumData.total_tracks},
                             ${albumData.album_type},
-                            ${albumData.external_urls.spotify},
-                            ${albumData.genres},
                             ${albumData.label},
                             ${albumData.images?.[0]?.url ?? null}
                         )
                     `;
                 }
 
-                // Process Track
                 const trackExists = await sql`
                     SELECT 1 FROM tracks WHERE "trackId" = ${trackId} LIMIT 1
                 `;
                 if (!trackExists.length) {
                     await sql`
-                        INSERT INTO tracks ("trackId", name, "albumId", "artistId", duration,popularity, explicit, "spotifyUrl") 
+                        INSERT INTO tracks ("trackId", name, "albumId", "artistId", duration,popularity, explicit) 
                         VALUES (
                             ${trackId},
                             ${track.name},
                             ${album.id},
                             ${artist.id},
                             ${track.duration_ms},
-                            ${track.popularity},
                             ${track.explicit},
-                            ${track.external_urls.spotify}
                         )
                     `;
                 }
 
-                // Record history
                 await sql`
                     INSERT INTO "trackHistory" ("trackId", "userId", "artistId", timestamp) 
-                    VALUES (
-                        ${trackId}, ${userId}, ${artist.id}, ${played_at}
-                    )
-                `;
-
-                await sql`
-                    INSERT INTO "artistHistory" ("artistId", "userId", timestamp) 
-                    VALUES (
-                        ${artist.id}, ${userId}, ${played_at}
-                    )
+                    VALUES (${trackId}, ${userId}, ${artist.id}, ${played_at})
                 `;
             }
         }

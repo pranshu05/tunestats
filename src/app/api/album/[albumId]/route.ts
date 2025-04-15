@@ -10,10 +10,12 @@ export async function GET(req: NextRequest) {
 
     try {
         const result = await sql`
-            SELECT a.*, ar."name" as "artistName"
+            SELECT a.*, ar."name" as "artistName", COUNT(t."trackId") as "trackCount"
             FROM albums a
             JOIN artists ar ON a."artistId" = ar."artistId"
+            LEFT JOIN tracks t ON a."albumId" = t."albumId"
             WHERE a."albumId" = ${albumId}
+            GROUP BY a."albumId", ar."name"
         `;
 
         if (!result || result.length === 0) {

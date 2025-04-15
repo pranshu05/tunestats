@@ -4,15 +4,12 @@ import useSWR from "swr"
 import { fetcher } from "@/utils/fetcher"
 import FetchError from "../(layout)/FetchError"
 import FetchLoader from "../(layout)/FetchLoader"
-import { Users, BarChart3 } from "lucide-react"
 
 interface Artist {
     artistId: string
     name: string
     imageUrl: string
-    popularity: number
     genres: string[]
-    followers: number
 }
 
 export default function ArtistCard({ artistId }: { artistId: string }) {
@@ -24,7 +21,6 @@ export default function ArtistCard({ artistId }: { artistId: string }) {
     if (!artist) return <FetchLoader />
     if (!playcount) return <FetchLoader />
 
-    const formattedFollowers = artist.followers.toLocaleString()
     const formattedPlaycount = Number.parseInt(playcount.playcount).toLocaleString()
 
     return (
@@ -37,16 +33,6 @@ export default function ArtistCard({ artistId }: { artistId: string }) {
                     <div>
                         <h1 className="text-xl lg:text-3xl font-bold text-[#e6d2c0] mb-2">{artist.name}</h1>
                         <div className="flex flex-wrap gap-2 mb-4">{artist.genres.map((genre, index) => (<span key={index} className="px-3 py-1 bg-[#2a211c] text-[#a18072] text-sm rounded-full">{genre}</span>))}</div>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-                            <div className="flex items-center gap-2 text-[#a18072]">
-                                <Users size={18} className="text-[#c38e70]" />
-                                <span className="text-[#e6d2c0]">Followers: {formattedFollowers}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-[#a18072]">
-                                <BarChart3 size={18} className="text-[#c38e70]" />
-                                <span className="text-[#e6d2c0]">Popularity: {artist.popularity}/100</span>
-                            </div>
-                        </div>
                     </div>
                     <div className="mt-6 p-4 bg-[#2a211c] rounded-lg">
                         <p className="text-[#a18072] mb-1">Global Playcount</p>
