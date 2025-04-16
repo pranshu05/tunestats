@@ -128,14 +128,14 @@ export async function GET(request: NextRequest) {
                 `;
                 if (!trackExists.length) {
                     await sql`
-                        INSERT INTO tracks ("trackId", name, "albumId", "artistId", duration,popularity, explicit) 
+                        INSERT INTO tracks ("trackId", name, "albumId", "artistId", duration, explicit) 
                         VALUES (
                             ${trackId},
                             ${track.name},
                             ${album.id},
                             ${artist.id},
                             ${track.duration_ms},
-                            ${track.explicit},
+                            ${track.explicit}
                         )
                     `;
                 }
