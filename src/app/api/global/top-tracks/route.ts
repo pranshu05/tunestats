@@ -18,10 +18,11 @@ export async function GET(req: NextRequest) {
 
     try {
         const topTracks = await sql`
-            SELECT t.*, COUNT(th."trackId") AS playcount
+            SELECT t.*, COUNT(th."trackId") AS playcount, a."imageUrl" AS "imageUrl"
             FROM tracks t JOIN "trackHistory" th ON t."trackId" = th."trackId"
+            JOIN albums a ON t."albumId" = a."albumId"
             WHERE th."timestamp" >= NOW() - ${sql.unsafe(`INTERVAL '${days} days'`)}
-            GROUP BY t."trackId" ORDER BY playcount DESC
+            GROUP BY t."trackId", a."imageUrl" ORDER BY playcount DESC
             LIMIT 10
         `;
 
