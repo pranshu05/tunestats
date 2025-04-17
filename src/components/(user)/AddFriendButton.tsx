@@ -62,30 +62,13 @@ export default function FriendButton({ targetUserId }: { targetUserId: string })
     const isFriend = status === "friend"
 
     return (
-        <button
-            onClick={handleFriendAction}
-            disabled={isLoading}
-            className={`
-                px-4 py-2 rounded-full inline-flex items-center gap-2 transition-all
-                ${isFriend ? "bg-[#3d2e23] text-[#e6d2c0]" : "bg-[#c38e70] text-[#1e1814]"} 
-                ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}
-            `}
-        >
+        <button onClick={handleFriendAction} disabled={isLoading} className={`px-4 py-2 rounded-full inline-flex items-center gap-2 transition-all ${isFriend ? "bg-[#3d2e23] text-[#e6d2c0]" : "bg-[#c38e70] text-[#1e1814]"} ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}>
             {isLoading ? (
-                <>
-                    <Loader2 className="animate-spin" size={16} />
-                    {isFriend ? "Removing..." : "Adding..."}
-                </>
+                <><Loader2 className="animate-spin" size={16} />{isFriend ? "Removing..." : "Adding..."}</>
             ) : isFriend ? (
-                <>
-                    <UserMinus size={16} />
-                    Remove Friend
-                </>
+                <><UserMinus size={16} />Remove Friend</>
             ) : (
-                <>
-                    <UserPlus size={16} />
-                    Add Friend
-                </>
+                <><UserPlus size={16} />Add Friend</>
             )}
         </button>
     )

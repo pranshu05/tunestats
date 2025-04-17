@@ -15,6 +15,19 @@ export async function DELETE(req: NextRequest) {
     }
 
     try {
+        const comment = await sql`
+            SELECT * FROM comments
+            WHERE "commentId" = ${commentId}
+        `;
+
+        if (comment[0]?.userId !== session.user.id) {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
+        
+        if (comment.length === 0) {
+            return new NextResponse("Comment not found", { status: 404 });
+        }
+
         await sql`
             DELETE FROM comments
             WHERE "commentId" = ${commentId} AND "userId" = ${session.user.id}

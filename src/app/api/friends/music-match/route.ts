@@ -20,139 +20,203 @@ export async function GET() {
 
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const oneWeekAgoIso = oneWeekAgo.toISOString();
 
         const friendCompatibilityResults = [];
 
         for (const friend of friends) {
             const friendId = friend.friend_id;
 
-            const userTracks = sql`
-                SELECT "trackId", COUNT(*) as play_count
-                FROM "trackHistory"
-                WHERE "userId" = ${session.user.id}
-                AND "timestamp" >= ${oneWeekAgo.toISOString()}
-                GROUP BY "trackId"
-            `;
-
-            const friendTracks = sql`
-                SELECT "trackId", COUNT(*) as play_count
-                FROM "trackHistory"
-                WHERE "userId" = ${friendId}
-                AND "timestamp" >= ${oneWeekAgo.toISOString()}
-                GROUP BY "trackId"
-            `;
-
-            const userArtists = sql`
-                SELECT "artistId", COUNT(*) as listen_count
-                FROM "trackHistory"
-                WHERE "userId" = ${session.user.id}
-                AND "timestamp" >= ${oneWeekAgo.toISOString()}
-                GROUP BY "artistId"
-            `;
-
-            const friendArtists = sql`
-                SELECT "artistId", COUNT(*) as listen_count
-                FROM "trackHistory"
-                WHERE "userId" = ${friendId}
-                AND "timestamp" >= ${oneWeekAgo.toISOString()}
-                GROUP BY "artistId"
-            `;
-
-            const compatibilityResult = await sql`
+            const compatibilityData = await sql`
                 WITH 
+                user_history AS (
+                    SELECT th."trackId", th."artistId"
+                    FROM "trackHistory" th
+                    WHERE th."userId" = ${session.user.id}
+                    AND th."timestamp" >= ${oneWeekAgoIso}
+                ),
+                friend_history AS (
+                    SELECT th."trackId", th."artistId"
+                    FROM "trackHistory" th
+                    WHERE th."userId" = ${friendId}
+                    AND th."timestamp" >= ${oneWeekAgoIso}
+                ),
+                user_genres AS (
+                    SELECT DISTINCT unnest(a.genres) as genre
+                    FROM user_history uh
+                    JOIN artists a ON uh."artistId" = a."artistId"
+                ),
+                friend_genres AS (
+                    SELECT DISTINCT unnest(a.genres) as genre
+                    FROM friend_history fh
+                    JOIN artists a ON fh."artistId" = a."artistId"
+                ),
                 shared_tracks AS (
-                    SELECT COUNT(DISTINCT ut."trackId") as count
-                    FROM (${userTracks}) ut
-                    JOIN (${friendTracks}) ft ON ut."trackId" = ft."trackId"
+                    SELECT COUNT(DISTINCT uh."trackId") as count
+                    FROM user_history uh
+                    JOIN friend_history fh ON uh."trackId" = fh."trackId"
                 ),
                 shared_artists AS (
-                    SELECT COUNT(DISTINCT ua."artistId") as count
-                    FROM (${userArtists}) ua
-                    JOIN (${friendArtists}) fa ON ua."artistId" = fa."artistId"
+                    SELECT COUNT(DISTINCT uh."artistId") as count
+                    FROM user_history uh
+                    JOIN friend_history fh ON uh."artistId" = fh."artistId"
                 ),
                 total_unique_tracks AS (
                     SELECT COUNT(DISTINCT "trackId") as count
                     FROM (
-                        SELECT "trackId" FROM (${userTracks})
+                        SELECT "trackId" FROM user_history
                         UNION
-                        SELECT "trackId" FROM (${friendTracks})
+                        SELECT "trackId" FROM friend_history
                     ) as combined
                 ),
                 total_unique_artists AS (
                     SELECT COUNT(DISTINCT "artistId") as count
                     FROM (
-                        SELECT "artistId" FROM (${userArtists})
+                        SELECT "artistId" FROM user_history
                         UNION
-                        SELECT "artistId" FROM (${friendArtists})
+                        SELECT "artistId" FROM friend_history
+                    ) as combined
+                ),
+                shared_genres AS (
+                    SELECT COUNT(DISTINCT ug.genre) as count
+                    FROM user_genres ug
+                    JOIN friend_genres fg ON ug.genre = fg.genre
+                ),
+                total_unique_genres AS (
+                    SELECT COUNT(DISTINCT genre) as count
+                    FROM (
+                        SELECT genre FROM user_genres
+                        UNION
+                        SELECT genre FROM friend_genres
                     ) as combined
                 )
                 SELECT 
                     CASE 
-                        WHEN (tut.count = 0 OR tua.count = 0) THEN 0
-                        ELSE ROUND(((st.count::float / NULLIF(tut.count, 0)) * 0.5 + (sa.count::float / NULLIF(tua.count, 0)) * 0.5) * 100)
+                        WHEN tug.count = 0 THEN 0
+                        ELSE ROUND(
+                            -- Genre similarity has 70% weight
+                            ((sg.count::float / NULLIF(tug.count, 0)) * 0.7 + 
+                            -- Artist similarity has 20% weight
+                             (CASE WHEN tua.count = 0 THEN 0 
+                              ELSE (sa.count::float / NULLIF(tua.count, 0)) END) * 0.2 +
+                            -- Track similarity has 10% weight
+                             (CASE WHEN tut.count = 0 THEN 0 
+                              ELSE (st.count::float / NULLIF(tut.count, 0)) END) * 0.1) * 100
+                        )
                     END as compatibility_score,
                     st.count as shared_tracks_count,
                     tut.count as total_unique_tracks,
                     sa.count as shared_artists_count,
-                    tua.count as total_unique_artists
-                FROM shared_tracks st, shared_artists sa, 
-                total_unique_tracks tut, total_unique_artists tua
+                    tua.count as total_unique_artists,
+                    sg.count as shared_genres_count,
+                    tug.count as total_unique_genres
+                FROM shared_tracks st, shared_artists sa, shared_genres sg,
+                total_unique_tracks tut, total_unique_artists tua, total_unique_genres tug
             `;
 
-            const sharedArtists = await sql`
-                SELECT DISTINCT a."artistId", a."name"
-                FROM "trackHistory" th
-                JOIN artists a ON th."artistId" = a."artistId"
-                WHERE th."userId" = ${session.user.id}
-                AND th."timestamp" >= ${oneWeekAgo.toISOString()}
-                AND EXISTS (
-                    SELECT 1
-                    FROM "trackHistory" th2
-                    WHERE th2."userId" = ${friendId}
-                    AND th2."artistId" = th."artistId"
-                    AND th2."timestamp" >= ${oneWeekAgo.toISOString()}
+            const sharedItems = await sql`
+                WITH 
+                user_history AS (
+                    SELECT th."trackId", th."artistId"
+                    FROM "trackHistory" th
+                    WHERE th."userId" = ${session.user.id}
+                    AND th."timestamp" >= ${oneWeekAgoIso}
+                ),
+                friend_history AS (
+                    SELECT th."trackId", th."artistId"
+                    FROM "trackHistory" th
+                    WHERE th."userId" = ${friendId}
+                    AND th."timestamp" >= ${oneWeekAgoIso}
+                ),
+                shared_artists_data AS (
+                    SELECT DISTINCT a."artistId", a."name"
+                    FROM user_history uh
+                    JOIN friend_history fh ON uh."artistId" = fh."artistId"
+                    JOIN artists a ON uh."artistId" = a."artistId"
+                    LIMIT 5
+                ),
+                shared_tracks_data AS (
+                    SELECT DISTINCT t."trackId", t."name", a."name" as "artistName"
+                    FROM user_history uh
+                    JOIN friend_history fh ON uh."trackId" = fh."trackId"
+                    JOIN tracks t ON uh."trackId" = t."trackId"
+                    JOIN artists a ON t."artistId" = a."artistId"
+                    LIMIT 5
+                ),
+                user_genres AS (
+                    SELECT DISTINCT unnest(a.genres) as genre
+                    FROM user_history uh
+                    JOIN artists a ON uh."artistId" = a."artistId"
+                ),
+                friend_genres AS (
+                    SELECT DISTINCT unnest(a.genres) as genre
+                    FROM friend_history fh
+                    JOIN artists a ON fh."artistId" = a."artistId"
+                ),
+                shared_genres_data AS (
+                    SELECT DISTINCT ug.genre
+                    FROM user_genres ug
+                    JOIN friend_genres fg ON ug.genre = fg.genre
+                    LIMIT 8
                 )
-                LIMIT 5
-            `;
-
-            const sharedTracks = await sql`
-                SELECT DISTINCT t."trackId", t."name", a."name" as "artistName"
-                FROM "trackHistory" th
-                JOIN tracks t ON th."trackId" = t."trackId"
-                JOIN artists a ON t."artistId" = a."artistId"
-                WHERE th."userId" = ${session.user.id}
-                AND th."timestamp" >= ${oneWeekAgo.toISOString()}
-                AND EXISTS (
-                    SELECT 1
-                    FROM "trackHistory" th2
-                    WHERE th2."userId" = ${friendId}
-                    AND th2."trackId" = th."trackId"
-                    AND th2."timestamp" >= ${oneWeekAgo.toISOString()}
-                )
-                LIMIT 5
+                SELECT 
+                    json_agg(DISTINCT sad.*) as shared_artists,
+                    (SELECT json_agg(DISTINCT std.*) FROM shared_tracks_data std) as shared_tracks,
+                    (SELECT json_agg(DISTINCT sgd.genre) FROM shared_genres_data sgd) as shared_genres
+                FROM shared_artists_data sad
             `;
 
             const friendInfo = await sql`
                 SELECT "userId", name, email FROM users WHERE "userId" = ${friendId}
             `;
 
+            const compatibilityResult = compatibilityData[0];
+            const sharedArtists = sharedItems[0]?.shared_artists || [];
+            const sharedTracks = sharedItems[0]?.shared_tracks || [];
+            const sharedGenres = sharedItems[0]?.shared_genres || [];
+
+            // Apply a bonus to the compatibility score for higher genre similarity
+            let compatibilityScore = compatibilityResult?.compatibility_score || 0;
+
+            // If there's significant genre overlap, apply a bonus to increase scores
+            if (compatibilityResult?.shared_genres_count > 0) {
+                const genreSimilarityRatio = compatibilityResult.shared_genres_count /
+                    compatibilityResult.total_unique_genres;
+
+                // Apply exponential boost for higher genre similarity
+                if (genreSimilarityRatio >= 0.6) {
+                    compatibilityScore = Math.min(100, Math.round(compatibilityScore * 1.3));
+                } else if (genreSimilarityRatio >= 0.4) {
+                    compatibilityScore = Math.min(100, Math.round(compatibilityScore * 1.2));
+                } else if (genreSimilarityRatio >= 0.2) {
+                    compatibilityScore = Math.min(100, Math.round(compatibilityScore * 1.1));
+                }
+            }
+
             friendCompatibilityResults.push({
                 friendId,
                 friendInfo: friendInfo[0] || null,
-                compatibilityScore: compatibilityResult[0]?.compatibility_score || 0,
+                compatibilityScore,
                 stats: {
-                    sharedTracks: compatibilityResult[0]?.shared_tracks_count || 0,
-                    totalUniqueTracks: compatibilityResult[0]?.total_unique_tracks || 0,
-                    sharedArtists: compatibilityResult[0]?.shared_artists_count || 0,
-                    totalUniqueArtists: compatibilityResult[0]?.total_unique_artists || 0
+                    sharedTracks: compatibilityResult?.shared_tracks_count || 0,
+                    totalUniqueTracks: compatibilityResult?.total_unique_tracks || 0,
+                    sharedArtists: compatibilityResult?.shared_artists_count || 0,
+                    totalUniqueArtists: compatibilityResult?.total_unique_artists || 0,
+                    sharedGenres: compatibilityResult?.shared_genres_count || 0,
+                    totalUniqueGenres: compatibilityResult?.total_unique_genres || 0
                 },
                 topSharedArtists: sharedArtists,
-                topSharedTracks: sharedTracks
+                topSharedTracks: sharedTracks,
+                topSharedGenres: sharedGenres
             });
         }
 
+        // Sort results by compatibility score (highest first)
+        friendCompatibilityResults.sort((a, b) => b.compatibilityScore - a.compatibilityScore);
+
         return NextResponse.json(friendCompatibilityResults, { status: 200 });
-    } catch {
+    } catch (error) {
+        console.error("Error calculating compatibility:", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

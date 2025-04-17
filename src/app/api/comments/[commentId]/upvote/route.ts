@@ -15,6 +15,14 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+        const commentExists = await sql`
+            SELECT 1 FROM comments WHERE "commentId" = ${commentId}
+        `;
+
+        if (commentExists.length === 0) {
+            return new NextResponse("Comment not found", { status: 404 });
+        }
+
         await sql`
             INSERT INTO upvotes ("userId", "commentId")
             VALUES (${session.user.id}, ${commentId})
@@ -39,6 +47,14 @@ export async function DELETE(req: NextRequest) {
     }
 
     try {
+        const commentExists = await sql`
+            SELECT 1 FROM comments WHERE "commentId" = ${commentId}
+        `;
+
+        if (commentExists.length === 0) {
+            return new NextResponse("Comment not found", { status: 404 });
+        }
+
         await sql`
             DELETE FROM upvotes
             WHERE "userId" = ${session.user.id} AND "commentId" = ${commentId}

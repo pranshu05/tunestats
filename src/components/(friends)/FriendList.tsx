@@ -18,6 +18,8 @@ interface Stats {
     totalUniqueTracks: number
     sharedArtists: number
     totalUniqueArtists: number
+    sharedGenres: number
+    totalUniqueGenres: number
 }
 
 interface FriendInfo {
@@ -33,6 +35,7 @@ interface FriendMatch {
     stats: Stats
     topSharedArtists: Artist[]
     topSharedTracks: Track[]
+    topSharedGenres: string[]
 }
 
 interface FriendListProps {

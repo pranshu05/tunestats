@@ -1,5 +1,4 @@
 import { useState } from "react"
-import Image from "next/image"
 import { User, Users, BarChart3, MessageSquare, ChevronRight } from "lucide-react"
 import FeatureTab from "./FeatureTab"
 
@@ -9,7 +8,7 @@ export default function FeaturesSection() {
     return (
         <section id="features" className="px-4 lg:px-8 py-16 lg:py-24">
             <div className="text-center mb-12">
-                <h2 className="text-2xl lg:text-3xl lg:text-4xl font-bold text-[#e6d2c0] mb-4">Powerful Features</h2>
+                <h2 className="text-2xl lg:text-4xl font-bold text-[#e6d2c0] mb-4">Powerful Features</h2>
                 <p className="text-[#a18072] max-w-2xl mx-auto">Explore everything TuneStats has to offer to enhance your music experience</p>
             </div>
             <div className="bg-[#1e1814] border border-[#3d2e23] rounded-xl overflow-hidden shadow-lg">
@@ -76,30 +75,23 @@ function FeatureContent({
     icon,
     title,
     description,
-    listItems,
-    imageAlt,
-    rotation
+    listItems
 }: FeatureContentProps) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-[#2a211c] rounded-full flex items-center justify-center">{icon}</div>
-                    <h3 className="text-xl font-bold text-[#e6d2c0]">{title}</h3>
-                </div>
-                <p className="text-[#a18072] mb-6">{description}</p>
-                <ul className="space-y-3">
-                    {listItems.map((item, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                            <ChevronRight className="text-[#c38e70] mt-1 flex-shrink-0" size={18} />
-                            <span className="text-[#e6d2c0]">{item}</span>
-                        </li>
-                    ))}
-                </ul>
+        <div>
+            <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-[#2a211c] rounded-full flex items-center justify-center">{icon}</div>
+                <h3 className="text-xl font-bold text-[#e6d2c0]">{title}</h3>
             </div>
-            <div className={`bg-[#2a211c] border border-[#3d2e23] rounded-lg p-4 transform ${rotation > 0 ? 'rotate-1' : '-rotate-1'} shadow-lg`}>
-                <Image src="/placeholder.svg?height=400&width=600" alt={imageAlt} width={600} height={400} className="rounded" />
-            </div>
+            <p className="text-[#a18072] mb-6">{description}</p>
+            <ul className="space-y-3">
+                {listItems.map((item, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                        <ChevronRight className="text-[#c38e70] mt-1 flex-shrink-0" size={18} />
+                        <span className="text-[#e6d2c0]">{item}</span>
+                    </li>
+                ))}
+            </ul>
         </div>
     )
 }

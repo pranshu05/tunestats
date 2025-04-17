@@ -12,14 +12,14 @@ export default function HeroSection({ session }: HeroSectionProps) {
             <div className="px-4 lg:px-8 py-16 lg:py-24 z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-12 items-center">
                     <div className="space-y-6">
-                        <div className="inline-block px-4 py-2 bg-[#2a211c] border border-[#3d2e23] rounded-lg text-[#c38e70] font-medium">Your Spotify Experience, Elevated</div>
+                        <div className="inline-block px-4 py-2 bg-[#2a211c] border border-[#3d2e23] rounded-lg text-[#c38e70] font-medium">Your Spotify Stats, Simplified</div>
                         <h1 className="text-4xl lg:text-6xl font-bold text-[#e6d2c0] leading-tight">Discover Your <span className="text-[#c38e70]">Music DNA</span> with TuneStats</h1>
                         <p className="text-xl text-[#a18072] max-w-lg">Dive deeper into your music taste, compare with friends, and explore your listening habits like never before.</p>
                         <div className="flex flex-wrap gap-4 pt-4">
                             {session ? (
                                 <Link href={session.user?.id ? `/user/${session.user.id}` : "#"} className="px-6 py-3 bg-[#c38e70] text-[#1e1814] font-bold rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2">Go to Profile <ArrowRight size={18} /></Link>
                             ) : (
-                                <Link href="/api/auth/signin" className="px-6 py-3 bg-[#c38e70] text-[#1e1814] font-bold rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2">Sign In with Spotify <ArrowRight size={18} /></Link>
+                                <Link href="/api/auth/signin" className="px-6 py-3 bg-[#1DB954] text-[#1e1814] font-bold rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2">Get Started <ArrowRight size={18} /></Link>
                             )}
                             <Link href="#features" className="px-6 py-3 bg-[#2a211c] border border-[#3d2e23] text-[#e6d2c0] rounded-lg hover:bg-[#3d2e23] transition-all">Explore Features</Link>
                         </div>

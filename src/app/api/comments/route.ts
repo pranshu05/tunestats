@@ -8,6 +8,10 @@ export async function GET(req: NextRequest) {
     const entityId = searchParams.get('entityId');
     const entityType = searchParams.get('entityType');
 
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id)
+        return new NextResponse("Unauthorized", { status: 401 });
+
     if (!entityId || !entityType) {
         return new NextResponse("Missing query parameters", { status: 400 });
     }
@@ -43,12 +47,31 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+        const entityExists = await sql`
+            SELECT EXISTS (
+                SELECT 1 FROM (
+                    SELECT "userId" AS id
+                    FROM users UNION ALL
+                    SELECT "albumId" AS id 
+                    FROM albums UNION ALL
+                    SELECT "artistId" AS id 
+                    FROM artists UNION ALL
+                    SELECT "trackId" AS id FROM tracks
+                ) AS entities
+                WHERE id = ${entityId}
+            ) AS "exists";
+        `;
+
+        if (!entityExists[0]?.exists) {
+            return new NextResponse("Entity not found", { status: 404 });
+        }
+
         await sql`
             INSERT INTO comments ("userId", "entityId", "entityType", "text", "parentCommentId")
             VALUES (${session.user.id}, ${entityId}, ${entityType}, ${text}, ${parentCommentId})
             RETURNING *
         `;
-        
+
         return NextResponse.json("Added Comment", { status: 201 });
     } catch {
         return new NextResponse("Internal Server Error", { status: 500 });

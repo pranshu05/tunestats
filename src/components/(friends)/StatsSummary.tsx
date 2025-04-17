@@ -1,10 +1,12 @@
-import { Music, Users, BarChart3 } from "lucide-react"
+import { Music, Users, BarChart3, Tag } from "lucide-react"
 
 interface Stats {
     sharedTracks: number
     totalUniqueTracks: number
     sharedArtists: number
     totalUniqueArtists: number
+    sharedGenres: number
+    totalUniqueGenres: number
 }
 
 interface StatsSummaryProps {
@@ -19,6 +21,7 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
 
     const trackPercentage = calculatePercentage(stats.sharedTracks, stats.totalUniqueTracks)
     const artistPercentage = calculatePercentage(stats.sharedArtists, stats.totalUniqueArtists)
+    const genrePercentage = calculatePercentage(stats.sharedGenres, stats.totalUniqueGenres)
 
     return (
         <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
@@ -30,13 +33,13 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
                 <div>
                     <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center">
-                            <Music className="w-4 h-4 mr-2 text-[#c38e70]" />
-                            <span className="text-sm font-medium text-[#e6d2c0]">Shared Tracks</span>
+                            <Tag className="w-4 h-4 mr-2 text-[#c38e70]" />
+                            <span className="text-sm font-medium text-[#e6d2c0]">Shared Genres</span>
                         </div>
-                        <span className="text-sm font-medium text-[#e6d2c0]">{stats.sharedTracks} of {stats.totalUniqueTracks}</span>
+                        <span className="text-sm font-medium text-[#e6d2c0]">{stats.sharedGenres} of {stats.totalUniqueGenres}</span>
                     </div>
                     <div className="w-full bg-[#2a211c] rounded-full h-2.5">
-                        <div className="bg-[#c38e70] rounded-full h-2.5 transition-all duration-700" style={{ width: `${trackPercentage}%` }}></div>
+                        <div className="bg-[#c38e70] rounded-full h-2.5 transition-all duration-700" style={{ width: `${genrePercentage}%` }}></div>
                     </div>
                 </div>
                 <div>
@@ -51,15 +54,31 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
                         <div className="bg-[#c38e70] rounded-full h-2.5 transition-all duration-700" style={{ width: `${artistPercentage}%` }}></div>
                     </div>
                 </div>
+                <div>
+                    <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center">
+                            <Music className="w-4 h-4 mr-2 text-[#c38e70]" />
+                            <span className="text-sm font-medium text-[#e6d2c0]">Shared Tracks</span>
+                        </div>
+                        <span className="text-sm font-medium text-[#e6d2c0]">{stats.sharedTracks} of {stats.totalUniqueTracks}</span>
+                    </div>
+                    <div className="w-full bg-[#2a211c] rounded-full h-2.5">
+                        <div className="bg-[#c38e70] rounded-full h-2.5 transition-all duration-700" style={{ width: `${trackPercentage}%` }}></div>
+                    </div>
+                </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-6">
+            <div className="grid grid-cols-3 gap-4 mt-6">
                 <div className="text-center p-4 bg-[#2a211c] rounded-lg">
-                    <p className="text-sm text-[#a18072] mb-1">Shared Tracks</p>
-                    <p className="text-2xl font-bold text-[#e6d2c0]">{stats.sharedTracks}</p>
+                    <p className="text-sm text-[#a18072] mb-1">Shared Genres</p>
+                    <p className="text-2xl font-bold text-[#e6d2c0]">{stats.sharedGenres}</p>
                 </div>
                 <div className="text-center p-4 bg-[#2a211c] rounded-lg">
                     <p className="text-sm text-[#a18072] mb-1">Shared Artists</p>
                     <p className="text-2xl font-bold text-[#e6d2c0]">{stats.sharedArtists}</p>
+                </div>
+                <div className="text-center p-4 bg-[#2a211c] rounded-lg">
+                    <p className="text-sm text-[#a18072] mb-1">Shared Tracks</p>
+                    <p className="text-2xl font-bold text-[#e6d2c0]">{stats.sharedTracks}</p>
                 </div>
             </div>
         </div>

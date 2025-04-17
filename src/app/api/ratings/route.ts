@@ -39,6 +39,23 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+        const entityExists = await sql`
+            SELECT 1
+            FROM (
+                SELECT "artistId" AS "entityId" FROM artists
+                UNION ALL
+                SELECT "albumId" AS "entityId" FROM albums
+                UNION ALL
+                SELECT "trackId" AS "entityId" FROM tracks
+            ) AS entities
+            WHERE "entityId" = ${entityId}
+            LIMIT 1
+        `;
+
+        if (entityExists.length === 0) {
+            return new NextResponse("Entity does not exist", { status: 404 });
+        }
+
         await sql`
             INSERT INTO ratings ("userId", "entityId", "entityType", "rating")
             VALUES (${session.user.id}, ${entityId}, ${entityType}, ${rating})
@@ -46,7 +63,7 @@ export async function POST(req: NextRequest) {
             SET "rating" = EXCLUDED."rating"
         `;
 
-        return new NextResponse("Rating saved", { status: 201});
+        return new NextResponse("Rating saved", { status: 201 });
     } catch {
         return new NextResponse("Internal Server Error", { status: 500 });
     }

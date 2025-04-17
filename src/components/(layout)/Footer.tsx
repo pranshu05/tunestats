@@ -10,7 +10,7 @@ export default function Footer() {
                             <Music className="text-[#c38e70]" />
                             <span className="text-xl font-bold text-[#e6d2c0]">TuneStats</span>
                         </div>
-                        <p className="text-[#a18072]">Your Spotify experience, elevated. Discover your music DNA and connect with friends.</p>
+                        <p className="text-[#a18072]">Your Spotify stats, simplified. Discover your music DNA and connect with friends.</p>
                     </div>
                 </div>
                 <div className="border-t border-[#3d2e23] mt-8 pt-8 text-center text-[#a18072] text-sm">

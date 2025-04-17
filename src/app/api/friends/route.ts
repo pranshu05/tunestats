@@ -23,6 +23,21 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+        const isAlreadyFriend = await checkFriendship(session.user.id, friendId);
+
+        const userExists = await sql`
+            SELECT 1 FROM Users 
+            WHERE "userId" = ${friendId}
+        `;
+
+        if (userExists.length === 0) {
+            return new NextResponse("User with this friendId does not exist", { status: 400 });
+        }
+
+        if (isAlreadyFriend) {
+            return new NextResponse("Already friends", { status: 400 });
+        }
+
         await sql`
             INSERT INTO Friends ("userId", "friendId")
             VALUES (${session.user.id}, ${friendId})
@@ -48,6 +63,12 @@ export async function DELETE(req: NextRequest) {
     }
 
     try {
+        const isFriend = await checkFriendship(session.user.id, friendId);
+
+        if (!isFriend) {
+            return new NextResponse("Friendship does not exist", { status: 400 });
+        }
+
         await sql`
             DELETE FROM Friends 
             WHERE "userId" = ${session.user.id} AND "friendId" = ${friendId}

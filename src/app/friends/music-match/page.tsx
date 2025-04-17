@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import FriendList from "@/components/(friends)/FriendList"
 import CompatibilityScore from "@/components/(friends)/CompatibilityScore"
+import SharedGenres from "@/components/(friends)/SharedGenres"
 import SharedArtists from "@/components/(friends)/SharedArtists"
 import SharedTracks from "@/components/(friends)/SharedTracks"
 import StatsSummary from "@/components/(friends)/StatsSummary"
@@ -24,6 +25,8 @@ interface Stats {
     totalUniqueTracks: number
     sharedArtists: number
     totalUniqueArtists: number
+    sharedGenres: number
+    totalUniqueGenres: number
 }
 
 interface FriendInfo {
@@ -39,6 +42,7 @@ interface FriendMatch {
     stats: Stats
     topSharedArtists: Artist[]
     topSharedTracks: Track[]
+    topSharedGenres: string[]
 }
 
 export default function MusicMatchPage() {
@@ -122,12 +126,13 @@ export default function MusicMatchPage() {
                 {selectedFriend && (
                     <div className="lg:col-span-3 space-y-8">
                         <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
-                            <h2 className="text-2xl font-semibold mb-6 text-[#e6d2c0]">Your Music Match with {selectedFriend.friendInfo.name}</h2>
+                            <h2 className="text-2xl font-semibold mb-6 text-[#e6d2c0]">Your Music Match with <a href={`/user/${selectedFriend.friendId}`} >{selectedFriend.friendInfo.name}</a></h2>
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                <div className="lg:col-span-1"><CompatibilityScore score={selectedFriend.compatibilityScore} /></div>
+                                <div className="lg:col-span-1"><CompatibilityScore score={selectedFriend.compatibilityScore} sharedGenres={selectedFriend.stats.sharedGenres} /></div>
                                 <div className="lg:col-span-2"><StatsSummary stats={selectedFriend.stats} /></div>
                             </div>
                         </div>
+                        <SharedGenres genres={selectedFriend.topSharedGenres} />
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <SharedArtists artists={selectedFriend.topSharedArtists} />
                             <SharedTracks tracks={selectedFriend.topSharedTracks} />
