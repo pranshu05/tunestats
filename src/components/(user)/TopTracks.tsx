@@ -39,8 +39,8 @@ export default function TopTracks({ userId }: { userId: string }) {
         <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 lg:mb-4 gap-2 lg:gap-4">
                 <div className="flex items-center gap-2">
-                    <Music className="text-[#c38e70]" />
-                    <h3 className="text-xl font-bold text-[#e6d2c0]">Top Tracks</h3>
+                    <Music className="size-5 lg:size-6 text-[#c38e70]" />
+                    <h3 className="text-lg lg:text-xl font-bold text-[#e6d2c0]">Top Tracks</h3>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="flex items-center bg-[#2a211c] rounded-md p-1">

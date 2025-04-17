@@ -36,8 +36,8 @@ export default function ArtistAlbums({ artistId }: { artistId: string }) {
     return (
         <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex items-center gap-2 mb-2 lg:mb-4">
-                <Disc className="text-[#c38e70]" />
-                <h2 className="text-xl font-bold text-[#e6d2c0]">Albums</h2>
+                <Disc className="size-5 lg:size-6 text-[#c38e70]" />
+                <h2 className="text-lg lg:text-xl font-bold text-[#e6d2c0]">Albums</h2>
             </div>
             <div className="relative">
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10"><button onClick={scrollLeft} className="p-2 rounded-full bg-[#2a211c] text-[#e6d2c0] hover:bg-[#3d2e23] shadow-lg"><ChevronLeft size={20} /></button></div>

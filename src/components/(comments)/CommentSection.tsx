@@ -148,7 +148,7 @@ export default function CommentSection({ entityId, entityType }: { entityId: str
             </div>
             <p className="text-sm mb-2 bg-[#2a211c] p-2 rounded text-[#e6d2c0]">{c.text}</p>
             <div className="flex flex-wrap items-center text-sm gap-1 lg:gap-4">
-                <button onClick={c.hasUserUpvoted ? () => handleRemoveUpvote(c.commentId) : () => handleUpvote(c.commentId)} className={`inline-flex items-center gap-1 ${c.hasUserUpvoted ? "text-[#c38e70]" : "text-[#a18072] hover:text-[#e6d2c0]"}`}><ThumbsUp size={14} /><span>{c.upvoteCount}</span></button>
+                <button onClick={c.hasUserUpvoted ? () => handleRemoveUpvote(c.commentId) : () => handleUpvote(c.commentId)} className={`inline-flex items-center gap-1 ${c.hasUserUpvoted ? "text-[#c38e70]" : "text-[#a18072] hover:text-[#e6d2c0]"}`}><ThumbsUp size={14} fill={c.hasUserUpvoted ? "currentColor" : "none"} /><span>{c.upvoteCount}</span></button>
                 <button onClick={() => toggleReply(c.commentId)} className="inline-flex items-center gap-1 text-[#a18072] hover:text-[#e6d2c0]"><Reply size={14} />Reply</button>
                 {session?.user?.id === c.userId && (<button onClick={() => handleDelete(c.commentId)} className="inline-flex items-center gap-1 text-red-400 hover:text-red-300"><Trash2 size={14} />Delete</button>)}
             </div>

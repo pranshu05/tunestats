@@ -23,8 +23,8 @@ export default function AlbumTracks({ albumId }: { albumId: string }) {
     return (
         <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex items-center gap-2 mb-2 lg:mb-4">
-                <Music className="text-[#c38e70]" />
-                <h2 className="text-xl font-bold text-[#e6d2c0]">Tracks</h2>
+                <Music className="size-5 lg:size-6 text-[#c38e70]" />
+                <h2 className="text-lg lg:text-xl font-bold text-[#e6d2c0]">Tracks</h2>
             </div>
             <div className="space-y-2 lg:space-y-3">
                 {tracks.map((track) => (

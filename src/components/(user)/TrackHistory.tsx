@@ -25,8 +25,8 @@ export default function TrackHistory({ userId }: { userId: string }) {
     return (
         <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex items-center gap-2 mb-2 lg:mb-4 ">
-                <History className="text-[#c38e70]" />
-                <h3 className="text-xl font-bold text-[#e6d2c0]">Listening History</h3>
+                <History className="size-5 lg:size-6 text-[#c38e70]" />
+                <h3 className="text-lg lg:text-xl font-bold text-[#e6d2c0]">Listening History</h3>
             </div>
             <div className="space-y-2 lg:space-y-3">
                 {data.tracks.map((t: Track) => (
