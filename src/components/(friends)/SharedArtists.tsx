@@ -34,7 +34,7 @@ export default function SharedArtists({ artists }: SharedArtistsProps) {
             <ul className="space-y-3">
                 {artists.map((artist) => (
                     <a href={`/artist/${artist.artistId}`} key={artist.artistId} className="flex items-center p-3 bg-[#2a211c] hover:bg-[#342820] transition-colors rounded-lg">
-                        <div className="w-10 h-10 bg-[#3d2e23] rounded-full flex items-center justify-center mr-3 flex-shrink-0"><span className="text-[#c38e70] font-bold">{artist.name.charAt(0).toUpperCase()}</span></div>
+                        <div className="w-10 h-10 bg-[#3d2e23] rounded-full flex items-center justify-center mr-3 flex-shrink-0"><span className="text-[#c38e70] font-bold">{artist.name.includes(" ") ? artist.name.split(" ").slice(0, 2).map(word => word.charAt(0).toUpperCase()).join("") : artist.name.charAt(0).toUpperCase()}</span></div>
                         <div><p className="font-medium text-[#e6d2c0]">{artist.name}</p></div>
                     </a>
                 ))}

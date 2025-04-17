@@ -53,7 +53,7 @@ export default function FriendList({ friends, selectedFriend, onSelectFriend }: 
             <ul className="divide-y divide-[#3d2e23]">
                 {friends.map((friend) => (
                     <li key={friend.friendId} onClick={() => onSelectFriend(friend)} className={`p-4 flex items-center cursor-pointer transition-colors ${selectedFriend?.friendId === friend.friendId ? "bg-[#2a211c]" : "hover:bg-[#2a211c]"}`}>
-                        <div className="mr-3 w-10 h-10 bg-[#3d2e23] rounded-full flex items-center justify-center flex-shrink-0"><span className="text-[#c38e70] font-bold">{friend.friendInfo.name.charAt(0).toUpperCase()}</span></div>
+                        <div className="mr-3 w-10 h-10 bg-[#3d2e23] rounded-full flex items-center justify-center flex-shrink-0"><span className="text-[#c38e70] font-bold">{friend.friendInfo.name.includes(" ") ? friend.friendInfo.name.split(" ").slice(0, 2).map(word => word.charAt(0).toUpperCase()).join("") : friend.friendInfo.name.charAt(0).toUpperCase()}</span></div>
                         <div className="flex-1 min-w-0">
                             <p className="font-medium text-[#e6d2c0] truncate">{friend.friendInfo.name}</p>
                             <div className="flex items-center text-sm text-[#a18072]">
