@@ -20,7 +20,7 @@ type UserPlayCount = {
 
 export default function UserCard({ userId }: { userId: string }) {
     const { data: user, error } = useSWR<User>(`/api/user/${userId}`, fetcher)
-    const { data: playCount, error: playCountError } = useSWR<UserPlayCount>(`/api/user/${userId}/play-count`, fetcher)
+    const { data: playCount, error: playCountError } = useSWR<UserPlayCount>(`/api/user/${userId}/playcount`, fetcher)
 
     if (error) return <FetchError />
     if (playCountError) return <FetchError />

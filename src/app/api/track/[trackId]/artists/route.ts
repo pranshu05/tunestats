@@ -29,13 +29,11 @@ export async function GET(req: NextRequest) {
 
         const result = {
             primaryArtist: primaryArtist[0],
-            featuredArtists: featuredArtists || [],
-            allArtists: [primaryArtist[0], ...(featuredArtists || [])]
+            featuredArtists: featuredArtists || []
         };
 
         return NextResponse.json(result, { status: 200 });
-    } catch (error) {
-        console.error("Error fetching track artists:", error);
+    } catch {
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

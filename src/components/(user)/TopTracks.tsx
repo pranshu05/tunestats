@@ -12,6 +12,7 @@ type Track = {
     name: string
     albumImage: string
     artistName: string
+    featuredArtists: string[]
 }
 
 export default function TopTracks({ userId }: { userId: string }) {
@@ -69,7 +70,7 @@ export default function TopTracks({ userId }: { userId: string }) {
                                         </div>
                                     </div>
                                     <h4 className="font-bold text-[#e6d2c0] line-clamp-1">{track.name}</h4>
-                                    <p className="text-sm text-[#a18072] mt-1 line-clamp-1">{track.artistName}</p>
+                                    <p className="text-sm text-[#a18072] mt-1 line-clamp-1">{track.artistName}{track.featuredArtists?.length > 0 && `, ${track.featuredArtists.join(", ")}`}</p>
                                 </div>
                             </a>
                         ))}
@@ -89,7 +90,7 @@ export default function TopTracks({ userId }: { userId: string }) {
                                     </div>
                                 </div>
                                 <h4 className="font-bold text-[#e6d2c0] line-clamp-1">{track.name}</h4>
-                                <p className="text-sm text-[#a18072] mt-1 line-clamp-1">{track.artistName}</p>
+                                <p className="text-sm text-[#a18072] mt-1 line-clamp-1">{track.artistName}{track.featuredArtists?.length > 0 && `, ${track.featuredArtists.join(", ")}`}</p>
                             </div>
                         </a>
                     ))}

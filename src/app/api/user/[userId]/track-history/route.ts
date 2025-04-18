@@ -14,7 +14,13 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
 
     try {
         const tracks = await sql`
-            SELECT th."timestamp", t."name" AS "trackName", t."trackId" AS "trackId", a."name" AS "artistName", al."imageUrl"
+            SELECT th."timestamp", t."name" AS "trackName", t."trackId" AS "trackId", a."name" AS "artistName", al."imageUrl",
+            (
+            SELECT json_agg(art."name")
+            FROM "trackFeaturedArtists" tfa
+            JOIN "artists" art ON tfa."artistId" = art."artistId"
+            WHERE tfa."trackId" = t."trackId"
+            ) AS "featuredArtists"
             FROM "trackHistory" th
             JOIN "tracks" t ON th."trackId" = t."trackId"
             JOIN "artists" a ON th."artistId" = a."artistId"

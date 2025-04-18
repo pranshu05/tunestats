@@ -6,9 +6,10 @@ import { Percent } from "lucide-react"
 interface CompatibilityScoreProps {
     score: number
     sharedGenres: number
+    totalUniqueGenres: number
 }
 
-export default function CompatibilityScore({ score, sharedGenres }: CompatibilityScoreProps) {
+export default function CompatibilityScore({ score, sharedGenres, totalUniqueGenres }: CompatibilityScoreProps) {
     const [animatedScore, setAnimatedScore] = useState(0)
 
     useEffect(() => {
@@ -35,10 +36,12 @@ export default function CompatibilityScore({ score, sharedGenres }: Compatibilit
         return "Different Musical Tastes"
     }
 
+    console.log((sharedGenres / totalUniqueGenres))
     const getGenreDescription = () => {
-        if (sharedGenres >= 6) return "Remarkable genre overlap"
-        if (sharedGenres >= 4) return "Great genre variety"
-        if (sharedGenres >= 2) return "Some genre similarity"
+        if ((sharedGenres / totalUniqueGenres) >= 0.8) return "Remarkable genre overlap"
+        if ((sharedGenres / totalUniqueGenres) >= 0.6) return "Great genre variety"
+        if ((sharedGenres / totalUniqueGenres) >= 0.4) return "Good genre overlap"
+        if ((sharedGenres / totalUniqueGenres) >= 0.2) return "Some genre similarity"
         if (sharedGenres === 1) return "One shared genre"
         return ""
     }

@@ -18,11 +18,23 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
         }
 
         const userPlayCount = await sql`
-            SELECT 
-                (SELECT COUNT(*) FROM "trackHistory" WHERE "userId" = ${userId}) AS "playCount",
-                (SELECT COUNT(DISTINCT "trackId") FROM "trackHistory" WHERE "userId" = ${userId}) AS "trackCount",
-                (SELECT COUNT(DISTINCT "artistId") FROM "trackHistory" WHERE "userId" = ${userId}) AS "artistCount"
+        SELECT 
+            (SELECT COUNT(*) FROM "trackHistory" WHERE "userId" = ${userId}) AS "playCount",
+            (SELECT COUNT(DISTINCT "trackId") FROM "trackHistory" WHERE "userId" = ${userId}) AS "trackCount",
+            (
+            SELECT COUNT(DISTINCT "artistId") FROM (
+                    SELECT "artistId"
+                    FROM "trackHistory"
+                    WHERE "userId" = ${userId}
+                    UNION
+                    SELECT fa."artistId"
+                    FROM "trackHistory" th
+                    JOIN "trackFeaturedArtists" fa ON th."trackId" = fa."trackId"
+                    WHERE th."userId" = ${userId}
+                ) AS combined_artists
+            ) AS "artistCount"
         `;
+
 
         return NextResponse.json(userPlayCount[0], { status: 200 });
     } catch {

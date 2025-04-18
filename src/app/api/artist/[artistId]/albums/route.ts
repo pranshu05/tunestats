@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
         `;
 
         if (!albums || albums.length === 0) {
-            return new NextResponse("No albums found", { status: 404 });
+            return NextResponse.json([], { status: 200 });
         }
 
         return NextResponse.json(albums, { status: 200 });

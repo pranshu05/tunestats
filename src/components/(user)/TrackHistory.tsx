@@ -12,6 +12,7 @@ type Track = {
     imageUrl: string
     trackName: string
     artistName: string
+    featuredArtists: string[]
     trackId: string
 }
 
@@ -38,7 +39,7 @@ export default function TrackHistory({ userId }: { userId: string }) {
                         </div>
                         <div>
                             <p className="font-medium text-[#e6d2c0] line-clamp-1" title={t.trackName}>{t.trackName.length > 30 ? `${t.trackName.slice(0, 30)}...` : t.trackName}</p>
-                            <p className="text-sm text-[#a18072] line-clamp-1">{t.artistName}</p>
+                            <p className="text-sm text-[#a18072] line-clamp-1">{t.artistName}{t.featuredArtists?.length > 0 && `, ${t.featuredArtists.join(", ")}`}</p>
                         </div>
                     </a>
                 ))}

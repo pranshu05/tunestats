@@ -33,6 +33,16 @@ export default function ArtistAlbums({ artistId }: { artistId: string }) {
         }
     }
 
+    if (albums.length === 0) return (
+        <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
+            <div className="flex items-center gap-2 mb-2 lg:mb-4">
+                <Disc className="size-5 lg:size-6 text-[#c38e70]" />
+                <h2 className="text-lg lg:text-xl font-bold text-[#e6d2c0]">Albums</h2>
+            </div>
+            <div className="text-[#a18072]">No albums found</div>
+        </div>
+    )
+
     return (
         <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex items-center gap-2 mb-2 lg:mb-4">

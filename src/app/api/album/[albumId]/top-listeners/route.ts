@@ -25,8 +25,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json(result, { status: 200 });
 
-    } catch (error) {
-        console.error("Error fetching top listeners:", error);
+    } catch {
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

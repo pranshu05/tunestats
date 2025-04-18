@@ -19,7 +19,7 @@ interface ArtistResponse {
 }
 
 export default function TrackArtist({ trackId }: { trackId: string }) {
-    const { data, error } = useSWR<ArtistResponse>(`/api/track/${trackId}/artist`, fetcher)
+    const { data, error } = useSWR<ArtistResponse>(`/api/track/${trackId}/artists`, fetcher)
 
     if (error) return <FetchError />
     if (!data) return <FetchLoader />

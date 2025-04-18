@@ -23,8 +23,7 @@ export async function GET(req: NextRequest) {
             AND th."artistId" != ${artistId}
         `;
 
-        if ((!primaryPlays || primaryPlays.length === 0) &&
-            (!featuredPlays || featuredPlays.length === 0)) {
+        if ((!primaryPlays || primaryPlays.length === 0) && (!featuredPlays || featuredPlays.length === 0)) {
             return new NextResponse("No playcount found", { status: 404 });
         }
 
@@ -41,8 +40,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json(result, { status: 200 });
 
-    } catch (error) {
-        console.error("Error fetching artist playcount:", error);
+    } catch {
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

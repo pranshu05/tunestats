@@ -18,7 +18,13 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
 
     try {
         const result = await sql`
-            SELECT t."trackId", t."name", a."imageUrl" AS "albumImage", COUNT(*) AS "playCount", ar.name AS "artistName"
+            SELECT t."trackId", t."name", a."imageUrl" AS "albumImage", COUNT(*) AS "playCount", ar.name AS "artistName",
+            (
+            SELECT json_agg(art."name")
+            FROM "trackFeaturedArtists" tfa
+            JOIN "artists" art ON tfa."artistId" = art."artistId"
+            WHERE tfa."trackId" = t."trackId"
+            ) AS "featuredArtists"
             FROM "trackHistory" th
             JOIN "tracks" t ON th."trackId" = t."trackId"
             JOIN "albums" a ON t."albumId" = a."albumId"

@@ -41,15 +41,35 @@ export async function GET() {
                     WHERE th."userId" = ${friendId}
                     AND th."timestamp" >= ${oneWeekAgoIso}
                 ),
+                user_artists AS (
+                    -- Primary artists from user's history 
+                    SELECT DISTINCT uh."artistId" 
+                    FROM user_history uh
+                    UNION
+                    -- Featured artists from user's tracks
+                    SELECT DISTINCT tf."artistId"
+                    FROM user_history uh
+                    JOIN "trackFeaturedArtists" tf ON uh."trackId" = tf."trackId"
+                ),
+                friend_artists AS (
+                    -- Primary artists from friend's history
+                    SELECT DISTINCT fh."artistId" 
+                    FROM friend_history fh
+                    UNION
+                    -- Featured artists from friend's tracks
+                    SELECT DISTINCT tf."artistId"
+                    FROM friend_history fh
+                    JOIN "trackFeaturedArtists" tf ON fh."trackId" = tf."trackId"
+                ),
                 user_genres AS (
                     SELECT DISTINCT unnest(a.genres) as genre
-                    FROM user_history uh
-                    JOIN artists a ON uh."artistId" = a."artistId"
+                    FROM user_artists ua
+                    JOIN artists a ON ua."artistId" = a."artistId"
                 ),
                 friend_genres AS (
                     SELECT DISTINCT unnest(a.genres) as genre
-                    FROM friend_history fh
-                    JOIN artists a ON fh."artistId" = a."artistId"
+                    FROM friend_artists fa
+                    JOIN artists a ON fa."artistId" = a."artistId"
                 ),
                 shared_tracks AS (
                     SELECT COUNT(DISTINCT uh."trackId") as count
@@ -57,9 +77,9 @@ export async function GET() {
                     JOIN friend_history fh ON uh."trackId" = fh."trackId"
                 ),
                 shared_artists AS (
-                    SELECT COUNT(DISTINCT uh."artistId") as count
-                    FROM user_history uh
-                    JOIN friend_history fh ON uh."artistId" = fh."artistId"
+                    SELECT COUNT(DISTINCT ua."artistId") as count
+                    FROM user_artists ua
+                    JOIN friend_artists fa ON ua."artistId" = fa."artistId"
                 ),
                 total_unique_tracks AS (
                     SELECT COUNT(DISTINCT "trackId") as count
@@ -72,9 +92,9 @@ export async function GET() {
                 total_unique_artists AS (
                     SELECT COUNT(DISTINCT "artistId") as count
                     FROM (
-                        SELECT "artistId" FROM user_history
+                        SELECT "artistId" FROM user_artists
                         UNION
-                        SELECT "artistId" FROM friend_history
+                        SELECT "artistId" FROM friend_artists
                     ) as combined
                 ),
                 shared_genres AS (
@@ -128,11 +148,31 @@ export async function GET() {
                     WHERE th."userId" = ${friendId}
                     AND th."timestamp" >= ${oneWeekAgoIso}
                 ),
+                user_artists AS (
+                    -- Primary artists from user's history 
+                    SELECT DISTINCT uh."artistId" 
+                    FROM user_history uh
+                    UNION
+                    -- Featured artists from user's tracks
+                    SELECT DISTINCT tf."artistId"
+                    FROM user_history uh
+                    JOIN "trackFeaturedArtists" tf ON uh."trackId" = tf."trackId"
+                ),
+                friend_artists AS (
+                    -- Primary artists from friend's history
+                    SELECT DISTINCT fh."artistId" 
+                    FROM friend_history fh
+                    UNION
+                    -- Featured artists from friend's tracks
+                    SELECT DISTINCT tf."artistId"
+                    FROM friend_history fh
+                    JOIN "trackFeaturedArtists" tf ON fh."trackId" = tf."trackId"
+                ),
                 shared_artists_data AS (
                     SELECT DISTINCT a."artistId", a."name"
-                    FROM user_history uh
-                    JOIN friend_history fh ON uh."artistId" = fh."artistId"
-                    JOIN artists a ON uh."artistId" = a."artistId"
+                    FROM user_artists ua
+                    JOIN friend_artists fa ON ua."artistId" = fa."artistId"
+                    JOIN artists a ON ua."artistId" = a."artistId"
                     LIMIT 5
                 ),
                 shared_tracks_data AS (
@@ -145,13 +185,13 @@ export async function GET() {
                 ),
                 user_genres AS (
                     SELECT DISTINCT unnest(a.genres) as genre
-                    FROM user_history uh
-                    JOIN artists a ON uh."artistId" = a."artistId"
+                    FROM user_artists ua
+                    JOIN artists a ON ua."artistId" = a."artistId"
                 ),
                 friend_genres AS (
                     SELECT DISTINCT unnest(a.genres) as genre
-                    FROM friend_history fh
-                    JOIN artists a ON fh."artistId" = a."artistId"
+                    FROM friend_artists fa
+                    JOIN artists a ON fa."artistId" = a."artistId"
                 ),
                 shared_genres_data AS (
                     SELECT DISTINCT ug.genre
@@ -175,15 +215,12 @@ export async function GET() {
             const sharedTracks = sharedItems[0]?.shared_tracks || [];
             const sharedGenres = sharedItems[0]?.shared_genres || [];
 
-            // Apply a bonus to the compatibility score for higher genre similarity
             let compatibilityScore = compatibilityResult?.compatibility_score || 0;
 
-            // If there's significant genre overlap, apply a bonus to increase scores
             if (compatibilityResult?.shared_genres_count > 0) {
                 const genreSimilarityRatio = compatibilityResult.shared_genres_count /
                     compatibilityResult.total_unique_genres;
 
-                // Apply exponential boost for higher genre similarity
                 if (genreSimilarityRatio >= 0.6) {
                     compatibilityScore = Math.min(100, Math.round(compatibilityScore * 1.3));
                 } else if (genreSimilarityRatio >= 0.4) {
@@ -211,7 +248,6 @@ export async function GET() {
             });
         }
 
-        // Sort results by compatibility score (highest first)
         friendCompatibilityResults.sort((a, b) => b.compatibilityScore - a.compatibilityScore);
 
         return NextResponse.json(friendCompatibilityResults, { status: 200 });
