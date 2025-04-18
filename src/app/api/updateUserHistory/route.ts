@@ -58,10 +58,11 @@ export async function GET(request: NextRequest) {
                     }
                 }
 
-                const artistExists = await sql`
+                const primaryArtistExists = await sql`
                     SELECT 1 FROM artists WHERE "artistId" = ${primaryArtist.id} LIMIT 1
                 `;
-                if (!artistExists.length) {
+
+                if (!primaryArtistExists.length) {
                     const artistResponse = await fetch(
                         `https://api.spotify.com/v1/artists/${primaryArtist.id}`,
                         {
@@ -69,42 +70,8 @@ export async function GET(request: NextRequest) {
                         }
                     );
 
-                    if (!artistResponse.ok) {
-                        continue;
-                    }
-
-                    const artistData = await artistResponse.json();
-
-                    await sql`
-                        INSERT INTO artists ("artistId", name, genres, "imageUrl") 
-                        VALUES (
-                            ${artistData.id},
-                            ${artistData.name},
-                            ${artistData.genres},
-                            ${artistData.images?.[0]?.url ?? null}
-                        )
-                    `;
-                }
-
-                for (const featuredArtist of featuredArtists) {
-                    const featuredArtistExists = await sql`
-                        SELECT 1 FROM artists WHERE "artistId" = ${featuredArtist.id} LIMIT 1
-                    `;
-
-                    if (!featuredArtistExists.length) {
-                        const artistResponse = await fetch(
-                            `https://api.spotify.com/v1/artists/${featuredArtist.id}`,
-                            {
-                                headers: { Authorization: `Bearer ${accessToken}` }
-                            }
-                        );
-
-                        if (!artistResponse.ok) {
-                            continue;
-                        }
-
+                    if (artistResponse.ok) {
                         const artistData = await artistResponse.json();
-
                         await sql`
                             INSERT INTO artists ("artistId", name, genres, "imageUrl") 
                             VALUES (
@@ -115,17 +82,12 @@ export async function GET(request: NextRequest) {
                             )
                         `;
                     }
-
-                    await sql`
-                        INSERT INTO "trackFeaturedArtists" ("trackId", "artistId")
-                        VALUES (${trackId}, ${featuredArtist.id})
-                        ON CONFLICT ("trackId", "artistId") DO NOTHING
-                    `;
                 }
 
                 const albumExists = await sql`
                     SELECT 1 FROM albums WHERE "albumId" = ${album.id} LIMIT 1
                 `;
+
                 if (!albumExists.length) {
                     const albumResponse = await fetch(
                         `https://api.spotify.com/v1/albums/${album.id}`,
@@ -134,31 +96,29 @@ export async function GET(request: NextRequest) {
                         }
                     );
 
-                    if (!albumResponse.ok) {
-                        continue;
+                    if (albumResponse.ok) {
+                        const albumData = await albumResponse.json();
+                        let releaseDate = albumData.release_date;
+
+                        if (/^\d{4}$/.test(releaseDate)) {
+                            releaseDate = `${releaseDate}-01-01`;
+                        } else if (/^\d{4}-\d{2}$/.test(releaseDate)) {
+                            releaseDate = `${releaseDate}-01`;
+                        }
+
+                        await sql`
+                            INSERT INTO albums ("albumId", name, "artistId", "releaseDate", "albumType", label, "imageUrl")
+                            VALUES (
+                                ${albumData.id},
+                                ${albumData.name},
+                                ${primaryArtist.id}, 
+                                ${releaseDate},
+                                ${albumData.album_type},
+                                ${albumData.label},
+                                ${albumData.images?.[0]?.url ?? null}
+                            )
+                        `;
                     }
-
-                    const albumData = await albumResponse.json();
-
-                    let releaseDate = albumData.release_date;
-                    if (/^\d{4}$/.test(releaseDate)) {
-                        releaseDate = `${releaseDate}-01-01`;
-                    } else if (/^\d{4}-\d{2}$/.test(releaseDate)) {
-                        releaseDate = `${releaseDate}-01`;
-                    }
-
-                    await sql`
-                        INSERT INTO albums ("albumId", name, "artistId", "releaseDate", "albumType", label, "imageUrl")
-                        VALUES (
-                            ${albumData.id},
-                            ${albumData.name},
-                            ${primaryArtist.id}, 
-                            ${releaseDate},
-                            ${albumData.album_type},
-                            ${albumData.label},
-                            ${albumData.images?.[0]?.url ?? null}
-                        )
-                    `;
                 }
 
                 const trackExists = await sql`
@@ -175,6 +135,38 @@ export async function GET(request: NextRequest) {
                             ${track.duration_ms},
                             ${track.explicit}
                         )
+                    `;
+                }
+
+                for (const featuredArtist of featuredArtists) {
+                    const featuredArtistExists = await sql`
+                        SELECT 1 FROM artists WHERE "artistId" = ${featuredArtist.id} LIMIT 1
+                    `;
+
+                    if (!featuredArtistExists.length) {
+                        const artistResponse = await fetch(
+                            `https://api.spotify.com/v1/artists/${featuredArtist.id}`,
+                            { headers: { Authorization: `Bearer ${accessToken}` } }
+                        );
+
+                        if (artistResponse.ok) {
+                            const artistData = await artistResponse.json();
+                            await sql`
+                                INSERT INTO artists ("artistId", name, genres, "imageUrl") 
+                                VALUES (
+                                    ${artistData.id},
+                                    ${artistData.name},
+                                    ${artistData.genres},
+                                    ${artistData.images?.[0]?.url ?? null}
+                                )
+                            `;
+                        }
+                    }
+
+                    await sql`
+                        INSERT INTO "trackFeaturedArtists" ("trackId", "artistId")
+                        VALUES (${trackId}, ${featuredArtist.id})
+                        ON CONFLICT ("trackId", "artistId") DO NOTHING
                     `;
                 }
 
