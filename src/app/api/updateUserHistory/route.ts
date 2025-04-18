@@ -44,7 +44,8 @@ export async function GET(request: NextRequest) {
             for (const item of items) {
                 const { played_at, track } = item;
                 const { id: trackId, artists, album } = track;
-                const artist = artists[0];
+                const primaryArtist = artists[0];
+                const featuredArtists = artists.slice(1);
 
                 if (!forceRefresh) {
                     const existingHistory = await sql`
@@ -58,11 +59,11 @@ export async function GET(request: NextRequest) {
                 }
 
                 const artistExists = await sql`
-                    SELECT 1 FROM artists WHERE "artistId" = ${artist.id} LIMIT 1
+                    SELECT 1 FROM artists WHERE "artistId" = ${primaryArtist.id} LIMIT 1
                 `;
                 if (!artistExists.length) {
                     const artistResponse = await fetch(
-                        `https://api.spotify.com/v1/artists/${artist.id}`,
+                        `https://api.spotify.com/v1/artists/${primaryArtist.id}`,
                         {
                             headers: { Authorization: `Bearer ${accessToken}` }
                         }
@@ -82,6 +83,43 @@ export async function GET(request: NextRequest) {
                             ${artistData.genres},
                             ${artistData.images?.[0]?.url ?? null}
                         )
+                    `;
+                }
+
+                for (const featuredArtist of featuredArtists) {
+                    const featuredArtistExists = await sql`
+                        SELECT 1 FROM artists WHERE "artistId" = ${featuredArtist.id} LIMIT 1
+                    `;
+
+                    if (!featuredArtistExists.length) {
+                        const artistResponse = await fetch(
+                            `https://api.spotify.com/v1/artists/${featuredArtist.id}`,
+                            {
+                                headers: { Authorization: `Bearer ${accessToken}` }
+                            }
+                        );
+
+                        if (!artistResponse.ok) {
+                            continue;
+                        }
+
+                        const artistData = await artistResponse.json();
+
+                        await sql`
+                            INSERT INTO artists ("artistId", name, genres, "imageUrl") 
+                            VALUES (
+                                ${artistData.id},
+                                ${artistData.name},
+                                ${artistData.genres},
+                                ${artistData.images?.[0]?.url ?? null}
+                            )
+                        `;
+                    }
+
+                    await sql`
+                        INSERT INTO "trackFeaturedArtists" ("trackId", "artistId")
+                        VALUES (${trackId}, ${featuredArtist.id})
+                        ON CONFLICT ("trackId", "artistId") DO NOTHING
                     `;
                 }
 
@@ -114,7 +152,7 @@ export async function GET(request: NextRequest) {
                         VALUES (
                             ${albumData.id},
                             ${albumData.name},
-                            ${artist.id}, 
+                            ${primaryArtist.id}, 
                             ${releaseDate},
                             ${albumData.album_type},
                             ${albumData.label},
@@ -133,7 +171,7 @@ export async function GET(request: NextRequest) {
                             ${trackId},
                             ${track.name},
                             ${album.id},
-                            ${artist.id},
+                            ${primaryArtist.id},
                             ${track.duration_ms},
                             ${track.explicit}
                         )
@@ -142,7 +180,7 @@ export async function GET(request: NextRequest) {
 
                 await sql`
                     INSERT INTO "trackHistory" ("trackId", "userId", "artistId", timestamp) 
-                    VALUES (${trackId}, ${userId}, ${artist.id}, ${played_at})
+                    VALUES (${trackId}, ${userId}, ${primaryArtist.id}, ${played_at})
                 `;
             }
         }

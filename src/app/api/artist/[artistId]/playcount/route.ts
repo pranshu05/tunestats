@@ -9,18 +9,40 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const result = await sql`
-            SELECT "artistId", COUNT(*) AS "playcount" 
-            FROM "trackHistory" WHERE "artistId" = ${artistId} GROUP BY "artistId";
+        const primaryPlays = await sql`
+            SELECT COUNT(*) AS "primaryPlaycount" 
+            FROM "trackHistory" 
+            WHERE "artistId" = ${artistId}
         `;
 
-        if (!result || result.length === 0) {
+        const featuredPlays = await sql`
+            SELECT COUNT(*) AS "featuredPlaycount" 
+            FROM "trackHistory" th
+            JOIN "trackFeaturedArtists" tf ON th."trackId" = tf."trackId"
+            WHERE tf."artistId" = ${artistId} 
+            AND th."artistId" != ${artistId}
+        `;
+
+        if ((!primaryPlays || primaryPlays.length === 0) &&
+            (!featuredPlays || featuredPlays.length === 0)) {
             return new NextResponse("No playcount found", { status: 404 });
         }
 
-        return NextResponse.json(result[0], { status: 200 });
+        const primaryCount = primaryPlays.length > 0 ? parseInt(primaryPlays[0].primaryPlaycount) : 0;
+        const featuredCount = featuredPlays.length > 0 ? parseInt(featuredPlays[0].featuredPlaycount) : 0;
+        const totalPlaycount = primaryCount + featuredCount;
 
-    } catch {
+        const result = {
+            artistId: artistId,
+            primaryPlaycount: primaryCount,
+            featuredPlaycount: featuredCount,
+            playcount: totalPlaycount
+        };
+
+        return NextResponse.json(result, { status: 200 });
+
+    } catch (error) {
+        console.error("Error fetching artist playcount:", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

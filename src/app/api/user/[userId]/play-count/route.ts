@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from "@/utils/db";
 
-export async function GET(req: NextRequest) {
-    const userId = req.nextUrl.pathname.split('/').slice(-2, -1)[0];
+export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
+    const userId = params.userId;
 
     if (!userId) {
         return new NextResponse("Missing query parameters", { status: 400 });

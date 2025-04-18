@@ -9,19 +9,33 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const result = await sql`
+        const primaryArtist = await sql`
             SELECT t."trackId", ar.*
             FROM tracks t
             JOIN artists ar ON t."artistId" = ar."artistId"
             WHERE t."trackId" = ${trackId}
         `;
 
-        if (!result || result.length === 0) {
+        if (!primaryArtist || primaryArtist.length === 0) {
             return new NextResponse("No artist found", { status: 404 });
         }
 
-        return NextResponse.json(result[0], { status: 200 });
-    } catch {
+        const featuredArtists = await sql`
+            SELECT ar.*
+            FROM "trackFeaturedArtists" tf
+            JOIN artists ar ON tf."artistId" = ar."artistId"
+            WHERE tf."trackId" = ${trackId}
+        `;
+
+        const result = {
+            primaryArtist: primaryArtist[0],
+            featuredArtists: featuredArtists || [],
+            allArtists: [primaryArtist[0], ...(featuredArtists || [])]
+        };
+
+        return NextResponse.json(result, { status: 200 });
+    } catch (error) {
+        console.error("Error fetching track artists:", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
