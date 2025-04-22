@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
         }
 
         await sql`
-            INSERT INTO upvotes ("userId", "commentId")
-            VALUES (${session.user.id}, ${commentId})
+            INSERT INTO upvotes ("userId", "commentId", "createdAt")
+            VALUES (${session.user.id}, ${commentId}, NOW())
             ON CONFLICT ("userId", "commentId") DO NOTHING
         `;
 

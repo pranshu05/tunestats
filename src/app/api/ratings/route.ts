@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     try {
         const ratings = await sql`
-            SELECT "userId", "rating"
+            SELECT "userId", "rating", "createdAt"
             FROM ratings
             WHERE "entityId" = ${entityId} AND "entityType" = ${entityType}
         `;
@@ -57,8 +57,8 @@ export async function POST(req: NextRequest) {
         }
 
         await sql`
-            INSERT INTO ratings ("userId", "entityId", "entityType", "rating")
-            VALUES (${session.user.id}, ${entityId}, ${entityType}, ${rating})
+            INSERT INTO ratings ("userId", "entityId", "entityType", "rating", "createdAt")
+            VALUES (${session.user.id}, ${entityId}, ${entityType}, ${rating}, NOW())
             ON CONFLICT ("userId", "entityId", "entityType") DO UPDATE
             SET "rating" = EXCLUDED."rating"
         `;
