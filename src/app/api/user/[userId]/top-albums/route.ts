@@ -26,7 +26,7 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
             AND th."timestamp" >= NOW() - ${sql.unsafe(`INTERVAL '${days} days'`)}
             GROUP BY al."albumId", al."name", al."imageUrl"
             ORDER BY "playCount" DESC NULLS LAST
-            LIMIT 50
+            LIMIT 144
         `;
 
         if (!result || result.length === 0) {
@@ -34,8 +34,7 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
         }
 
         return NextResponse.json(result, { status: 200 });
-    } catch (error) {
-        console.error("Error fetching top albums:", error);
+    } catch {
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
