@@ -29,7 +29,6 @@ export const authOptions: NextAuthOptions = {
                     id: profile.id,
                     name: profile.display_name,
                     email: profile.email,
-                    image: profile.images?.[0]?.url ?? null,
                 };
             },
         }),
@@ -42,21 +41,19 @@ export const authOptions: NextAuthOptions = {
                 token.userId = account.providerAccountId as string;
 
                 await sql`
-                    INSERT INTO "users" ("userId", "email", "name", "accountType", "refreshToken", "image")
+                    INSERT INTO "users" ("userId", "email", "name", "accountType", "refreshToken")
                     VALUES (
                         ${account.providerAccountId},
                         ${user.email},
                         ${user.name},
                         'public',
-                        ${account.refresh_token},
-                        ${user.image ?? null}
+                        ${account.refresh_token}
                     )
                     ON CONFLICT ("userId") DO UPDATE SET
                         "email" = EXCLUDED.email,
                         "name" = EXCLUDED.name,
                         "accountType" = EXCLUDED."accountType",
-                        "refreshToken" = EXCLUDED."refreshToken",
-                        "image" = EXCLUDED.image
+                        "refreshToken" = EXCLUDED."refreshToken"
                 `;
             }
 
