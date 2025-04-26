@@ -6,12 +6,17 @@
 
 - **Spotify Authentication**: Securely log in with your Spotify account.
 - **Sharable User Profiles**: Generate personalized, shareable profiles for showcasing your Spotify activity.
-- **Friend Comparable Charts**: Compare your Spotify stats with friends in personalized charts.
+- **Comments Section**: Engage with the community by leaving comments on profiles, tracks/albums/artist pages.
+- **Rating System**: Rate your favorite tracks, albums, and artists just like IMDb but for Spotify!.
 - **Add Friends**: Build a network of friends and explore their music preferences.
+- **Friend Comparable Charts**: Compare your Spotify stats with friends in personalized charts.
 - **Privacy Control**: Set your profile as public or private based on your preference.
 - **Responsive Design**: Enjoy a seamless experience across all devices.
 - **Artist Page**: View detailed information about your favorite artists.
 - **Track Page**: Explore detailed insights about your top tracks.
+- **Album Page**: Discover more about your favorite albums.
+- **Global Stats**: View global stats of all top tracks, albums, and artists.
+- **Personalized Album Chart**: Get a personalized album chart based on your Spotify listening history.
 
 ---
 
@@ -24,7 +29,6 @@ Follow these steps to set up TuneStats on your local machine:
 Make sure you have the following installed:
 - Node.js (v16 or later)
 - npm or yarn
-- Firebase account for database configuration
 - Spotify Developer account to set up API credentials
 
 ### Installation
@@ -59,7 +63,11 @@ Make sure you have the following installed:
    DATABASE_URL=`your_database_url`(neon db)
    ```
 
-5. **Run the Development Server**
+5. **Setup Database**
+   - Create a Neon database and set up the connection string in your `.env` file.
+   - Run the DDL scripts from [DDL Script File](/db/create_tables.sql) to create the necessary tables in your database.
+
+6. **Run the Development Server**
    Start the development server:
    ```bash
    npm run dev
@@ -69,7 +77,7 @@ Make sure you have the following installed:
    yarn dev
    ```
 
-6. **Open in Browser**
+7. **Open in Browser**
    Open http://localhost:3000 to view the app.
 
 ---
