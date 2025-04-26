@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
     try {
         const comments = await sql`
-            SELECT c.*, u.name, u.image, (SELECT COUNT(*) FROM upvotes u2 WHERE u2."commentId" = c."commentId") AS "upvoteCount"
+            SELECT c.*, u.name, (SELECT COUNT(*) FROM upvotes u2 WHERE u2."commentId" = c."commentId") AS "upvoteCount"
             FROM comments c
             JOIN users u ON c."userId" = u."userId"
             WHERE c."entityId" = ${entityId} AND c."entityType" = ${entityType}

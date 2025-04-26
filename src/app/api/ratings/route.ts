@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     try {
         const ratings = await sql`
-            SELECT "userId", "rating", "createdAt"
+            SELECT "userId", "rating", "timestamp"
             FROM ratings
             WHERE "entityId" = ${entityId} AND "entityType" = ${entityType}
         `;
@@ -57,13 +57,37 @@ export async function POST(req: NextRequest) {
         }
 
         await sql`
-            INSERT INTO ratings ("userId", "entityId", "entityType", "rating", "createdAt")
+            INSERT INTO ratings ("userId", "entityId", "entityType", "rating", "timestamp")
             VALUES (${session.user.id}, ${entityId}, ${entityType}, ${rating}, NOW())
             ON CONFLICT ("userId", "entityId", "entityType") DO UPDATE
             SET "rating" = EXCLUDED."rating"
         `;
 
         return new NextResponse("Rating saved", { status: 201 });
+    } catch {
+        return new NextResponse("Internal Server Error", { status: 500 });
+    }
+}
+
+export async function DELETE(req: NextRequest) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id)
+        return new NextResponse("Unauthorized", { status: 401 });
+
+    const { entityId, entityType } = await req.json();
+    if (!entityId || !entityType) {
+        return new NextResponse("Missing fields", { status: 400 });
+    }
+
+    try {
+        await sql`
+            DELETE FROM ratings
+            WHERE "userId" = ${session.user.id}
+            AND "entityId" = ${entityId}
+            AND "entityType" = ${entityType}
+        `;
+
+        return new NextResponse("Rating deleted", { status: 200 });
     } catch {
         return new NextResponse("Internal Server Error", { status: 500 });
     }

@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import axios from "axios"
 import useSWR, { mutate } from "swr"
 import { fetcher } from "@/utils/fetcher"
-import { Star } from "lucide-react"
+import { Star, Trash2 } from "lucide-react"
 
 type EntityType = "artist" | "album" | "track"
 type Rating = { userId: string; rating: number }
@@ -13,13 +13,14 @@ export default function RatingComponent({ entityId, entityType }: { entityId: st
     const [hovered, setHovered] = useState<number | null>(null)
     const { data: session } = useSession()
     const currentUserId = session?.user?.id
-    const { data } = useSWR(`/api/ratings?entityId=${entityId}&entityType=${entityType}`, fetcher, { revalidateOnFocus: false, })
+    const { data } = useSWR(`/api/ratings?entityId=${entityId}&entityType=${entityType}`, fetcher, { revalidateOnFocus: false })
     const [userRating, setUserRating] = useState<number | null>(null)
 
     useEffect(() => {
         if (data?.ratings && currentUserId) {
             const existing = data.ratings.find((r: Rating) => r.userId === currentUserId)
             if (existing) setUserRating(existing.rating)
+            else setUserRating(null)
         }
     }, [data, currentUserId])
 
@@ -27,10 +28,19 @@ export default function RatingComponent({ entityId, entityType }: { entityId: st
         setUserRating(value)
 
         await axios.post("/api/ratings", {
-            userId: currentUserId,
             entityId,
             entityType,
             rating: value,
+        })
+
+        mutate(`/api/ratings?entityId=${entityId}&entityType=${entityType}`)
+    }
+
+    const handleDelete = async () => {
+        setUserRating(null)
+
+        await axios.delete("/api/ratings", {
+            data: { entityId, entityType },
         })
 
         mutate(`/api/ratings?entityId=${entityId}&entityType=${entityType}`)
@@ -55,6 +65,7 @@ export default function RatingComponent({ entityId, entityType }: { entityId: st
                             </button>
                         ))}
                     </div>
+                    {userRating && (<button onClick={handleDelete} className="flex items-center gap-2 text-sm text-red-400 hover:text-red-500 transition mb-4"><Trash2 size={16} />Clear Rating</button>)}
                     <div className="flex items-center space-x-3 pt-3 border-t border-[#3d2e23] p-2">
                         <span className="font-bold text-lg text-[#e6d2c0]">{averageRating.toFixed(1)}</span>
                         <Star className="fill-[#c38e70] text-[#c38e70]" size={18} />
