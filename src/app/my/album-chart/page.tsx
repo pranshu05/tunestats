@@ -108,7 +108,7 @@ export default function AlbumChartPage() {
         const ctx = canvas.getContext("2d")
         if (!ctx) return
 
-        const imageSize = 300
+        const imageSize = 500
         canvas.width = cols * imageSize
         canvas.height = rows * imageSize
 
