@@ -1,12 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { sql } from "@/utils/db";
+import { isValidId } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
     try {
         const userId = params.userId;
 
-        if (!userId || typeof userId !== 'string' || userId.trim() === '') {
-            return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+        if (!isValidId(userId)) {
+            return createErrorResponse("Invalid user ID", 400);
         }
 
         const user = await sql`
@@ -17,11 +19,11 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
         `;
 
         if (!user || user.length === 0) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
+            return createErrorResponse("User not found", 404);
         }
 
-        return NextResponse.json(user[0], { status: 200, headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120', }, });
-    } catch {
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return createSuccessResponse(user[0], 200, 'public, s-maxage=60, stale-while-revalidate=120');
+    } catch (error) {
+        return handleError(error);
     }
 }

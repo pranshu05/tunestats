@@ -1,32 +1,29 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { sql } from "@/utils/db";
-
-const timeRangeDays = {
-    week: 7,
-    month: 30,
-    year: 365,
-};
+import { isValidTimeRange, TIME_RANGE_DAYS } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const range = searchParams.get('range') ?? 'week';
-    const days = timeRangeDays[range as keyof typeof timeRangeDays] ?? 7;
-
-    if (!["week", "month", "year"].includes(range)) {
-        return new NextResponse("Invalid time period. Use 'week', 'month', or 'year'.", { status: 400 });
-    }
-
     try {
+        const { searchParams } = new URL(req.url);
+        const range = searchParams.get('range') ?? 'week';
+
+        if (!isValidTimeRange(range)) {
+            return createErrorResponse("Invalid time period. Use 'week', 'month', or 'year'.", 400);
+        }
+
+        const days = TIME_RANGE_DAYS[range];
+
         const topArtists = await sql`
             SELECT a.*, COUNT(th."artistId") AS playcount
             FROM artists a JOIN "trackHistory" th ON a."artistId" = th."artistId"
-            WHERE th."timestamp" >= NOW() - ${sql.unsafe(`INTERVAL '${days} days'`)}
+            WHERE th."timestamp" >= NOW() - make_interval(days => ${days})
             GROUP BY a."artistId" ORDER BY playcount DESC
             LIMIT 10
         `;
 
-        return NextResponse.json({ range, artists: topArtists }, { status: 200 });
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return createSuccessResponse({ range, artists: topArtists }, 200);
+    } catch (error) {
+        return handleError(error);
     }
 }

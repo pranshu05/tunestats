@@ -1,20 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { sql } from "@/utils/db";
+import { isValidId } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
-    const userId = params.userId;
-
-    if (!userId) {
-        return new NextResponse("Missing query parameters", { status: 400 });
-    }
-
     try {
+        const userId = params.userId;
+
+        if (!isValidId(userId)) {
+            return createErrorResponse("Invalid or missing user ID", 400);
+        }
+
         const userExists = await sql`
             SELECT EXISTS (SELECT 1 FROM users WHERE "userId" = ${userId}) AS "exists"
         `;
 
         if (!userExists[0].exists) {
-            return new NextResponse("User not found", { status: 404 });
+            return createErrorResponse("User not found", 404);
         }
 
         const userPlayCount = await sql`
@@ -35,9 +37,8 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
             ) AS "artistCount"
         `;
 
-
-        return NextResponse.json(userPlayCount[0], { status: 200 });
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return createSuccessResponse(userPlayCount[0], 200);
+    } catch (error) {
+        return handleError(error);
     }
 }

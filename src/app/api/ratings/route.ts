@@ -1,18 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/auth";
+import { NextRequest } from "next/server";
 import { sql } from '@/utils/db';
+import { requireAuth } from "@/utils/auth-middleware";
+import { isValidEntityType, isValidId, isValidRating } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const entityId = searchParams.get("entityId");
-    const entityType = searchParams.get("entityType");
-
-    if (!entityId || !entityType) {
-        return new NextResponse("Missing query parameters", { status: 400 });
-    }
-
     try {
+        const { searchParams } = new URL(req.url);
+        const entityId = searchParams.get("entityId");
+        const entityType = searchParams.get("entityType");
+
+        if (!isValidId(entityId) || !isValidEntityType(entityType)) {
+            return createErrorResponse("Invalid or missing query parameters", 400);
+        }
+
+        if (entityType === 'user') {
+            return createErrorResponse("Cannot rate users", 400);
+        }
+
         const ratings = await sql`
             SELECT "userId", "rating", "timestamp"
             FROM ratings
@@ -22,23 +27,32 @@ export async function GET(req: NextRequest) {
         const totalRatings = ratings.length;
         const averageRating = totalRatings > 0 ? ratings.reduce((acc, cur) => acc + cur.rating, 0) / totalRatings : 0;
 
-        return NextResponse.json({ averageRating, totalRatings, ratings }, { status: 200 });
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return createSuccessResponse({ averageRating, totalRatings, ratings }, 200);
+    } catch (error) {
+        return handleError(error);
     }
 }
 
 export async function POST(req: NextRequest) {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id)
-        return new NextResponse("Unauthorized", { status: 401 });
-
-    const { entityId, entityType, rating } = await req.json();
-    if (!entityId || !entityType || !rating) {
-        return new NextResponse("Missing fields", { status: 400 });
-    }
-
     try {
+        const auth = await requireAuth();
+        if (!auth.authenticated) return auth.response;
+
+        const body = await req.json();
+        const { entityId, entityType, rating } = body;
+
+        if (!isValidId(entityId) || !isValidEntityType(entityType)) {
+            return createErrorResponse("Invalid or missing fields", 400);
+        }
+
+        if (entityType === 'user') {
+            return createErrorResponse("Cannot rate users", 400);
+        }
+
+        if (!isValidRating(rating)) {
+            return createErrorResponse(`Rating must be an integer between 1 and 5`, 400);
+        }
+
         const entityExists = await sql`
             SELECT 1
             FROM (
@@ -53,42 +67,47 @@ export async function POST(req: NextRequest) {
         `;
 
         if (entityExists.length === 0) {
-            return new NextResponse("Entity does not exist", { status: 404 });
+            return createErrorResponse("Entity does not exist", 404);
         }
 
         await sql`
             INSERT INTO ratings ("userId", "entityId", "entityType", "rating", "timestamp")
-            VALUES (${session.user.id}, ${entityId}, ${entityType}, ${rating}, NOW())
+            VALUES (${auth.userId}, ${entityId}, ${entityType}, ${rating}, NOW())
             ON CONFLICT ("userId", "entityId", "entityType") DO UPDATE
-            SET "rating" = EXCLUDED."rating"
+            SET "rating" = EXCLUDED."rating", "timestamp" = NOW()
         `;
 
-        return new NextResponse("Rating saved", { status: 201 });
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return createSuccessResponse({ message: "Rating saved" }, 201);
+    } catch (error) {
+        return handleError(error);
     }
 }
 
 export async function DELETE(req: NextRequest) {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id)
-        return new NextResponse("Unauthorized", { status: 401 });
-
-    const { entityId, entityType } = await req.json();
-    if (!entityId || !entityType) {
-        return new NextResponse("Missing fields", { status: 400 });
-    }
-
     try {
-        await sql`
+        const auth = await requireAuth();
+        if (!auth.authenticated) return auth.response;
+
+        const body = await req.json();
+        const { entityId, entityType } = body;
+
+        if (!isValidId(entityId) || !isValidEntityType(entityType)) {
+            return createErrorResponse("Invalid or missing fields", 400);
+        }
+
+        const result = await sql`
             DELETE FROM ratings
-            WHERE "userId" = ${session.user.id}
+            WHERE "userId" = ${auth.userId}
             AND "entityId" = ${entityId}
             AND "entityType" = ${entityType}
         `;
 
-        return new NextResponse("Rating deleted", { status: 200 });
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+        if (result.length === 0) {
+            return createErrorResponse("Rating not found", 404);
+        }
+
+        return createSuccessResponse({ message: "Rating deleted" }, 200);
+    } catch (error) {
+        return handleError(error);
     }
 }

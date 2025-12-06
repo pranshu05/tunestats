@@ -1,27 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { sql } from "@/utils/db";
+import { isValidId } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 export async function GET(req: NextRequest) {
-    const trackId = req.nextUrl.pathname.split('/').pop();
-
-    if (!trackId) {
-        return new NextResponse("Missing query parameters", { status: 400 });
-    }
-
     try {
+        const trackId = req.nextUrl.pathname.split('/').pop();
+
+        if (!isValidId(trackId)) {
+            return createErrorResponse("Invalid or missing track ID", 400);
+        }
+
         const track = await sql`
             SELECT tracks.*, albums."imageUrl" 
             FROM tracks 
             JOIN albums ON tracks."albumId" = albums."albumId" 
             WHERE tracks."trackId" = ${trackId}
+            LIMIT 1
         `;
 
         if (!track || track.length === 0) {
-            return new NextResponse("Track not found", { status: 404 });
+            return createErrorResponse("Track not found", 404);
         }
 
-        return NextResponse.json(track[0], { status: 200 });
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return createSuccessResponse(track[0], 200);
+    } catch (error) {
+        return handleError(error);
     }
 }

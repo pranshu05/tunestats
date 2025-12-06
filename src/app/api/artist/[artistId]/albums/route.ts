@@ -1,24 +1,26 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { sql } from "@/utils/db";
+import { isValidId } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 export async function GET(req: NextRequest) {
-    const artistId = req.nextUrl.pathname.split("/").slice(-2, -1)[0];
-
-    if (!artistId) {
-        return new NextResponse("Missing query parameters", { status: 400 });
-    }
-
     try {
+        const artistId = req.nextUrl.pathname.split("/").slice(-2, -1)[0];
+
+        if (!isValidId(artistId)) {
+            return createErrorResponse("Invalid or missing artist ID", 400);
+        }
+
         const albums = await sql`
             SELECT * FROM albums WHERE "artistId" = ${artistId}
         `;
 
         if (!albums || albums.length === 0) {
-            return NextResponse.json([], { status: 200 });
+            return createSuccessResponse([], 200);
         }
 
-        return NextResponse.json(albums, { status: 200 });
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return createSuccessResponse(albums, 200);
+    } catch (error) {
+        return handleError(error);
     }
 }

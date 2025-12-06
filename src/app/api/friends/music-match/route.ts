@@ -1,21 +1,19 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/auth";
 import { sql } from "@/utils/db";
+import { requireAuth } from "@/utils/auth-middleware";
+import { handleError, createSuccessResponse } from "@/utils/errorHandler";
 
 export async function GET() {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id)
-        return new NextResponse("Unauthorized", { status: 401 });
-
     try {
+        const auth = await requireAuth();
+        if (!auth.authenticated) return auth.response;
+
         const friends = await sql`
-            SELECT CASE WHEN "userId" = ${session.user.id} THEN "friendId" ELSE "userId" END as friend_id
-            FROM Friends WHERE "userId" = ${session.user.id} OR "friendId" = ${session.user.id}
+            SELECT CASE WHEN "userId" = ${auth.userId} THEN "friendId" ELSE "userId" END as friend_id
+            FROM friends WHERE "userId" = ${auth.userId} OR "friendId" = ${auth.userId}
         `;
 
         if (friends.length === 0) {
-            return NextResponse.json([], { status: 200 });
+            return createSuccessResponse([], 200);
         }
 
         const oneWeekAgo = new Date();
@@ -32,7 +30,7 @@ export async function GET() {
                 user_history AS (
                     SELECT th."trackId", th."artistId"
                     FROM "trackHistory" th
-                    WHERE th."userId" = ${session.user.id}
+                    WHERE th."userId" = ${auth.userId}
                     AND th."timestamp" >= ${oneWeekAgoIso}
                 ),
                 friend_history AS (
@@ -139,7 +137,7 @@ export async function GET() {
                 user_history AS (
                     SELECT th."trackId", th."artistId"
                     FROM "trackHistory" th
-                    WHERE th."userId" = ${session.user.id}
+                    WHERE th."userId" = ${auth.userId}
                     AND th."timestamp" >= ${oneWeekAgoIso}
                 ),
                 friend_history AS (
@@ -250,9 +248,8 @@ export async function GET() {
 
         friendCompatibilityResults.sort((a, b) => b.compatibilityScore - a.compatibilityScore);
 
-        return NextResponse.json(friendCompatibilityResults, { status: 200 });
+        return createSuccessResponse(friendCompatibilityResults, 200);
     } catch (error) {
-        console.error("Error calculating compatibility:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return handleError(error);
     }
 }

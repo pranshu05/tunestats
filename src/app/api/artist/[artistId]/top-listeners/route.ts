@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { sql } from "@/utils/db";
+import { isValidId } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 interface CombinedListener {
     userId: string;
@@ -8,13 +10,13 @@ interface CombinedListener {
 }
 
 export async function GET(req: NextRequest) {
-    const artistId = req.nextUrl.pathname.split("/").slice(-2, -1)[0];
-
-    if (!artistId) {
-        return new NextResponse("Missing query parameters", { status: 400 });
-    }
-
     try {
+        const artistId = req.nextUrl.pathname.split("/").slice(-2, -1)[0];
+
+        if (!isValidId(artistId)) {
+            return createErrorResponse("Invalid or missing artist ID", 400);
+        }
+
         const primaryListeners = await sql`
             SELECT th."userId", COUNT(*) AS "playCount", u.name
             FROM "trackHistory" th JOIN tracks t ON t."trackId" = th."trackId"
@@ -49,12 +51,12 @@ export async function GET(req: NextRequest) {
                     });
                 }
                 return acc;
-            }, [])
+            }, [] as CombinedListener[])
             .sort((a: CombinedListener, b: CombinedListener) => b.playCount - a.playCount).slice(0, 5);
 
-        return NextResponse.json(combinedListeners, { status: 200 });
+        return createSuccessResponse(combinedListeners, 200);
 
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+    } catch (error) {
+        return handleError(error);
     }
 }

@@ -1,10 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/utils/auth';
+import { NextRequest } from 'next/server';
 import { sql } from "@/utils/db";
-
-const MAX_COMMENT_LENGTH = 2000;
-const MIN_COMMENT_LENGTH = 1;
+import { requireAuth } from "@/utils/auth-middleware";
+import { isValidEntityType, isValidId, isValidCommentText, sanitizeString } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 export async function GET(req: NextRequest) {
     try {
@@ -12,18 +10,11 @@ export async function GET(req: NextRequest) {
         const entityId = searchParams.get('entityId');
         const entityType = searchParams.get('entityType');
 
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const auth = await requireAuth();
+        if (!auth.authenticated) return auth.response;
 
-        if (!entityId || !entityType) {
-            return NextResponse.json({ error: "Missing query parameters" }, { status: 400 });
-        }
-
-        const validEntityTypes = ['user', 'track', 'album', 'artist'];
-        if (!validEntityTypes.includes(entityType)) {
-            return NextResponse.json({ error: "Invalid entity type" }, { status: 400 });
+        if (!isValidId(entityId) || !isValidEntityType(entityType)) {
+            return createErrorResponse("Invalid or missing query parameters", 400);
         }
 
         const comments = await sql`
@@ -38,39 +29,35 @@ export async function GET(req: NextRequest) {
             ORDER BY c."timestamp" ASC
         `;
 
-        return NextResponse.json(comments || [], {
-            status: 200, headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60', },
-        });
-    } catch {
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return createSuccessResponse(comments || [], 200, 'public, s-maxage=30, stale-while-revalidate=60');
+    } catch (error) {
+        return handleError(error);
     }
 }
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const auth = await requireAuth();
+        if (!auth.authenticated) return auth.response;
 
         const body = await req.json();
         const { entityId, entityType, parentCommentId, text } = body;
 
-        if (!entityId || !entityType || !text) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        if (!isValidId(entityId) || !isValidEntityType(entityType)) {
+            return createErrorResponse("Invalid or missing required fields", 400);
         }
 
-        const validEntityTypes = ['user', 'track', 'album', 'artist'];
-        if (!validEntityTypes.includes(entityType)) {
-            return NextResponse.json({ error: "Invalid entity type" }, { status: 400 });
+        if (!isValidCommentText(text)) {
+            return createErrorResponse(`Comment must be between 1 and 2000 characters`, 400);
         }
 
-        const trimmedText = text.trim();
-        if (trimmedText.length < MIN_COMMENT_LENGTH || trimmedText.length > MAX_COMMENT_LENGTH) {
-            return NextResponse.json({ error: `Comment must be between ${MIN_COMMENT_LENGTH} and ${MAX_COMMENT_LENGTH} characters` }, { status: 400 });
-        }
+        const trimmedText = sanitizeString(text);
 
         if (parentCommentId !== null && parentCommentId !== undefined) {
+            if (!isValidId(parentCommentId)) {
+                return createErrorResponse("Invalid parent comment ID", 400);
+            }
+
             const parentComment = await sql`
                 SELECT "commentId" 
                 FROM comments 
@@ -79,7 +66,7 @@ export async function POST(req: NextRequest) {
             `;
 
             if (!parentComment || parentComment.length === 0) {
-                return NextResponse.json({ error: "Parent comment not found" }, { status: 404 });
+                return createErrorResponse("Parent comment not found", 404);
             }
         }
 
@@ -99,13 +86,13 @@ export async function POST(req: NextRequest) {
         `;
 
         if (!entityExists[0]?.exists) {
-            return NextResponse.json({ error: "Entity not found" }, { status: 404 });
+            return createErrorResponse("Entity not found", 404);
         }
 
         await sql`
             INSERT INTO comments ("userId", "entityId", "entityType", "text", "parentCommentId")
             VALUES (
-                ${session.user.id}, 
+                ${auth.userId}, 
                 ${entityId}, 
                 ${entityType}, 
                 ${trimmedText}, 
@@ -113,8 +100,8 @@ export async function POST(req: NextRequest) {
             )
         `;
 
-        return NextResponse.json({ message: "Comment added successfully" }, { status: 201 });
-    } catch {
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return createSuccessResponse({ message: "Comment added successfully" }, 201);
+    } catch (error) {
+        return handleError(error);
     }
 }

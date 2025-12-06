@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { sql } from "@/utils/db";
+import { isValidId } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 const PAGE_SIZE = 10;
 
@@ -12,15 +14,12 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
 
         const userId = params.userId;
 
-        if (!userId || typeof userId !== 'string' || userId.trim() === '') {
-            return NextResponse.json(
-                { error: "Invalid user ID" },
-                { status: 400 }
-            );
+        if (!isValidId(userId)) {
+            return createErrorResponse("Invalid user ID", 400);
         }
 
         if (offset > 10000) {
-            return NextResponse.json({ error: "Page number too large" }, { status: 400 });
+            return createErrorResponse("Page number too large", 400);
         }
 
         const [tracks, totalCount] = await Promise.all([
@@ -58,12 +57,11 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
         const totalPages = Math.ceil(Number(totalCount[0]?.count || 0) / PAGE_SIZE);
 
         if (!tracks || tracks.length === 0) {
-            return NextResponse.json({ tracks: [], totalPages: 0 }, { status: 200, headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120', }, });
+            return createSuccessResponse({ tracks: [], totalPages: 0 }, 200, 'public, s-maxage=60, stale-while-revalidate=120');
         }
 
-        return NextResponse.json({ tracks, totalPages }, { status: 200, headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120', }, }
-        );
-    } catch {
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return createSuccessResponse({ tracks, totalPages }, 200, 'public, s-maxage=60, stale-while-revalidate=120');
+    } catch (error) {
+        return handleError(error);
     }
 }

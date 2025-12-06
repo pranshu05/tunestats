@@ -1,14 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { sql } from "@/utils/db";
+import { isValidId } from "@/utils/validation";
+import { handleError, createSuccessResponse, createErrorResponse } from "@/utils/errorHandler";
 
 export async function GET(req: NextRequest) {
-    const artistId = req.nextUrl.pathname.split("/").slice(-2, -1)[0];
-
-    if (!artistId) {
-        return new NextResponse("Missing query parameters", { status: 400 });
-    }
-
     try {
+        const artistId = req.nextUrl.pathname.split("/").slice(-2, -1)[0];
+
+        if (!isValidId(artistId)) {
+            return createErrorResponse("Invalid or missing artist ID", 400);
+        }
+
         const primaryPlays = await sql`
             SELECT COUNT(*) AS "primaryPlaycount" 
             FROM "trackHistory" 
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
         `;
 
         if ((!primaryPlays || primaryPlays.length === 0) && (!featuredPlays || featuredPlays.length === 0)) {
-            return new NextResponse("No playcount found", { status: 404 });
+            return createErrorResponse("No playcount found", 404);
         }
 
         const primaryCount = primaryPlays.length > 0 ? parseInt(primaryPlays[0].primaryPlaycount) : 0;
@@ -38,9 +40,9 @@ export async function GET(req: NextRequest) {
             playcount: totalPlaycount
         };
 
-        return NextResponse.json(result, { status: 200 });
+        return createSuccessResponse(result, 200);
 
-    } catch {
-        return new NextResponse("Internal Server Error", { status: 500 });
+    } catch (error) {
+        return handleError(error);
     }
 }
