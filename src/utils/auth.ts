@@ -22,6 +22,7 @@ export const authOptions: NextAuthOptions = {
                         'playlist-read-private',
                         'playlist-read-collaborative',
                     ].join(' '),
+                    redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/spotify`,
                 },
             },
             profile(profile) {

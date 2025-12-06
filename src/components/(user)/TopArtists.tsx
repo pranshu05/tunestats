@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
-import { useState, useRef } from "react"
+import { useState, useRef, useCallback } from "react"
 import useSWR from "swr"
 import { fetcher } from "@/utils/fetcher"
 import FetchError from "../(layout)/FetchError"
@@ -16,80 +16,138 @@ type Artist = {
 export default function TopArtists({ userId }: { userId: string }) {
     const [period, setPeriod] = useState("week")
     const [viewMode, setViewMode] = useState<"carousel" | "grid">("carousel")
-    const { data: artists, error } = useSWR<Artist[]>(`/api/user/${userId}/top-artists?period=${period}`, fetcher)
     const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
-    if (error) return <FetchError />
-    if (!artists) return <FetchLoader />
+    const { data: artists, error, isLoading } = useSWR<Artist[]>(
+        userId ? `/api/user/${userId}/top-artists?period=${period}` : null,
+        fetcher,
+        {
+            revalidateOnFocus: false,
+            dedupingInterval: 5000,
+        }
+    )
 
-    const scrollLeft = () => {
+    const scrollLeft = useCallback(() => {
         if (scrollContainerRef.current) {
             scrollContainerRef.current.scrollBy({ left: -300, behavior: "smooth" })
         }
-    }
+    }, [])
 
-    const scrollRight = () => {
+    const scrollRight = useCallback(() => {
         if (scrollContainerRef.current) {
             scrollContainerRef.current.scrollBy({ left: 300, behavior: "smooth" })
         }
-    }
+    }, [])
+
+    const renderArtistCard = (artist: Artist) => (
+        <a 
+            href={`/artist/${encodeURIComponent(artist.artistId)}`} 
+            key={artist.artistId} 
+            className={viewMode === "carousel" ? "snap-start flex-shrink-0 w-[150px] lg:w-[220px] group" : "group"}
+        >
+            <div className="bg-[#2a211c] rounded-lg p-3 transform transition-transform group-hover:-translate-y-1 shadow-md hover:shadow-lg">
+                <div className="relative mb-3 bg-[#e6d2c0] p-2 rounded">
+                    <div className="aspect-square">
+                        <img 
+                            src={artist.imageUrl || "/placeholder.svg"} 
+                            alt={`${artist.name}'s profile`}
+                            className="w-full h-full object-cover rounded" 
+                            loading="lazy"
+                            onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/placeholder.svg";
+                            }}
+                        />
+                    </div>
+                </div>
+                <h4 className="font-bold text-[#e6d2c0] line-clamp-1 text-center" title={artist.name}>
+                    {artist.name}
+                </h4>
+            </div>
+        </a>
+    );
+
+    if (error) return <FetchError />
+    if (isLoading || !artists) return <FetchLoader />
 
     return (
         <div className="rounded-lg bg-[#1e1814] border border-[#3d2e23] p-3 lg:p-6 shadow-lg">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 lg:mb-4 gap-2 lg:gap-4">
                 <div className="flex items-center gap-2">
-                    <Users className="size-5 lg:size-6 text-[#c38e70]" />
-                    <h3 className="text-lg lg:text-xl font-bold text-[#e6d2c0]">Top Artists</h3>
+                    <Users className="size-5 lg:size-6 text-[#c38e70]" aria-hidden="true" />
+                    <h2 className="text-lg lg:text-xl font-bold text-[#e6d2c0]">Top Artists</h2>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center bg-[#2a211c] rounded-md p-1">
-                        <button onClick={() => setViewMode("carousel")} className={`p-1.5 rounded ${viewMode === "carousel" ? "bg-[#3d2e23] text-[#e6d2c0]" : "text-[#a18072]"}`}><List size={18} /></button>
-                        <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded ${viewMode === "grid" ? "bg-[#3d2e23] text-[#e6d2c0]" : "text-[#a18072]"}`}><Grid size={18} /></button>
+                    <div className="flex items-center bg-[#2a211c] rounded-md p-1" role="group" aria-label="View mode">
+                        <button 
+                            onClick={() => setViewMode("carousel")} 
+                            className={`p-1.5 rounded ${viewMode === "carousel" ? "bg-[#3d2e23] text-[#e6d2c0]" : "text-[#a18072]"} transition-colors`}
+                            aria-label="Carousel view"
+                            aria-pressed={viewMode === "carousel"}
+                        >
+                            <List size={18} />
+                        </button>
+                        <button 
+                            onClick={() => setViewMode("grid")} 
+                            className={`p-1.5 rounded ${viewMode === "grid" ? "bg-[#3d2e23] text-[#e6d2c0]" : "text-[#a18072]"} transition-colors`}
+                            aria-label="Grid view"
+                            aria-pressed={viewMode === "grid"}
+                        >
+                            <Grid size={18} />
+                        </button>
                     </div>
-                    <select value={period} onChange={(e) => setPeriod(e.target.value)} className="bg-[#2a211c] text-[#e6d2c0] px-3 py-1.5 rounded-md border border-[#3d2e23] focus:outline-none focus:ring-1 focus:ring-[#c38e70]">
+                    <select 
+                        value={period} 
+                        onChange={(e) => setPeriod(e.target.value)} 
+                        className="bg-[#2a211c] text-[#e6d2c0] px-3 py-1.5 rounded-md border border-[#3d2e23] focus:outline-none focus:ring-1 focus:ring-[#c38e70]"
+                        aria-label="Time period"
+                    >
                         <option value="week">Last Week</option>
                         <option value="month">Last Month</option>
                         <option value="year">Last Year</option>
                     </select>
                 </div>
             </div>
-            {viewMode === "carousel" ? (
+
+            {artists.length === 0 ? (
+                <div className="text-center py-12 text-[#a18072]">
+                    <Users className="mx-auto mb-4 opacity-50" size={48} />
+                    <p>No artists found for this period</p>
+                </div>
+            ) : viewMode === "carousel" ? (
                 <div className="relative">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10">
-                        <button onClick={scrollLeft} className="p-2 rounded-full bg-[#2a211c] text-[#e6d2c0] hover:bg-[#3d2e23] shadow-lg"><ChevronLeft size={20} /></button>
-                    </div>
-                    <div ref={scrollContainerRef} className="flex gap-2 lg:gap-5 overflow-x-auto px-2 hide-scrollbar snap-x snap-mandatory">
-                        {artists.map((artist) => (
-                            <a href={`/artist/${artist.artistId}`} key={artist.artistId} className="snap-start flex-shrink-0 w-[150px] lg:w-[220px] group">
-                                <div className="bg-[#2a211c] rounded-lg p-3 transform transition-transform group-hover:-translate-y-1 shadow-md hover:shadow-lg">
-                                    <div className="relative mb-3 bg-[#e6d2c0] p-2 rounded">
-                                        <div className="aspect-square">
-                                            <img src={artist.imageUrl || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover rounded" />
-                                        </div>
-                                    </div>
-                                    <h4 className="font-bold text-[#e6d2c0] line-clamp-1 text-center">{artist.name}</h4>
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10">
-                        <button onClick={scrollRight} className="p-2 rounded-full bg-[#2a211c] text-[#e6d2c0] hover:bg-[#3d2e23] shadow-lg"><ChevronRight size={20} /></button>
+                    {artists.length > 4 && (
+                        <>
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10">
+                                <button 
+                                    onClick={scrollLeft} 
+                                    className="p-2 rounded-full bg-[#2a211c] text-[#e6d2c0] hover:bg-[#3d2e23] shadow-lg transition-colors"
+                                    aria-label="Scroll left"
+                                >
+                                    <ChevronLeft size={20} />
+                                </button>
+                            </div>
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10">
+                                <button 
+                                    onClick={scrollRight} 
+                                    className="p-2 rounded-full bg-[#2a211c] text-[#e6d2c0] hover:bg-[#3d2e23] shadow-lg transition-colors"
+                                    aria-label="Scroll right"
+                                >
+                                    <ChevronRight size={20} />
+                                </button>
+                            </div>
+                        </>
+                    )}
+                    <div 
+                        ref={scrollContainerRef} 
+                        className="flex gap-2 lg:gap-5 overflow-x-auto px-2 hide-scrollbar snap-x snap-mandatory"
+                    >
+                        {artists.map(renderArtistCard)}
                     </div>
                 </div>
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 lg:gap-5">
-                    {artists.map((artist) => (
-                        <a href={`/artist/${artist.artistId}`} key={artist.artistId} className="group">
-                            <div className="bg-[#2a211c] rounded-lg p-3 transform transition-transform group-hover:-translate-y-1 shadow-md hover:shadow-lg">
-                                <div className="relative mb-3 bg-[#e6d2c0] p-2 rounded">
-                                    <div className="aspect-square">
-                                        <img src={artist.imageUrl || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover rounded" />
-                                    </div>
-                                </div>
-                                <h4 className="font-bold text-[#e6d2c0] line-clamp-1 text-center">{artist.name}</h4>
-                            </div>
-                        </a>
-                    ))}
+                    {artists.map(renderArtistCard)}
                 </div>
             )}
         </div>
